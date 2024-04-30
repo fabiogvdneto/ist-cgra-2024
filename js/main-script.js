@@ -19,7 +19,7 @@ function createScene() {
     scene.add(new THREE.AxesHelper(10));
     scene.background = new THREE.Color('aliceblue');
 
-    createCrane(0, 0, 0);
+    createCane(0, -20, 0);
 }
 
 //////////////////////
@@ -70,10 +70,14 @@ function initializeCameras() {
 var geometry, mesh, material;
 const l_base = 15, h_base = 5;
 const l_tower = 8, h_tower = 40;
+const l_cab = 10, h_cab = 5;
+const l_jib = 8, c_jib = 35, h_jib = 6;
+const c_counterJib = 25;
 
+// Base's referential
 
 function addBase(obj, x, y, z) {
-    'use strict'
+    'use strict';
     geometry = new THREE.BoxGeometry(l_base, h_base, l_base);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
@@ -81,26 +85,83 @@ function addBase(obj, x, y, z) {
 }
 
 function addTower(obj, x, y, z) {
-    'use strict'
+    'use strict';
     geometry = new THREE.BoxGeometry(l_tower, h_tower, l_tower);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
-function createCrane(x, y, z) {
+function createCane(x, y, z) {
+    'use strict';
     var crane = new THREE.Object3D();
 
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
-    addBase(crane, 0, 0, 0);
-    addTower(crane, 0, h_base/2 + h_tower/2, 0)
+    addBase(crane, 0, h_base/2, 0);
+    addTower(crane, 0, h_base + h_tower/2, 0)
+    createSuperior(crane, 0, h_base + h_tower, 0);
 
     scene.add(crane);
 
     crane.position.x = x;
     crane.position.y = y;
     crane.position.z = z;
+}
+
+// Superior's referentiaL
+
+
+function addCab(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.BoxGeometry(l_cab, h_cab, l_cab);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addCounterJib(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.BoxGeometry(l_jib, h_jib, c_counterJib);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addJib(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.BoxGeometry(l_jib, h_jib, c_jib);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addApex(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.BoxGeometry(l_jib, l_jib, l_jib);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+
+
+function createSuperior(obj, x, y, z) {
+    'use strict';
+    var jib = new THREE.Object3D();
+
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    addCab(jib, -1, h_cab/2, -1);
+    addJib(jib, 0, h_cab + h_jib/2, -(1 + l_cab/2 + c_jib/2));
+    addCounterJib(jib, 0, h_cab + h_jib/2, -(1 + l_cab/2) + c_counterJib/2);
+
+    jib.position.x = x;
+    jib.position.y = y;
+    jib.position.z = z;
+
+    obj.add(jib);
+
 }
 
 //////////////////////
