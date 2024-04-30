@@ -71,8 +71,12 @@ var geometry, mesh, material;
 const l_base = 15, h_base = 5;
 const l_tower = 8, h_tower = 40;
 const l_cab = 10, h_cab = 5;
-const l_jib = 8, c_jib = 35, h_jib = 6;
-const c_counterJib = 25;
+const l_jib = 8, c_jib = 35, h_jib = 3;
+const c_counterJib = 20, h_counterJib = 2.5;
+const h_pl = 15;
+const l_counterWeigth = 6, h_counterWeigth = 6, c_counterWeigth = 5;
+const l_motor = 5, h_motor = 2;
+const l_suport = 4, h_suport = 2;
 
 // Base's referential
 
@@ -111,7 +115,6 @@ function createCane(x, y, z) {
 
 // Superior's referentiaL
 
-
 function addCab(obj, x, y, z) {
     'use strict';
     geometry = new THREE.BoxGeometry(l_cab, h_cab, l_cab);
@@ -122,7 +125,7 @@ function addCab(obj, x, y, z) {
 
 function addCounterJib(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.BoxGeometry(l_jib, h_jib, c_counterJib);
+    geometry = new THREE.BoxGeometry(l_jib, h_counterJib, c_counterJib);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -138,23 +141,70 @@ function addJib(obj, x, y, z) {
 
 function addApex(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.BoxGeometry(l_jib, l_jib, l_jib);
+
+    geometry = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_tower,2), 1/2)/2), h_pl, 4, 1, false, 0.782, 6.3);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
+function addCounterWeigth(obj, x, y, z) {
+    'use strict';
 
+    geometry = new THREE.BoxGeometry(c_counterWeigth, h_counterWeigth, l_counterWeigth);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addMotors(obj, x, y, z) { 
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(l_jib, h_motor, l_motor);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+
+}
+
+function addPendants(obj, x, y, z) {
+    'use strict';
+
+    const material = new THREE.LineBasicMaterial( { color: 0x00ff00, wireframe: true } );
+
+    const points1 = []; // first pendant
+    points1.push(new THREE.Vector3(0, h_cab + h_pl, 0)); // Start point
+    points1.push(new THREE.Vector3(0, h_cab + h_counterJib, -1 + l_cab/2 + c_counterJib/2)); // End point
+
+    geometry = new THREE.BufferGeometry().setFromPoints(points1);
+    mesh = new THREE.Line(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+
+    const points2 = []; // secound pendant
+    points2.push(new THREE.Vector3(0, h_cab + h_pl, 0)); // Start point
+    points2.push(new THREE.Vector3(0, h_cab + h_jib, - (1 + l_cab/2 + c_jib*(3/4)))); // End point12
+
+    geometry = new THREE.BufferGeometry().setFromPoints(points2);
+    mesh = new THREE.Line(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}3
 
 function createSuperior(obj, x, y, z) {
-    'use strict';
+    'use strict';21
     var jib = new THREE.Object3D();
 
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
     addCab(jib, -1, h_cab/2, -1);
     addJib(jib, 0, h_cab + h_jib/2, -(1 + l_cab/2 + c_jib/2));
-    addCounterJib(jib, 0, h_cab + h_jib/2, -(1 + l_cab/2) + c_counterJib/2);
+    addCounterJib(jib, 0, h_cab + h_counterJib/2, -1 + l_cab/2 + c_counterJib/2);
+    addApex(jib, 0, h_cab + h_pl/2, -1);
+    addCounterWeigth(jib, 0, h_cab - h_counterWeigth/2, -1 + l_cab/2 + 5/6*c_counterJib - c_counterWeigth/2);
+    addMotors(jib, 0, h_cab + h_counterJib + h_motor/2, -1 + l_cab/2 + c_counterJib - c_counterWeigth/2);
+    addPendants(jib, 0, 0, -1);
+    createCar(jib, 0,h_cab, - (l_cab/2 + c_jib - l_suport/2));
 
     jib.position.x = x;
     jib.position.y = y;
@@ -162,6 +212,33 @@ function createSuperior(obj, x, y, z) {
 
     obj.add(jib);
 
+}
+
+// Car's referential
+
+function addCar(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.BoxGeometry(l_suport, h_suport, l_suport);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+
+function createCar(obj, x, y, z) {
+    'use strict';
+    var car = new THREE.Object3D();
+
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    addCar(car, 0, -h_suport/2, 0);
+
+    car.position.x = x;
+    car.position.y = y;
+    car.position.z = z;
+
+    obj.add(car);
 }
 
 //////////////////////
