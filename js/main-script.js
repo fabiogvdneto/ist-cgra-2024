@@ -18,6 +18,8 @@ function createScene() {
     scene = new THREE.Scene();
     scene.add(new THREE.AxesHelper(10));
     scene.background = new THREE.Color('aliceblue');
+
+    createCrane(0, 0, 0);
 }
 
 //////////////////////
@@ -39,6 +41,40 @@ function createCamera(x, y, z) {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+var geometry, mesh, material;
+const l_base = 15, h_base = 5;
+const l_tower = 8, h_tower = 40;
+
+function addBase(obj, x, y, z) {
+    'use strict'
+    geometry = new THREE.BoxGeometry(l_base, h_base, l_base);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addTower(obj, x, y, z) {
+    'use strict'
+    geometry = new THREE.BoxGeometry(l_tower, h_tower, l_tower);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function createCrane(x, y, z) {
+    var crane = new THREE.Object3D();
+
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    addBase(crane, 0, 0, 0);
+    addTower(crane, 0, h_base/2 + h_tower/2, 0)
+
+    scene.add(crane);
+
+    crane.position.x = x;
+    crane.position.y = y;
+    crane.position.z = z;
+}
 
 //////////////////////
 /* CHECK COLLISIONS */
@@ -77,15 +113,12 @@ function render() {
 ////////////////////////////////
 function init() {
     'use strict';
-
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
     createScene();
-    createCamera(50, 0, 0);
-    createCamera(0, 50, 0);
-    createCamera(0, 0, 50);
+    createCamera(50, 50, 50);
 
     render();
 }
