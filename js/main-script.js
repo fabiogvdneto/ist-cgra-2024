@@ -39,11 +39,10 @@ function createPerpectiveCamera(x, y, z) {
 
 function createOrthographicCamera(x, y, z) {
     'use strict';
-    camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 0.1, 1000);
+    camera = new THREE.OrthographicCamera(window.innerWidth / -12, window.innerWidth / 12, window.innerHeight / 12, window.innerHeight / -12, 0.1, 1000);
     camera.position.x = x;
     camera.position.y = y;
     camera.position.z = z;
-    camera.zoom = 1000;
     camera.lookAt(scene.position);
  
     cameras.push(camera);
