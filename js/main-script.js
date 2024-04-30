@@ -120,6 +120,8 @@ function init() {
     createScene();
     createCamera(50, 50, 50);
 
+    window.addEventListener("keydown", onKeyDown);
+
     render();
 }
 
@@ -145,6 +147,18 @@ function onResize() {
 function onKeyDown(e) {
     'use strict';
 
+    switch (e.keyCode) {
+        case 49: // Key '1'
+            createCamera(50, 0, 0);
+            break;
+        case 50: // Key '2'
+            createCamera(0, 50, 0);
+            break;
+        case 51: // Key '3'
+            createCamera(0, 0, 50);
+            break;
+    }
+    render();
 }
 
 ///////////////////////
