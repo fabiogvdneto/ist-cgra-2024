@@ -8,7 +8,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 /* GLOBAL VARIABLES */
 //////////////////////
 var camera, scene, renderer;
-
+let cameras = [];
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -25,13 +25,40 @@ function createScene() {
 //////////////////////
 /* CREATE CAMERA(S) */
 //////////////////////
-function createCamera(x, y, z) {
+function createPerpectiveCamera(x, y, z) {
     'use strict';
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.x = x;
     camera.position.y = y;
     camera.position.z = z;
     camera.lookAt(scene.position);
+
+    cameras.push(camera);
+
+}
+
+function createOrthographicCamera(x, y, z) {
+    'use strict';
+    camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 0.1, 1000);
+    camera.position.x = x;
+    camera.position.y = y;
+    camera.position.z = z;
+    camera.zoom = 1000;
+    camera.lookAt(scene.position);
+ 
+    cameras.push(camera);
+}
+
+function initializeCameras() {
+    'use strict';
+    createOrthographicCamera(110, 0, 0);
+    createOrthographicCamera(0,110,0);
+    createOrthographicCamera(0,0,110);
+    createOrthographicCamera(140, 140, 140);
+    createPerpectiveCamera(140, 140, 140);
+    // createOrthographicCamera(); - movel camera
+
+    camera = cameras[0];
 }
 
 /////////////////////
@@ -44,6 +71,7 @@ function createCamera(x, y, z) {
 var geometry, mesh, material;
 const l_base = 15, h_base = 5;
 const l_tower = 8, h_tower = 40;
+
 
 function addBase(obj, x, y, z) {
     'use strict'
@@ -118,7 +146,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     createScene();
-    createCamera(50, 50, 50);
+    initializeCameras();
 
     window.addEventListener("keydown", onKeyDown);
 
@@ -149,14 +177,24 @@ function onKeyDown(e) {
 
     switch (e.keyCode) {
         case 49: // Key '1'
-            createCamera(50, 0, 0);
+            camera = cameras[0];
             break;
         case 50: // Key '2'
-            createCamera(0, 50, 0);
+            camera = cameras[1];  
             break;
         case 51: // Key '3'
-            createCamera(0, 0, 50);
+            camera = cameras[2]; 
             break;
+        case 52: // Key '4'
+            camera = cameras[3];
+            break;
+        case 53: // Key '5'
+            camera = cameras[4];  
+            break;
+        case 54: // Key '6'
+            camera = cameras[5]; 
+            break;
+
     }
     render();
 }
