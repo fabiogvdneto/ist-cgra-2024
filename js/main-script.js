@@ -77,6 +77,8 @@ const h_pl = 15;
 const l_counterWeigth = 6, h_counterWeigth = 6, c_counterWeigth = 5;
 const l_motor = 5, h_motor = 2;
 const l_suport = 4, h_suport = 2;
+const r_cane = 0.5, h_cane = 20;
+const l_claw = 6, h_claw = 4;
 
 // Base's referential
 
@@ -233,6 +235,7 @@ function createCar(obj, x, y, z) {
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
     addCar(car, 0, -h_suport/2, 0);
+    createSteelCable(car, 0, -h_suport -h_cane/2, 0);
 
     car.position.x = x;
     car.position.y = y;
@@ -240,6 +243,40 @@ function createCar(obj, x, y, z) {
 
     obj.add(car);
 }
+
+function addSteelCable(obj, x, y, z) {
+    'use strict';
+    geometry = new THREE.CylinderGeometry(r_cane, r_cane, h_cane, 32);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addClaw(obj, x, y, z) {
+    'use strict';
+
+    geometry = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_claw,2), 1/2)/2), h_claw , 4, 1, false, 0.782, 6.3);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function createSteelCable(obj, x, y, z) {
+    'use strict';
+    var cable = new THREE.Object3D();
+
+    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });21
+
+    addSteelCable(cable, 0, 0, 0);
+    addClaw(cable, 0, -h_cane/2 - h_claw/2, 0);
+
+    cable.position.x = x;
+    cable.position.y = y;
+    cable.position.z = z;
+
+    obj.add(cable);
+}
+
 
 //////////////////////
 /* CHECK COLLISIONS */
