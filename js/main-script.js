@@ -19,7 +19,7 @@ function createScene() {
     scene.add(new THREE.AxesHelper(10));
     scene.background = new THREE.Color('aliceblue');
 
-    createCrane(0, -20, 0);
+    addCrane(scene, 0, -20, 0);
 }
 
 //////////////////////
@@ -28,33 +28,28 @@ function createScene() {
 function createPerpectiveCamera(x, y, z) {
     'use strict';
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.x = x;
-    camera.position.y = y;
-    camera.position.z = z;
+    camera.position.set(x, y, z);
     camera.lookAt(scene.position);
 
     cameras.push(camera);
-
 }
 
 function createOrthographicCamera(x, y, z) {
     'use strict';
     camera = new THREE.OrthographicCamera(window.innerWidth / -12, window.innerWidth / 12, window.innerHeight / 12, window.innerHeight / -12, 0.1, 1000);
-    camera.position.x = x;
-    camera.position.y = y;
-    camera.position.z = z;
+    camera.position.set(x, y, z);
     camera.lookAt(scene.position);
- 
+
     cameras.push(camera);
 }
 
 function initializeCameras() {
     'use strict';
-    createOrthographicCamera(110, 0, 0);
-    createOrthographicCamera(0,110,0);
-    createOrthographicCamera(0,0,110);
-    createOrthographicCamera(140, 140, 140);
-    createPerpectiveCamera(140, 140, 140);
+    createOrthographicCamera(110, 0, 0);      // frontal camera
+    createOrthographicCamera(0,0,110);        // side camera
+    createOrthographicCamera(0,110,0);        // top camera
+    createOrthographicCamera(140, 140, 140);  // orthogonal projection
+    createPerpectiveCamera(140, 140, 140);    // perspective projection
     // createOrthographicCamera(); - movel camera
 
     camera = cameras[0];
@@ -67,206 +62,222 @@ function initializeCameras() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-let geometry, mesh, material;
-const l_base = 15, h_base = 5;
-const l_tower = 8, h_tower = 40;
-const l_cab = 10, h_cab = 5;
-const l_jib = 8, c_jib = 35, h_jib = 3;
-const c_counterJib = 20, h_counterJib = 2.5;
-const h_pl = 15;
-const l_counterWeigth = 6, h_counterWeigth = 6, c_counterWeigth = 5;
-const l_motor = 5, h_motor = 2;
-const l_suport = 4, h_suport = 2;
-const r_cane = 0.5, h_cane = 20;
-const l_claw = 6, h_claw = 4;
+let geom, mesh, material;
+let z_trolley = 20;
+let y_steelcable = 20;
 
-// Base's referential
+// l = length | w = width | h = height | d = diameter
+const l_base = 15, h_base = 5;                        // foundation
+const l_tower = 8, h_tower = 50;                      // tower
+const l_cab = 6, h_cab = 5;                           // cab
+const h_apex = 15;                                    // apex
+const w_cjib = 8, l_cjib = 20, h_cjib = 2.5;          // counterjib
+const w_jib = 8, l_jib = 35, h_jib = 3;               // jib
+const l_cweights = 6, h_cweights = 6, c_cweights = 5; // counterweights
+const d_pendants = 0;                                 // (rear & fore) pendants
+const l_motor = 5, h_motor = 2;                       // motor
+const l_trolley = 4, h_trolley = 2;                   // trolley
+const d_steelcable = 0.1;                             // steel cable
+const l_hookblock = 5, h_hookblock = 2;               // hook block
+const l_claw = 6, h_claw = 4;                         // claw
 
-function addBase(obj, x, y, z) {
+// great-grandchild ref: the hook (1x steel cable, 1x hook block, 4x claws)
+
+function addSteelCable(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.BoxGeometry(l_base, h_base, l_base);
-    mesh = new THREE.Mesh(geometry, material);
+    geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, y_steelcable, 16);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
-function addTower(obj, x, y, z) {
+function addHookBlock(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.BoxGeometry(l_tower, h_tower, l_tower);
-    mesh = new THREE.Mesh(geometry, material);
+    geom = new THREE.BoxGeometry(l_hookblock, h_hookblock, l_hookblock);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
-function createCrane(x, y, z) {
+function addClaws(obj, x, y, z) {
     'use strict';
-    const crane = new THREE.Object3D();
-    
-    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-
-    addBase(crane, 0, h_base/2, 0);
-    addTower(crane, 0, h_base + h_tower/2, 0)
-    createSuperior(crane, 0, h_base + h_tower, 0);
-
-    scene.add(crane);
-
-    crane.position.x = x;
-    crane.position.y = y;
-    crane.position.z = z;
+    geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_claw,2), 1/2)/2), -h_claw , 4, 1, false, 0.782, 6.3);
+    mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
 }
 
-// Superior's referentiaL
+function addHook(obj, x, y, z) {
+    'use strict';
+    const cable = new THREE.Object3D();
+
+    material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });21
+
+    addSteelCable(cable, 0, (y_steelcable/2), 0);
+    addHookBlock(cable, 0, -(h_hookblock/2), 0);
+    addClaws(cable, 0, -(h_hookblock + h_claw/2), 0);
+
+    cable.position.set(x, y, z);
+
+    obj.add(cable);
+}
+
+// grandchild ref: the handle (1x trolley)
+
+function addTrolley(obj, x, y, z) {
+    'use strict';
+    geom = new THREE.BoxGeometry(l_trolley, h_trolley, l_trolley);
+    mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addHandle(obj, x, y, z) {
+    'use strict';
+    const handle = new THREE.Object3D();
+
+    material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });
+
+    addTrolley(handle, 0, -h_trolley/2, 0);
+    addHook(handle, 0, -(h_trolley + y_steelcable), 0);
+
+    handle.position.set(x, y, z);
+
+    obj.add(handle);
+}
+
+// child ref: the superior (1x apex, 1x cab, 1x counterjib, 1x jib, 1x counterweights, 1x rear pendant, 1x fore pendant)
 
 function addCab(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.BoxGeometry(l_cab, h_cab, l_cab);
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
-function addCounterJib(obj, x, y, z) {
-    'use strict';
-    geometry = new THREE.BoxGeometry(l_jib, h_counterJib, c_counterJib);
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
-
-function addJib(obj, x, y, z) {
-    'use strict';
-    geometry = new THREE.BoxGeometry(l_jib, h_jib, c_jib);
-    mesh = new THREE.Mesh(geometry, material);
+    geom = new THREE.BoxGeometry(l_cab, h_cab, l_cab);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function addApex(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_tower,2), 1/2)/2), h_pl, 4, 1, false, 0.782, 6.3);
-    mesh = new THREE.Mesh(geometry, material);
+    geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_tower,2), 1/2)/2), h_apex, 4, 1, false, 0.782, 6.3);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
-function addCounterWeigth(obj, x, y, z) {
+function addCounterjib(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.BoxGeometry(c_counterWeigth, h_counterWeigth, l_counterWeigth);
-    mesh = new THREE.Mesh(geometry, material);
+    geom = new THREE.BoxGeometry(w_jib, h_cjib, l_cjib);
+    mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addJib(obj, x, y, z) {
+    'use strict';
+    geom = new THREE.BoxGeometry(w_cjib, h_jib, l_jib);
+    mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addCounterweigths(obj, x, y, z) {
+    'use strict';
+    geom = new THREE.BoxGeometry(c_cweights, h_cweights, l_cweights);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function addMotors(obj, x, y, z) { 
     'use strict';
-    geometry = new THREE.BoxGeometry(l_jib, h_motor, l_motor);
-    mesh = new THREE.Mesh(geometry, material);
+    geom = new THREE.BoxGeometry(w_jib, h_motor, l_motor);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
-function addPendants(obj, x, y, z) {
+function addRearPendant(obj, x, y, z) {
     'use strict';
-    const material = new THREE.LineBasicMaterial( { color: 0x00ff00, wireframe: true } );
+    const c1 = (h_apex - h_cjib);
+    const c2 = (l_tower/2 + l_cjib*3/4);
 
-    const points1 = []; // first pendant
-    points1.push(new THREE.Vector3(0, h_cab + h_pl, 0)); // Start point
-    points1.push(new THREE.Vector3(0, h_cab + h_counterJib, -1 + l_cab/2 + c_counterJib/2)); // End point
+    const length = Math.hypot(c1, c2); // h² = c² + c²
+    const angle = Math.atan(c2 / c1);  // angle = arctan(c2 / c1)
 
-    geometry = new THREE.BufferGeometry().setFromPoints(points1);
-    mesh = new THREE.Line(geometry, material);
+    geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
-    obj.add(mesh);
-
-    const points2 = []; // secound pendant
-    points2.push(new THREE.Vector3(0, h_cab + h_pl, 0)); // Start point
-    points2.push(new THREE.Vector3(0, h_cab + h_jib, - (1 + l_cab/2 + c_jib*(3/4)))); // End point
-
-    geometry = new THREE.BufferGeometry().setFromPoints(points2);
-    mesh = new THREE.Line(geometry, material);
-    mesh.position.set(x, y, z);
+    mesh.rotateX(-angle);
     obj.add(mesh);
 }
 
-function createSuperior(obj, x, y, z) {
+function addForePendant(obj, x, y, z) {
+    'use strict';
+    const c1 = (h_apex - h_jib);
+    const c2 = (l_tower/2 + l_jib*3/4);
+
+    const length = Math.hypot(c1, c2); // h² = c² + c²
+    const angle = Math.atan(c2 / c1);  // angle = arctan(c2 / c1)
+
+    geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
+    mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    mesh.rotateX(angle);
+    obj.add(mesh);
+}
+
+function addSuperior(obj, x, y, z) {
     'use strict';
     const jib = new THREE.Object3D();
 
-    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });
 
-    addCab(jib, -1, h_cab/2, -1);
-    addJib(jib, 0, h_cab + h_jib/2, -(1 + l_cab/2 + c_jib/2));
-    addCounterJib(jib, 0, h_cab + h_counterJib/2, -1 + l_cab/2 + c_counterJib/2);
-    addApex(jib, 0, h_cab + h_pl/2, -1);
-    addCounterWeigth(jib, 0, h_cab - h_counterWeigth/2, -1 + l_cab/2 + 5/6*c_counterJib - c_counterWeigth/2);
-    addMotors(jib, 0, h_cab + h_counterJib + h_motor/2, -1 + l_cab/2 + c_counterJib - c_counterWeigth/2);
-    addPendants(jib, 0, 0, -1);
-    createCar(jib, 0,h_cab, - (l_cab/2 + c_jib - l_suport/2));
+    addCab(jib, 0, -(h_cab/2), -(l_tower/2 + l_cab/2));
+    addApex(jib, 0, (h_apex/2), 0);
+    addCounterjib(jib, 0, (h_cjib/2), (l_tower/2 + l_cjib/2));
+    addJib(jib, 0, h_jib/2, -(l_tower + l_jib)/2);
+    addCounterweigths(jib, 0, -(h_cweights)/2, (l_tower/2 + l_cjib - l_cweights));
+    // addMotors(jib, 0, h_cab + h_cjib + h_motor/2, -1 + l_cab/2 + c_cjib - c_cweights/2);
+    addRearPendant(jib, 0, (h_apex + h_cjib)/2, (l_tower/2 + l_cjib*3/4)/2);
+    addForePendant(jib, 0, (h_apex + h_jib)/2, -(l_tower/2 + l_jib*3/4)/2);
+    addHandle(jib, 0, 0, -(l_tower/2 + l_cab + l_trolley + z_trolley));
 
-    jib.position.x = x;
-    jib.position.y = y;
-    jib.position.z = z;
+    jib.position.set(x, y, z);
 
     obj.add(jib);
 }
 
-// Car's referential
+// parent ref: WCS (1x foundation, 1x tower)
 
-function addCar(obj, x, y, z) {
+function addFoundation(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.BoxGeometry(l_suport, h_suport, l_suport);
-    mesh = new THREE.Mesh(geometry, material);
+    geom = new THREE.BoxGeometry(l_base, h_base, l_base);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
-
-function createCar(obj, x, y, z) {
+function addTower(obj, x, y, z) {
     'use strict';
-    const car = new THREE.Object3D();
-
-    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-
-    addCar(car, 0, -h_suport/2, 0);
-    createSteelCable(car, 0, -h_suport -h_cane/2, 0);
-
-    car.position.x = x;
-    car.position.y = y;
-    car.position.z = z;
-
-    obj.add(car);
-}
-
-function addSteelCable(obj, x, y, z) {
-    'use strict';
-    geometry = new THREE.CylinderGeometry(r_cane, r_cane, h_cane, 32);
-    mesh = new THREE.Mesh(geometry, material);
+    geom = new THREE.BoxGeometry(l_tower, h_tower, l_tower);
+    mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
-function addClaw(obj, x, y, z) {
+function addCrane(obj, x, y, z) {
     'use strict';
-    geometry = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_claw,2), 1/2)/2), h_claw , 4, 1, false, 0.782, 6.3);
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
-}
+    const crane = new THREE.Object3D();
+    
+    material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });
 
-function createSteelCable(obj, x, y, z) {
-    'use strict';
-    const cable = new THREE.Object3D();
+    addFoundation(crane, 0, (h_base/2), 0);
+    addTower(crane, 0, (h_base + h_tower/2), 0);
+    addSuperior(crane, 0, (h_base + h_tower), 0);
 
-    material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });21
+    crane.position.set(x, y, z);
 
-    addSteelCable(cable, 0, 0, 0);
-    addClaw(cable, 0, -h_cane/2 - h_claw/2, 0);
-
-    cable.position.x = x;
-    cable.position.y = y;
-    cable.position.z = z;
-
-    obj.add(cable);
+    obj.add(crane);
 }
 
 
@@ -340,27 +351,11 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-    switch (e.keyCode) {
-        case 49: // Key '1'
-            camera = cameras[0];
-            break;
-        case 50: // Key '2'
-            camera = cameras[1];  
-            break;
-        case 51: // Key '3'
-            camera = cameras[2]; 
-            break;
-        case 52: // Key '4'
-            camera = cameras[3];
-            break;
-        case 53: // Key '5'
-            camera = cameras[4];  
-            break;
-        case 54: // Key '6'
-            camera = cameras[5]; 
-            break;
+    // Switch camera when pressing keys {1, 2, 3, 4, 5, 6}
+    if (e.keyCode >= 49 && e.keyCode <= 54) {
+        camera = cameras[e.keyCode - 49];
+        render();
     }
-    render();
 }
 
 ///////////////////////
