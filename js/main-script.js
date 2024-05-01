@@ -7,7 +7,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-var camera, scene, renderer;
+let camera, scene, renderer;
 let cameras = [];
 
 /////////////////////
@@ -19,7 +19,7 @@ function createScene() {
     scene.add(new THREE.AxesHelper(10));
     scene.background = new THREE.Color('aliceblue');
 
-    createCane(0, -20, 0);
+    createCrane(0, -20, 0);
 }
 
 //////////////////////
@@ -67,7 +67,7 @@ function initializeCameras() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-var geometry, mesh, material;
+let geometry, mesh, material;
 const l_base = 15, h_base = 5;
 const l_tower = 8, h_tower = 40;
 const l_cab = 10, h_cab = 5;
@@ -98,10 +98,10 @@ function addTower(obj, x, y, z) {
     obj.add(mesh);
 }
 
-function createCane(x, y, z) {
+function createCrane(x, y, z) {
     'use strict';
-    var crane = new THREE.Object3D();
-
+    const crane = new THREE.Object3D();
+    
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
     addBase(crane, 0, h_base/2, 0);
@@ -143,7 +143,6 @@ function addJib(obj, x, y, z) {
 
 function addApex(obj, x, y, z) {
     'use strict';
-
     geometry = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_tower,2), 1/2)/2), h_pl, 4, 1, false, 0.782, 6.3);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
@@ -152,7 +151,6 @@ function addApex(obj, x, y, z) {
 
 function addCounterWeigth(obj, x, y, z) {
     'use strict';
-
     geometry = new THREE.BoxGeometry(c_counterWeigth, h_counterWeigth, l_counterWeigth);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
@@ -161,17 +159,14 @@ function addCounterWeigth(obj, x, y, z) {
 
 function addMotors(obj, x, y, z) { 
     'use strict';
-
     geometry = new THREE.BoxGeometry(l_jib, h_motor, l_motor);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
-
 }
 
 function addPendants(obj, x, y, z) {
     'use strict';
-
     const material = new THREE.LineBasicMaterial( { color: 0x00ff00, wireframe: true } );
 
     const points1 = []; // first pendant
@@ -185,17 +180,17 @@ function addPendants(obj, x, y, z) {
 
     const points2 = []; // secound pendant
     points2.push(new THREE.Vector3(0, h_cab + h_pl, 0)); // Start point
-    points2.push(new THREE.Vector3(0, h_cab + h_jib, - (1 + l_cab/2 + c_jib*(3/4)))); // End point12
+    points2.push(new THREE.Vector3(0, h_cab + h_jib, - (1 + l_cab/2 + c_jib*(3/4)))); // End point
 
     geometry = new THREE.BufferGeometry().setFromPoints(points2);
     mesh = new THREE.Line(geometry, material);
     mesh.position.set(x, y, z);
     obj.add(mesh);
-}3
+}
 
 function createSuperior(obj, x, y, z) {
-    'use strict';21
-    var jib = new THREE.Object3D();
+    'use strict';
+    const jib = new THREE.Object3D();
 
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
@@ -213,14 +208,12 @@ function createSuperior(obj, x, y, z) {
     jib.position.z = z;
 
     obj.add(jib);
-
 }
 
 // Car's referential
 
 function addCar(obj, x, y, z) {
     'use strict';
-
     geometry = new THREE.BoxGeometry(l_suport, h_suport, l_suport);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
@@ -230,7 +223,7 @@ function addCar(obj, x, y, z) {
 
 function createCar(obj, x, y, z) {
     'use strict';
-    var car = new THREE.Object3D();
+    const car = new THREE.Object3D();
 
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
@@ -254,7 +247,6 @@ function addSteelCable(obj, x, y, z) {
 
 function addClaw(obj, x, y, z) {
     'use strict';
-
     geometry = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_claw,2), 1/2)/2), h_claw , 4, 1, false, 0.782, 6.3);
     mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
@@ -263,7 +255,7 @@ function addClaw(obj, x, y, z) {
 
 function createSteelCable(obj, x, y, z) {
     'use strict';
-    var cable = new THREE.Object3D();
+    const cable = new THREE.Object3D();
 
     material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });21
 
@@ -348,7 +340,6 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-
     switch (e.keyCode) {
         case 49: // Key '1'
             camera = cameras[0];
@@ -368,7 +359,6 @@ function onKeyDown(e) {
         case 54: // Key '6'
             camera = cameras[5]; 
             break;
-
     }
     render();
 }
@@ -378,6 +368,7 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e){
     'use strict';
+    
 }
 
 init();
