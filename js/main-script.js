@@ -63,6 +63,7 @@ function initializeCameras() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 let geom, mesh, material;
+let theta_1 = 0;
 let z_trolley = 20;
 let y_steelcable = 20;
 
@@ -237,7 +238,7 @@ function addSuperior(obj, x, y, z) {
     addCounterjib(jib, 0, (h_cjib/2), (l_tower/2 + l_cjib/2));
     addJib(jib, 0, h_jib/2, -(l_tower + l_jib)/2);
     addCounterweigths(jib, 0, -(h_cweights)/2, (l_tower/2 + l_cjib - l_cweights));
-    // addMotors(jib, 0, h_cab + h_cjib + h_motor/2, -1 + l_cab/2 + c_cjib - c_cweights/2);
+    addMotors(jib, 0, (h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
     addRearPendant(jib, 0, (h_apex + h_cjib)/2, (l_tower/2 + l_cjib*3/4)/2);
     addForePendant(jib, 0, (h_apex + h_jib)/2, -(l_tower/2 + l_jib*3/4)/2);
     addHandle(jib, 0, 0, -(l_tower/2 + l_cab + l_trolley + z_trolley));
@@ -351,11 +352,18 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-    // Switch camera when pressing keys {1, 2, 3, 4, 5, 6}
-    if (e.keyCode >= 49 && e.keyCode <= 54) {
-        camera = cameras[e.keyCode - 49];
-        render();
+    switch (e.keyCode) {
+        // Switch camera when pressing keys {1, 2, 3, 4, 5, 6}
+        case 49:
+        case 50:
+        case 51:
+        case 52:
+        case 53:
+        case 54:
+            camera = cameras[e.keyCode - 49];
     }
+    
+    render();
 }
 
 ///////////////////////
