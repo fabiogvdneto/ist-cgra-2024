@@ -68,13 +68,14 @@ function initializeCameras() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-let geom, mesh;
-let theta_1 = 0;
-let z_trolley = 20;
+let geom, mesh, material;
 let y_steelcable = 20;
 
 // Crane Objects
-let crane, superior, handle, hook;
+let crane;    // parent
+let superior; // child
+let handle;   // grandchild
+let hook;     // ggrandchild
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const l_base = 15, h_base = 5;                                // foundation
@@ -163,7 +164,7 @@ function addTrolley(obj, x, y, z) {
 function addHandle(obj, x, y, z) {
     'use strict';
     handle = new THREE.Object3D();
-    handle.userData = { ForwardTranslation: false, BackwardTranslation: false };
+    handle.userData = { moving: false, step: 0.0 };
 
     addTrolley(handle, 0, -h_trolley/2, 0);
     addHook(handle, 0, -(h_trolley + y_steelcable), 0);
@@ -242,7 +243,7 @@ function addForePendant(obj, x, y, z) {
 function addSuperior(obj, x, y, z) {
     'use strict';
     superior = new THREE.Object3D();
-    superior.userData = { RigthRotation: false, LeftRotation: false };
+    superior.userData = { moving: false, step: 0.0 };
 
     addCab(superior, 0, -(h_cab/2), -(l_tower/2 + l_cab/2));
     addApex(superior, 0, (h_apex/2), 0);
@@ -252,7 +253,7 @@ function addSuperior(obj, x, y, z) {
     addMotors(superior, 0, (h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
     addRearPendant(superior, 0, (h_apex + h_cjib)/2, (l_tower/2 + l_cjib*3/4)/2);
     addForePendant(superior, 0, (h_apex + h_jib)/2, -(l_tower/2 + l_jib*3/4)/2);
-    addHandle(superior, 0, 0, -(l_tower/2 + l_cab + l_trolley + z_trolley));
+    addHandle(superior, 0, 0, -(l_tower/2 + l_trolley));
 
     superior.position.set(x, y, z);
 
@@ -374,15 +375,6 @@ function handleCollisions(){
 }
 
 
-////////////
-/* UPDATE */
-////////////
-function update(){
-    'use strict';
-
-}
-
-
 ///////////////////////
 /* HANDLE WIREFRAME */
 ///////////////////////
@@ -432,24 +424,22 @@ function init() {
 /////////////////////
 /* ANIMATION CYCLE */
 /////////////////////
+function update(){
+    'use strict';
+    if (superior.userData.moving) {
+        superior.rotateY(superior.userData.step);
+    }
+
+    if (handle.userData.moving) {
+        handle.position.z -= handle.userData.step;
+        handle.position.z = Math.min(handle.position.z, -(l_tower/2 + l_trolley));
+        handle.position.z = Math.max(-(l_tower/2 + l_jib - l_trolley/2), handle.position.z)
+    }
+}
+
 function animate() {
     'use strict';
-    if(superior.userData.LeftRotation){
-        
-    }
-
-    if(superior.userData.RigthRotation){
-        
-    }
-
-    if(handle.userData.ForwardTranslation){
-        
-    }
-
-    if(handle.userData.BackwardTranslation){
-        
-    }
-
+    update();
     render();
     requestAnimationFrame(animate);
 }
@@ -470,38 +460,42 @@ function onResize() {
 function onKeyDown(e) {
     'use strict';
     switch (e.keyCode) {
-        // Switch camera when pressing keys {1, 2, 3, 4, 5, 6}
-        case 49:
-        case 50:
-        case 51:
-        case 52:
-        case 53:
-        case 54:
+        // Switch camera when pressing numkeys (1-6)
+        case 49:  /* 1 */
+        case 50:  /* 2 */
+        case 51:  /* 3 */
+        case 52:  /* 4 */
+        case 53:  /* 5 */
+        case 54:  /* 6 */
             camera = cameras[e.keyCode - 49];
             break;
-        case 55:
+        // Toggle wireframe mode
+        case 55:  /* 7 */
             toggleWireframe();
             break;
-        case 65:
-        case 97:
-            // Rotate the superior to the left when pressing keys {A,a}
-            superior.userData.LeftRotation = true;
+        // Activate superior rotation to the left
+        case 65:  /* A */
+        case 97:  /* a */
+            superior.userData.moving = true;
+            superior.userData.step = 0.02;
             break;
-        case 81:
-        case 113:
-            // Rotate the superior to the rigth when pressing keys {Q,q}
-            superior.userData.RigthRotation = true;
+        // Activate superior rotation to the right
+        case 81:  /* Q */
+        case 113: /* q */
+            superior.userData.moving = true;
+            superior.userData.step = -0.02;
             break;
-        
-        case 87:
-        case 119:
-            // Move the trolley forward when pressing keys {W,w}
-            handle.userData.ForwardTranslation = true;
+        // Activate handle forward movement
+        case 87:  /* W */
+        case 119: /* w */
+            handle.userData.moving = true;
+            handle.userData.step = 0.1;
             break;
-        case 83:
-        case 115:
-            // Move the trolley backwards when pressing keys {S,s}
-            handle.userData.BackwardTranslation = true;
+        // Activate handle backwards movement
+        case 83:  /* S */
+        case 115: /* s */
+            handle.userData.moving = true;
+            handle.userData.step = -0.1;
             break;
     }
     
@@ -515,27 +509,22 @@ function onKeyDown(e) {
 function onKeyUp(e){
     'use strict';
     switch (e.keyCode) {
-        case 65:
-        case 97:
-            // Stop rotating the superior to the left 
-            jib.userData.LeftRotation = false;
+        // Deactivate superior rotation
+        case 65:  /* A */
+        case 81:  /* Q */
+        case 97:  /* a */
+        case 113: /* q */
+            superior.userData.moving = false;
             break;
-        case 81:
-        case 113:
-            // Stop rotating the superior to the rigth
-            jib.userData.RigthRotation = false;
+        // Deactivate handle movement
+        case 83:  /* S */
+        case 87:  /* W */
+        case 115: /* s */
+        case 119: /* w */
+            handle.userData.moving = false;
             break;
-        case 87:
-        case 119:
-            // Stop the trolley going forward 
-            handle.userData.ForwardTranslation = false;
-            break;
-        case 83:
-        case 115:
-            // Stop the trolley backwards 
-            handle.userData.BackwardTranslation = false;
-                break;
-    }  
+    }
+
     render();
 }
 
