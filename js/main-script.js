@@ -160,6 +160,8 @@ function addHandle(obj, x, y, z) {
     'use strict';
     const handle = new THREE.Object3D();
 
+    handle.userData = { ForwardTranslation: false, BackwardTranslation: false };
+
     material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });
 
     addTrolley(handle, 0, -h_trolley/2, 0);
@@ -253,6 +255,7 @@ function addForePendant(obj, x, y, z) {
 function addSuperior(obj, x, y, z) {
     'use strict';
     const jib = new THREE.Object3D();
+    jib.userData = { RigthRotation: false, LeftRotation: false };
 
     addCab(jib, 0, -(h_cab/2), -(l_tower/2 + l_cab/2));
     addApex(jib, 0, (h_apex/2), 0);
@@ -457,6 +460,7 @@ function init() {
     initializeCameras();
 
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
 
     render();
 }
@@ -466,6 +470,23 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
+
+    if(jib.userData.LeftRotation){
+        
+    }
+    if(jib.userData.RigthRotation){
+        
+    }
+    if(handle.userData.ForwardTranslation){
+        
+    }
+    if(handle.userData.BackwardTranslation){
+        
+    }
+
+    render();
+
+    requestAnimationFrame(animate);
 
 }
 
@@ -497,15 +518,26 @@ function onKeyDown(e) {
         case 55:
             toggleWireframe();
             break;
+        case 65:
+        case 97:
+            // Rotate the superior to the left when pressing keys {A,a}
+            jib.userData.LeftRotation = true;
+            break;
+        case 81:
+        case 113:
+            // Rotate the superior to the rigth when pressing keys {Q,q}
+            jib.userData.RigthRotation = true;
+            break;
+        
         case 87:
         case 119:
             // Move the trolley forward when pressing keys {W,w}
-            z_trolley += 1;
+            handle.userData.ForwardTranslation = true;
             break;
         case 83:
         case 115:
             // Move the trolley backwards when pressing keys {S,s}
-            z_trolley -= 1;
+            handle.userData.BackwardTranslation = true;
             break;
     }
     
@@ -517,7 +549,31 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e){
     'use strict';
+    switch (e.keyCode) {
+        case 65:
+        case 97:
+            // Stop rotating the superior to the left 
+            jib.userData.LeftRotation = false;
+            break;
+        case 81:
+        case 113:
+            // Stop rotating the superior to the rigth
+            jib.userData.RigthRotation = false;
+            break;
+        case 87:
+        case 119:
+            // Stop the trolley going forward 
+            handle.userData.ForwardTranslation = false;
+            break;
+        case 83:
+        case 115:
+            // Stop the trolley backwards 
+            handle.userData.BackwardTranslation = false;
+                break;
+    }
     
+    render();
+
 }
 
 init();
