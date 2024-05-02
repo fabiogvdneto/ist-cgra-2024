@@ -4,11 +4,13 @@ import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
+
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
 let camera, scene, renderer;
 let cameras = [];
+
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -22,6 +24,7 @@ function createScene() {
     addCrane(scene, 0, -20, 0);
     addObjects(scene);
 }
+
 
 //////////////////////
 /* CREATE CAMERA(S) */
@@ -56,9 +59,11 @@ function initializeCameras() {
     camera = cameras[3];
 }
 
+
 /////////////////////
 /* CREATE LIGHT(S) */
 /////////////////////
+
 
 ////////////////////////
 /* CREATE OBJECT3D(S) */
@@ -67,6 +72,8 @@ let geom, mesh, material;
 let theta_1 = 0;
 let z_trolley = 20;
 let y_steelcable = 20;
+
+let crane, superior, handle, hook;
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const l_base = 15, h_base = 5;                                // foundation
@@ -122,7 +129,6 @@ function addHookBlock(obj, x, y, z) {
     obj.add(mesh);
 }
 
-
 function addClaws(obj, x, y, z) {
     'use strict';
     geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_claw,2), 1/2)/2), -h_claw , 4, 1, false, 0.782, 6.3);
@@ -133,7 +139,7 @@ function addClaws(obj, x, y, z) {
 
 function addHook(obj, x, y, z) {
     'use strict';
-    const cable = new THREE.Object3D();
+    hook = new THREE.Object3D();
 
     material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });21
 
@@ -158,8 +164,7 @@ function addTrolley(obj, x, y, z) {
 
 function addHandle(obj, x, y, z) {
     'use strict';
-    const handle = new THREE.Object3D();
-
+    handle = new THREE.Object3D();
     handle.userData = { ForwardTranslation: false, BackwardTranslation: false };
 
     material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });
@@ -254,7 +259,7 @@ function addForePendant(obj, x, y, z) {
 
 function addSuperior(obj, x, y, z) {
     'use strict';
-    const jib = new THREE.Object3D();
+    jib = new THREE.Object3D();
     jib.userData = { RigthRotation: false, LeftRotation: false };
 
     addCab(jib, 0, -(h_cab/2), -(l_tower/2 + l_cab/2));
@@ -292,7 +297,7 @@ function addTower(obj, x, y, z) {
 
 function addCrane(obj, x, y, z) {
     'use strict';
-    const crane = new THREE.Object3D();
+    crane = new THREE.Object3D();
     
     addFoundation(crane, 0, (h_base/2), 0);
     addTower(crane, 0, (h_base + h_tower/2), 0);
@@ -397,6 +402,7 @@ function addTorusKnot(obj, x, y, z) {
     obj.add(mesh);
 }
 
+
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
@@ -404,6 +410,7 @@ function checkCollisions(){
     'use strict';
 
 }
+
 
 ///////////////////////
 /* HANDLE COLLISIONS */
@@ -413,6 +420,7 @@ function handleCollisions(){
 
 }
 
+
 ////////////
 /* UPDATE */
 ////////////
@@ -421,12 +429,12 @@ function update(){
 
 }
 
+
 ///////////////////////
 /* HANDLE WIREFRAME */
 ///////////////////////
 function toggleWireframe(){
     'use strict';
-
     foundation_material.wireframe = !foundation_material.wireframe;
     tower_material.wireframe = !tower_material.wireframe;
     metal_material.wireframe = !metal_material.wireframe;
@@ -447,6 +455,7 @@ function render() {
     renderer.render(scene, camera);
 }
 
+
 ////////////////////////////////
 /* INITIALIZE ANIMATION CYCLE */
 ////////////////////////////////
@@ -459,45 +468,47 @@ function init() {
     createScene();
     initializeCameras();
 
+    window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
 
     render();
 }
 
+
 /////////////////////
 /* ANIMATION CYCLE */
 /////////////////////
 function animate() {
     'use strict';
-
     if(jib.userData.LeftRotation){
         
     }
+
     if(jib.userData.RigthRotation){
         
     }
+
     if(handle.userData.ForwardTranslation){
         
     }
+
     if(handle.userData.BackwardTranslation){
         
     }
 
     render();
-
     requestAnimationFrame(animate);
-
 }
+
 
 ////////////////////////////
 /* RESIZE WINDOW CALLBACK */
 ////////////////////////////
 function onResize() { 
     'use strict';
-
+    renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
 
 
 ///////////////////////
@@ -543,6 +554,7 @@ function onKeyDown(e) {
     
     render();
 }
+
 
 ///////////////////////
 /* KEY UP CALLBACK */
