@@ -68,7 +68,7 @@ function initializeCameras() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-let geom, mesh, material;
+let geom, mesh;
 let theta_1 = 0;
 let z_trolley = 20;
 let y_steelcable = 20;
@@ -112,7 +112,6 @@ let motors_material = new THREE.MeshBasicMaterial({ color: 0x00408B, wireframe: 
 let steel = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: false });
 let counterweights_material = new THREE.MeshBasicMaterial({ color: 0x00408B, wireframe: false });
 let container_material = new THREE.MeshBasicMaterial({ color: 0xcacdcd, side: THREE.DoubleSide });
-
 
 function createMesh(geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
@@ -288,7 +287,6 @@ function addCrane(obj, x, y, z) {
 
 function addObjects(obj) {
     'use strict';
-
     addContainer(obj, 20, -20, -60);
     addDodecahedron(obj, -20, -20, -45);
     addIcosahedron(obj, -20, -20, -70);
@@ -296,45 +294,37 @@ function addObjects(obj) {
     addTorusKnot(obj, 0, -20, -35);
 }
 
-// Define the function to add an open-air container
 function addContainer(obj, x, y, z) {
     'use strict';
-
-    // Create the front wall
     const frontGeometry = new THREE.PlaneGeometry(w_container, h_container);
-    const frontWall = new THREE.Mesh(frontGeometry, container_material);
-    frontWall.position.set(x, y, z - l_container / 2);
+    const backGeometry = new THREE.PlaneGeometry(w_container, h_container);
+    const leftGeometry = new THREE.PlaneGeometry(l_container, h_container);
+    const rightGeometry = new THREE.PlaneGeometry(l_container, h_container);
+    const baseGeometry = new THREE.PlaneGeometry(w_container, l_container);
+
+    // Add the front wall
+    const frontWall = createMesh(frontGeometry, container_material, x, y, z - l_container / 2);
     obj.add(frontWall);
 
-    // Create the back wall
-    const backGeometry = new THREE.PlaneGeometry(w_container, h_container);
-    const backWall = new THREE.Mesh(backGeometry, container_material);
-    backWall.position.set(x, y, z + l_container / 2);
-    backWall.rotation.y = Math.PI; 
+    // Add the back wall
+    const backWall = createMesh(backGeometry, container_material, x, y, z + l_container / 2);
     obj.add(backWall);
 
-    // Create the left wall
-    const leftGeometry = new THREE.PlaneGeometry(l_container, h_container);
-    const leftWall = new THREE.Mesh(leftGeometry, container_material);
-    leftWall.position.set(x - w_container / 2, y, z);
-    leftWall.rotation.y = Math.PI / 2; 
+    // Add the left wall
+    const leftWall = createMesh(leftGeometry, container_material, x - w_container / 2, y, z);
+    leftWall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
     obj.add(leftWall);
 
-    // Create the right wall
-    const rightGeometry = new THREE.PlaneGeometry(l_container, h_container);
-    const rightWall = new THREE.Mesh(rightGeometry, container_material);
-    rightWall.position.set(x + w_container / 2, y, z);
-    rightWall.rotation.y = -Math.PI / 2; 
+    // Add the right wall
+    const rightWall = createMesh(rightGeometry, container_material, x + w_container / 2, y, z);
+    rightWall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
     obj.add(rightWall);
 
-    // Create the base platform
-    const baseGeometry = new THREE.PlaneGeometry(w_container, l_container);
-    const basePlatform = new THREE.Mesh(baseGeometry, steel);
-    basePlatform.position.set(x, y - h_container / 2, z);
-    basePlatform.rotation.x = -Math.PI / 2;
+    // Add the base platform
+    const basePlatform = createMesh(baseGeometry, steel, x, y - h_container / 2, z);
+    basePlatform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
     obj.add(basePlatform);
 }
-
 
 function addDodecahedron(obj, x, y, z) {
     'use strict';
@@ -545,10 +535,8 @@ function onKeyUp(e){
             // Stop the trolley backwards 
             handle.userData.BackwardTranslation = false;
                 break;
-    }
-    
+    }  
     render();
-
 }
 
 init();
