@@ -20,6 +20,7 @@ function createScene() {
     scene.background = new THREE.Color('aliceblue');
 
     addCrane(scene, 0, -20, 0);
+    addObjects(scene);
 }
 
 //////////////////////
@@ -52,7 +53,7 @@ function initializeCameras() {
     createPerpectiveCamera(140, 140, 140);    // perspective projection
     // createOrthographicCamera(); - movel camera
 
-    camera = cameras[0];
+    camera = cameras[3];
 }
 
 /////////////////////
@@ -67,7 +68,7 @@ let theta_1 = 0;
 let z_trolley = 20;
 let y_steelcable = 20;
 
-// l = length | w = width | h = height | d = diameter
+// l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const l_base = 15, h_base = 5;                        // foundation
 const l_tower = 8, h_tower = 50;                      // tower
 const l_cab = 6, h_cab = 5;                           // cab
@@ -81,6 +82,18 @@ const l_trolley = 4, h_trolley = 2;                   // trolley
 const d_steelcable = 0.1;                             // steel cable
 const l_hookblock = 5, h_hookblock = 2;               // hook block
 const l_claw = 6, h_claw = 4;                         // claw
+// Geometric objects dimensions
+const w_container = 25, h_container = 17.5, l_container = 35; // container
+const r_dodecahedron = 8;  // dodecahedron
+const d_icosahedron = 8;   // icosahedron
+const r_torus = 7;         // torus
+const tr_torus = 1.5;      // torus
+const r_torusknot = 3.5;   // torus knot
+const tr_torusknot = 0.75; // torus knot
+const ts_torusknot = 64;   // Tubular segments for smoothness in torus knot
+const rs_torusknot = 12;   // Radial segments for smoothness in torus knot
+const p_torusknot = 2;     // `p` parameter defines how many times the curve winds around its axis
+const q_torusknot = 3;     // `q` parameter defines how many times the curve winds around the tube
 
 // Materials 
 let foundation_material = new THREE.MeshBasicMaterial({ color: 0x1a7ef3, wireframe: false });
@@ -288,6 +301,99 @@ function addCrane(obj, x, y, z) {
     obj.add(crane);
 }
 
+function addObjects(obj) {
+    'use strict';
+    material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });
+
+    addContainer(obj, 20, -20, -60);
+    addDodecahedron(obj, -20, -20, -45);
+    addIcosahedron(obj, -20, -20, -70);
+    addTorus(obj, 20, -20, -20);
+    addTorusKnot(obj, 0, -20, -35);
+}
+
+function addContainer(obj, x, y, z) {
+    'use strict';
+
+    const geom = new THREE.BufferGeometry();
+
+    // Define the vertices for the base and the four walls of the container
+    const vertices = new Float32Array([
+        // Base (bottom face)
+        w_container / 2, -h_container / 2, l_container / 2,   // Bottom front right
+        -w_container / 2, -h_container / 2, l_container / 2,  // Bottom front left
+        -w_container / 2, -h_container / 2, -l_container / 2, // Bottom back left
+        w_container / 2, -h_container / 2, -l_container / 2,  // Bottom back right
+        
+        // Top corners of the walls
+        w_container / 2, h_container / 2, l_container / 2,    // Top front right
+        -w_container / 2, h_container / 2, l_container / 2,   // Top front left
+        -w_container / 2, h_container / 2, -l_container / 2,  // Top back left
+        w_container / 2, h_container / 2, -l_container / 2,   // Top back right
+    ]);
+
+    // Define the indices for the geometry (triangles)
+    const indices = [
+        // Base (bottom face)
+        0, 1, 2, 0, 2, 3,
+
+        // Front wall
+        4, 5, 0, 4, 0, 1,
+
+        // Back wall
+        6, 7, 2, 6, 2, 3,
+
+        // Left wall
+        5, 6, 1, 6, 1, 2,
+        
+        // Right wall
+        7, 4, 3, 4, 3, 0,
+    ];
+
+    geom.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geom.setIndex(indices);
+    
+    const mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addDodecahedron(obj, x, y, z) {
+    'use strict';
+    const detail = 0; // Detail level (0 is default)
+    const geom = new THREE.DodecahedronGeometry(r_dodecahedron, detail);
+    const mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addIcosahedron(obj, x, y, z) {
+    'use strict';
+    const detail = 0; // Detail level (0 is default)
+    const geom = new THREE.IcosahedronGeometry(d_icosahedron, detail);
+    const mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addTorus(obj, x, y, z) {
+    'use strict';
+    const radialSegments = 24; 
+    const tubularSegments = 48; 
+    const arc = Math.PI * 2; // Full circle arc
+    const geom = new THREE.TorusGeometry(r_torus, tr_torus, radialSegments, tubularSegments, arc);
+    const mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addTorusKnot(obj, x, y, z) {
+    'use strict';
+    const geom = new THREE.TorusKnotGeometry(r_torusknot, tr_torusknot, ts_torusknot, rs_torusknot, p_torusknot, q_torusknot);
+    const mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
 
 //////////////////////
 /* CHECK COLLISIONS */
