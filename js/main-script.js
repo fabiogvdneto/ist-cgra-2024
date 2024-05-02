@@ -84,13 +84,13 @@ const l_hookblock = 5, h_hookblock = 2;                       // hook block
 const l_claw = 6, h_claw = 4;                                 // claw
 
 // Objects to be loaded by the crane
-const w_container = 25, h_container = 17.5, l_container = 35; // container
-const r_dodecahedron = 8;                                     // dodecahedron
-const d_icosahedron = 8;                                      // icosahedron
-const r_torus = 7, tr_torus = 1.5;                            // torus
-const r_torusknot = 3.5, tr_torusknot = 0.75;                 // torus knot
-const ts_torusknot = 64;                                      // Tubular segments for smoothness in torus knot
-const rs_torusknot = 12;                                      // Radial segments for smoothness in torus knot
+const w_container = 20, h_container = 14.5, l_container = 25; // container
+const r_dodecahedron = 4;                                     // dodecahedron
+const d_icosahedron = 4;                                      // icosahedron
+const r_torus = 4, tr_torus = 1.5;                            // torus
+const r_torusknot = 2.5, tr_torusknot = 0.75;                 // torus knot
+const ts_torusknot = 50;                                      // Tubular segments for smoothness in torus knot
+const rs_torusknot = 10;                                      // Radial segments for smoothness in torus knot
 const p_torusknot = 2;                                        // 'p' parameter defines how many times the curve winds around its axis
 const q_torusknot = 3;                                        // 'q' parameter defines how many times the curve winds around the tube
 
@@ -99,9 +99,9 @@ let foundation_material = new THREE.MeshBasicMaterial({ color: 0x1a7ef3, wirefra
 let tower_material = new THREE.MeshBasicMaterial({ color: 0xFFC300 , wireframe: false });
 let metal_material = new THREE.MeshBasicMaterial({ color: 0x1FFBF00, wireframe: false });
 let cab_material = new THREE.MeshBasicMaterial({ color: 0x1a7ef3, wireframe: false });
-let pedants_material = new THREE.MeshBasicMaterial({ color: 0x1FFBF00, wireframe: true });
+let pedants_material = new THREE.MeshBasicMaterial({ color: 0x1FFBF00, wireframe: false });
 let motors_material = new THREE.MeshBasicMaterial({ color: 0x00408B, wireframe: false });
-let steel = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: true });
+let steel = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: false });
 let counterweights_material = new THREE.MeshBasicMaterial({ color: 0x00408B, wireframe: false });
 
 // great-grandchild ref: the hook (1x steel cable, 1x hook block, 4x claws)
@@ -352,7 +352,7 @@ function addContainer(obj, x, y, z) {
     geom.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     geom.setIndex(indices);
     
-    const mesh = new THREE.Mesh(geom, material);
+    const mesh = new THREE.Mesh(geom, steel);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -361,7 +361,7 @@ function addDodecahedron(obj, x, y, z) {
     'use strict';
     const detail = 0; // Detail level (0 is default)
     const geom = new THREE.DodecahedronGeometry(r_dodecahedron, detail);
-    const mesh = new THREE.Mesh(geom, material);
+    const mesh = new THREE.Mesh(geom, steel);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -370,7 +370,7 @@ function addIcosahedron(obj, x, y, z) {
     'use strict';
     const detail = 0; // Detail level (0 is default)
     const geom = new THREE.IcosahedronGeometry(d_icosahedron, detail);
-    const mesh = new THREE.Mesh(geom, material);
+    const mesh = new THREE.Mesh(geom, steel);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -381,7 +381,7 @@ function addTorus(obj, x, y, z) {
     const tubularSegments = 48; 
     const arc = Math.PI * 2; // Full circle arc
     const geom = new THREE.TorusGeometry(r_torus, tr_torus, radialSegments, tubularSegments, arc);
-    const mesh = new THREE.Mesh(geom, material);
+    const mesh = new THREE.Mesh(geom, steel);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -389,7 +389,7 @@ function addTorus(obj, x, y, z) {
 function addTorusKnot(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusKnotGeometry(r_torusknot, tr_torusknot, ts_torusknot, rs_torusknot, p_torusknot, q_torusknot);
-    const mesh = new THREE.Mesh(geom, material);
+    const mesh = new THREE.Mesh(geom, steel);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -417,6 +417,24 @@ function update(){
     'use strict';
 
 }
+
+///////////////////////
+/* HANDLE WIREFRAME */
+///////////////////////
+function toggleWireframe(){
+    'use strict';
+
+    foundation_material.wireframe = !foundation_material.wireframe;
+    tower_material.wireframe = !tower_material.wireframe;
+    metal_material.wireframe = !metal_material.wireframe;
+    cab_material.wireframe = !cab_material.wireframe;
+    pedants_material.wireframe = !pedants_material.wireframe;
+    motors_material.wireframe = !motors_material.wireframe;
+    steel.wireframe = !steel.wireframe;
+    counterweights_material.wireframe = !counterweights_material.wireframe; 
+    material.wireframe = !material.wireframe;
+}
+
 
 /////////////
 /* DISPLAY */
@@ -459,6 +477,8 @@ function onResize() {
 
 }
 
+
+
 ///////////////////////
 /* KEY DOWN CALLBACK */
 ///////////////////////
@@ -475,11 +495,7 @@ function onKeyDown(e) {
             camera = cameras[e.keyCode - 49];
             break;
         case 55:
-            scene.traverse(function (node) {
-                if (node instanceof THREE.Mesh) {
-                    node.material.wireframe = !node.material.wireframe;
-                }
-            });
+            toggleWireframe();
             break;
         case 87:
         case 119:
