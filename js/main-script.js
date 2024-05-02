@@ -111,6 +111,8 @@ let pendants_material = new THREE.MeshBasicMaterial({ color: 0x1FFBF00, wirefram
 let motors_material = new THREE.MeshBasicMaterial({ color: 0x00408B, wireframe: false });
 let steel = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: false });
 let counterweights_material = new THREE.MeshBasicMaterial({ color: 0x00408B, wireframe: false });
+let container_material = new THREE.MeshBasicMaterial({ color: 0xcacdcd, side: THREE.DoubleSide });
+
 
 function createMesh(geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
@@ -286,7 +288,6 @@ function addCrane(obj, x, y, z) {
 
 function addObjects(obj) {
     'use strict';
-    material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });
 
     addContainer(obj, 20, -20, -60);
     addDodecahedron(obj, -20, -20, -45);
@@ -295,51 +296,45 @@ function addObjects(obj) {
     addTorusKnot(obj, 0, -20, -35);
 }
 
+// Define the function to add an open-air container
 function addContainer(obj, x, y, z) {
     'use strict';
 
-    const geom = new THREE.BufferGeometry();
+    // Create the front wall
+    const frontGeometry = new THREE.PlaneGeometry(w_container, h_container);
+    const frontWall = new THREE.Mesh(frontGeometry, container_material);
+    frontWall.position.set(x, y, z - l_container / 2);
+    obj.add(frontWall);
 
-    // Define the vertices for the base and the four walls of the container
-    const vertices = new Float32Array([
-        // Base (bottom face)
-        w_container / 2, -h_container / 2, l_container / 2,   // Bottom front right
-        -w_container / 2, -h_container / 2, l_container / 2,  // Bottom front left
-        -w_container / 2, -h_container / 2, -l_container / 2, // Bottom back left
-        w_container / 2, -h_container / 2, -l_container / 2,  // Bottom back right
-        
-        // Top corners of the walls
-        w_container / 2, h_container / 2, l_container / 2,    // Top front right
-        -w_container / 2, h_container / 2, l_container / 2,   // Top front left
-        -w_container / 2, h_container / 2, -l_container / 2,  // Top back left
-        w_container / 2, h_container / 2, -l_container / 2,   // Top back right
-    ]);
+    // Create the back wall
+    const backGeometry = new THREE.PlaneGeometry(w_container, h_container);
+    const backWall = new THREE.Mesh(backGeometry, container_material);
+    backWall.position.set(x, y, z + l_container / 2);
+    backWall.rotation.y = Math.PI; 
+    obj.add(backWall);
 
-    // Define the indices for the geometry (triangles)
-    const indices = [
-        // Base (bottom face)
-        0, 1, 2, 0, 2, 3,
+    // Create the left wall
+    const leftGeometry = new THREE.PlaneGeometry(l_container, h_container);
+    const leftWall = new THREE.Mesh(leftGeometry, container_material);
+    leftWall.position.set(x - w_container / 2, y, z);
+    leftWall.rotation.y = Math.PI / 2; 
+    obj.add(leftWall);
 
-        // Front wall
-        4, 5, 0, 4, 0, 1,
+    // Create the right wall
+    const rightGeometry = new THREE.PlaneGeometry(l_container, h_container);
+    const rightWall = new THREE.Mesh(rightGeometry, container_material);
+    rightWall.position.set(x + w_container / 2, y, z);
+    rightWall.rotation.y = -Math.PI / 2; 
+    obj.add(rightWall);
 
-        // Back wall
-        6, 7, 2, 6, 2, 3,
-
-        // Left wall
-        5, 6, 1, 6, 1, 2,
-        
-        // Right wall
-        7, 4, 3, 4, 3, 0,
-    ];
-
-    geom.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    geom.setIndex(indices);
-    
-    const mesh = new THREE.Mesh(geom, steel);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    // Create the base platform
+    const baseGeometry = new THREE.PlaneGeometry(w_container, l_container);
+    const basePlatform = new THREE.Mesh(baseGeometry, steel);
+    basePlatform.position.set(x, y - h_container / 2, z);
+    basePlatform.rotation.x = -Math.PI / 2;
+    obj.add(basePlatform);
 }
+
 
 function addDodecahedron(obj, x, y, z) {
     'use strict';
