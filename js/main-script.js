@@ -69,31 +69,30 @@ let z_trolley = 20;
 let y_steelcable = 20;
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
-const l_base = 15, h_base = 5;                        // foundation
-const l_tower = 8, h_tower = 50;                      // tower
-const l_cab = 6, h_cab = 5;                           // cab
-const h_apex = 15;                                    // apex
-const w_cjib = 8, l_cjib = 20, h_cjib = 2.5;          // counterjib
-const w_jib = 8, l_jib = 35, h_jib = 3;               // jib
-const l_cweights = 6, h_cweights = 6, c_cweights = 5; // counterweights
-const d_pendants = 0;                                 // (rear & fore) pendants
-const l_motor = 5, h_motor = 2;                       // motor
-const l_trolley = 4, h_trolley = 2;                   // trolley
-const d_steelcable = 0.1;                             // steel cable
-const l_hookblock = 5, h_hookblock = 2;               // hook block
-const l_claw = 6, h_claw = 4;                         // claw
-// Geometric objects dimensions
+const l_base = 15, h_base = 5;                                // foundation
+const l_tower = 8, h_tower = 50;                              // tower
+const l_cab = 6, h_cab = 5;                                   // cab
+const h_apex = 15;                                            // apex
+const w_cjib = 8, l_cjib = 20, h_cjib = 2.5;                  // counterjib
+const w_jib = 8, l_jib = 35, h_jib = 3;                       // jib
+const l_cweights = 6, h_cweights = 6, c_cweights = 5;         // counterweights
+const d_pendants = 0;                                         // (rear & fore) pendants
+const l_motor = 5, h_motor = 2;                               // motor
+const l_trolley = 4, h_trolley = 2;                           // trolley
+const d_steelcable = 0.1;                                     // steel cable
+const l_hookblock = 5, h_hookblock = 2;                       // hook block
+const l_claw = 6, h_claw = 4;                                 // claw
+
+// Objects to be loaded by the crane
 const w_container = 25, h_container = 17.5, l_container = 35; // container
-const r_dodecahedron = 8;  // dodecahedron
-const d_icosahedron = 8;   // icosahedron
-const r_torus = 7;         // torus
-const tr_torus = 1.5;      // torus
-const r_torusknot = 3.5;   // torus knot
-const tr_torusknot = 0.75; // torus knot
-const ts_torusknot = 64;   // Tubular segments for smoothness in torus knot
-const rs_torusknot = 12;   // Radial segments for smoothness in torus knot
-const p_torusknot = 2;     // `p` parameter defines how many times the curve winds around its axis
-const q_torusknot = 3;     // `q` parameter defines how many times the curve winds around the tube
+const r_dodecahedron = 8;                                     // dodecahedron
+const d_icosahedron = 8;                                      // icosahedron
+const r_torus = 7, tr_torus = 1.5;                            // torus
+const r_torusknot = 3.5, tr_torusknot = 0.75;                 // torus knot
+const ts_torusknot = 64;                                      // Tubular segments for smoothness in torus knot
+const rs_torusknot = 12;                                      // Radial segments for smoothness in torus knot
+const p_torusknot = 2;                                        // 'p' parameter defines how many times the curve winds around its axis
+const q_torusknot = 3;                                        // 'q' parameter defines how many times the curve winds around the tube
 
 // Materials 
 let foundation_material = new THREE.MeshBasicMaterial({ color: 0x1a7ef3, wireframe: false });
