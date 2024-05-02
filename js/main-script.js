@@ -142,13 +142,13 @@ function addHook(obj, x, y, z) {
     'use strict';
     hook = new THREE.Object3D();
 
-    addSteelCable(cable, 0, (y_steelcable/2), 0);
-    addHookBlock(cable, 0, -(h_hookblock/2), 0);
-    addClaws(cable, 0, -(h_hookblock + h_claw/2), 0);
+    addSteelCable(hook, 0, (y_steelcable/2), 0);
+    addHookBlock(hook, 0, -(h_hookblock/2), 0);
+    addClaws(hook, 0, -(h_hookblock + h_claw/2), 0);
 
-    cable.position.set(x, y, z);
+    hook.position.set(x, y, z);
 
-    obj.add(cable);
+    obj.add(hook);
 }
 
 // grandchild ref: the handle (1x trolley)
