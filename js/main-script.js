@@ -245,15 +245,15 @@ function addSuperior(obj, x, y, z) {
     superior = new THREE.Object3D();
     superior.userData = { moving: false, step: 0.0 };
 
-    addCab(superior, 0, -(h_cab/2), -(l_tower/2 + l_cab/2));
-    addApex(superior, 0, (h_apex/2), 0);
-    addCounterjib(superior, 0, (h_cjib/2), (l_tower/2 + l_cjib/2));
-    addJib(superior, 0, h_jib/2, -(l_tower + l_jib)/2);
-    addCounterweigths(superior, 0, -(h_cweights)/2, (l_tower/2 + l_cjib - l_cweights));
-    addMotors(superior, 0, (h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
-    addRearPendant(superior, 0, (h_apex + h_cjib)/2, (l_tower/2 + l_cjib*3/4)/2);
-    addForePendant(superior, 0, (h_apex + h_jib)/2, -(l_tower/2 + l_jib*3/4)/2);
-    addHandle(superior, 0, 0, -(l_tower/2 + l_trolley));
+    addCab(superior, 0, h_cab/2, 0);
+    addApex(superior, 0, (h_cab + h_apex/2), 0);
+    addCounterjib(superior, 0, (h_cab + h_cjib/2), (l_tower/2 + l_cjib/2));
+    addJib(superior, 0, (h_cab + h_jib/2), -(l_tower + l_jib)/2);
+    addCounterweigths(superior, 0, (h_cab - h_cweights/2), (l_tower/2 + l_cjib - l_cweights));
+    addMotors(superior, 0, (h_cab + h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
+    addRearPendant(superior, 0, (h_cab + h_apex/2 + h_cjib/2), (l_tower/2 + l_cjib*3/4)/2);
+    addForePendant(superior, 0, (h_cab + h_apex/2 + h_jib/2),  -(l_tower/2 + l_jib*3/4)/2);
+    addHandle(superior, 0, h_cab, -(l_tower/2 + l_trolley));
 
     superior.position.set(x, y, z);
 
