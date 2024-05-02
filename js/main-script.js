@@ -73,6 +73,7 @@ let theta_1 = 0;
 let z_trolley = 20;
 let y_steelcable = 20;
 
+// Crane Objects
 let crane, superior, handle, hook;
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
@@ -106,42 +107,40 @@ let foundation_material = new THREE.MeshBasicMaterial({ color: 0x1a7ef3, wirefra
 let tower_material = new THREE.MeshBasicMaterial({ color: 0xFFC300 , wireframe: false });
 let metal_material = new THREE.MeshBasicMaterial({ color: 0x1FFBF00, wireframe: false });
 let cab_material = new THREE.MeshBasicMaterial({ color: 0x1a7ef3, wireframe: false });
-let pedants_material = new THREE.MeshBasicMaterial({ color: 0x1FFBF00, wireframe: false });
+let pendants_material = new THREE.MeshBasicMaterial({ color: 0x1FFBF00, wireframe: false });
 let motors_material = new THREE.MeshBasicMaterial({ color: 0x00408B, wireframe: false });
 let steel = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: false });
 let counterweights_material = new THREE.MeshBasicMaterial({ color: 0x00408B, wireframe: false });
+
+function createMesh(geom, material, x, y, z) {
+    const mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    return mesh;
+}
 
 // great-grandchild ref: the hook (1x steel cable, 1x hook block, 4x claws)
 
 function addSteelCable(obj, x, y, z) {
     'use strict';
     geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, y_steelcable, 16);
-    mesh = new THREE.Mesh(geom, steel);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, steel, x, y, z));
 }
 
 function addHookBlock(obj, x, y, z) {
     'use strict';
     geom = new THREE.BoxGeometry(l_hookblock, h_hookblock, l_hookblock);
-    mesh = new THREE.Mesh(geom, cab_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, cab_material, x, y, z));
 }
 
 function addClaws(obj, x, y, z) {
     'use strict';
     geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_claw,2), 1/2)/2), -h_claw , 4, 1, false, 0.782, 6.3);
-    mesh = new THREE.Mesh(geom, cab_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, cab_material, x, y, z));
 }
 
 function addHook(obj, x, y, z) {
     'use strict';
     hook = new THREE.Object3D();
-
-    material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });21
 
     addSteelCable(cable, 0, (y_steelcable/2), 0);
     addHookBlock(cable, 0, -(h_hookblock/2), 0);
@@ -157,17 +156,13 @@ function addHook(obj, x, y, z) {
 function addTrolley(obj, x, y, z) {
     'use strict';
     geom = new THREE.BoxGeometry(l_trolley, h_trolley, l_trolley);
-    mesh = new THREE.Mesh(geom, cab_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, cab_material, x, y, z));
 }
 
 function addHandle(obj, x, y, z) {
     'use strict';
     handle = new THREE.Object3D();
     handle.userData = { ForwardTranslation: false, BackwardTranslation: false };
-
-    material = new THREE.MeshBasicMaterial({ color: 0x104340, wireframe: true });
 
     addTrolley(handle, 0, -h_trolley/2, 0);
     addHook(handle, 0, -(h_trolley + y_steelcable), 0);
@@ -182,49 +177,37 @@ function addHandle(obj, x, y, z) {
 function addCab(obj, x, y, z) {
     'use strict';
     geom = new THREE.BoxGeometry(l_cab, h_cab, l_cab);
-    mesh = new THREE.Mesh(geom, cab_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, cab_material, x, y, z));
 }
 
 function addApex(obj, x, y, z) {
     'use strict';
     geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_tower,2), 1/2)/2), h_apex, 4, 1, false, 0.782, 6.3);
-    mesh = new THREE.Mesh(geom, tower_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, tower_material, x, y, z));
 }
 
 function addCounterjib(obj, x, y, z) {
     'use strict';
     geom = new THREE.BoxGeometry(w_jib, h_cjib, l_cjib);
-    mesh = new THREE.Mesh(geom, metal_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, metal_material, x, y, z));
 }
 
 function addJib(obj, x, y, z) {
     'use strict';
     geom = new THREE.BoxGeometry(w_cjib, h_jib, l_jib);
-    mesh = new THREE.Mesh(geom, metal_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, metal_material, x, y, z));
 }
 
 function addCounterweigths(obj, x, y, z) {
     'use strict';
     geom = new THREE.BoxGeometry(c_cweights, h_cweights, l_cweights);
-    mesh = new THREE.Mesh(geom, counterweights_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, counterweights_material, x, y, z));
 }
 
 function addMotors(obj, x, y, z) { 
     'use strict';
     geom = new THREE.BoxGeometry(w_jib, h_motor, l_motor);
-    mesh = new THREE.Mesh(geom, motors_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, motors_material, x, y, z));
 }
 
 function addRearPendant(obj, x, y, z) {
@@ -236,8 +219,7 @@ function addRearPendant(obj, x, y, z) {
     const angle = Math.atan(c2 / c1);  // angle = arctan(c2 / c1)
 
     geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
-    mesh = new THREE.Mesh(geom, pedants_material);
-    mesh.position.set(x, y, z);
+    mesh = createMesh(geom, pendants_material, x, y, z);
     mesh.rotateX(-angle);
     obj.add(mesh);
 }
@@ -251,30 +233,29 @@ function addForePendant(obj, x, y, z) {
     const angle = Math.atan(c2 / c1);  // angle = arctan(c2 / c1)
 
     geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
-    mesh = new THREE.Mesh(geom, pedants_material);
-    mesh.position.set(x, y, z);
+    mesh = createMesh(geom, pendants_material, x, y, z);
     mesh.rotateX(angle);
     obj.add(mesh);
 }
 
 function addSuperior(obj, x, y, z) {
     'use strict';
-    jib = new THREE.Object3D();
-    jib.userData = { RigthRotation: false, LeftRotation: false };
+    superior = new THREE.Object3D();
+    superior.userData = { RigthRotation: false, LeftRotation: false };
 
-    addCab(jib, 0, -(h_cab/2), -(l_tower/2 + l_cab/2));
-    addApex(jib, 0, (h_apex/2), 0);
-    addCounterjib(jib, 0, (h_cjib/2), (l_tower/2 + l_cjib/2));
-    addJib(jib, 0, h_jib/2, -(l_tower + l_jib)/2);
-    addCounterweigths(jib, 0, -(h_cweights)/2, (l_tower/2 + l_cjib - l_cweights));
-    addMotors(jib, 0, (h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
-    addRearPendant(jib, 0, (h_apex + h_cjib)/2, (l_tower/2 + l_cjib*3/4)/2);
-    addForePendant(jib, 0, (h_apex + h_jib)/2, -(l_tower/2 + l_jib*3/4)/2);
-    addHandle(jib, 0, 0, -(l_tower/2 + l_cab + l_trolley + z_trolley));
+    addCab(superior, 0, -(h_cab/2), -(l_tower/2 + l_cab/2));
+    addApex(superior, 0, (h_apex/2), 0);
+    addCounterjib(superior, 0, (h_cjib/2), (l_tower/2 + l_cjib/2));
+    addJib(superior, 0, h_jib/2, -(l_tower + l_jib)/2);
+    addCounterweigths(superior, 0, -(h_cweights)/2, (l_tower/2 + l_cjib - l_cweights));
+    addMotors(superior, 0, (h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
+    addRearPendant(superior, 0, (h_apex + h_cjib)/2, (l_tower/2 + l_cjib*3/4)/2);
+    addForePendant(superior, 0, (h_apex + h_jib)/2, -(l_tower/2 + l_jib*3/4)/2);
+    addHandle(superior, 0, 0, -(l_tower/2 + l_cab + l_trolley + z_trolley));
 
-    jib.position.set(x, y, z);
+    superior.position.set(x, y, z);
 
-    obj.add(jib);
+    obj.add(superior);
 }
 
 // parent ref: WCS (1x foundation, 1x tower)
@@ -282,17 +263,13 @@ function addSuperior(obj, x, y, z) {
 function addFoundation(obj, x, y, z) {
     'use strict';
     geom = new THREE.BoxGeometry(l_base, h_base, l_base);
-    mesh = new THREE.Mesh(geom, foundation_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, foundation_material, x, y, z));
 }
 
 function addTower(obj, x, y, z) {
     'use strict';
     geom = new THREE.BoxGeometry(l_tower, h_tower, l_tower);
-    mesh = new THREE.Mesh(geom, tower_material);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, tower_material, x, y, z));
 }
 
 function addCrane(obj, x, y, z) {
@@ -304,7 +281,6 @@ function addCrane(obj, x, y, z) {
     addSuperior(crane, 0, (h_base + h_tower), 0);
 
     crane.position.set(x, y, z);
-
     obj.add(crane);
 }
 
@@ -369,18 +345,14 @@ function addDodecahedron(obj, x, y, z) {
     'use strict';
     const detail = 0; // Detail level (0 is default)
     const geom = new THREE.DodecahedronGeometry(r_dodecahedron, detail);
-    const mesh = new THREE.Mesh(geom, steel);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, steel, x, y, z));
 }
 
 function addIcosahedron(obj, x, y, z) {
     'use strict';
     const detail = 0; // Detail level (0 is default)
     const geom = new THREE.IcosahedronGeometry(d_icosahedron, detail);
-    const mesh = new THREE.Mesh(geom, steel);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, steel, x, y, z));
 }
 
 function addTorus(obj, x, y, z) {
@@ -389,17 +361,13 @@ function addTorus(obj, x, y, z) {
     const tubularSegments = 48; 
     const arc = Math.PI * 2; // Full circle arc
     const geom = new THREE.TorusGeometry(r_torus, tr_torus, radialSegments, tubularSegments, arc);
-    const mesh = new THREE.Mesh(geom, steel);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, steel, x, y, z));
 }
 
 function addTorusKnot(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusKnotGeometry(r_torusknot, tr_torusknot, ts_torusknot, rs_torusknot, p_torusknot, q_torusknot);
-    const mesh = new THREE.Mesh(geom, steel);
-    mesh.position.set(x, y, z);
-    obj.add(mesh);
+    obj.add(createMesh(geom, steel, x, y, z));
 }
 
 
@@ -439,7 +407,7 @@ function toggleWireframe(){
     tower_material.wireframe = !tower_material.wireframe;
     metal_material.wireframe = !metal_material.wireframe;
     cab_material.wireframe = !cab_material.wireframe;
-    pedants_material.wireframe = !pedants_material.wireframe;
+    pendants_material.wireframe = !pendants_material.wireframe;
     motors_material.wireframe = !motors_material.wireframe;
     steel.wireframe = !steel.wireframe;
     counterweights_material.wireframe = !counterweights_material.wireframe; 
@@ -481,11 +449,11 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
-    if(jib.userData.LeftRotation){
+    if(superior.userData.LeftRotation){
         
     }
 
-    if(jib.userData.RigthRotation){
+    if(superior.userData.RigthRotation){
         
     }
 
@@ -532,12 +500,12 @@ function onKeyDown(e) {
         case 65:
         case 97:
             // Rotate the superior to the left when pressing keys {A,a}
-            jib.userData.LeftRotation = true;
+            superior.userData.LeftRotation = true;
             break;
         case 81:
         case 113:
             // Rotate the superior to the rigth when pressing keys {Q,q}
-            jib.userData.RigthRotation = true;
+            superior.userData.RigthRotation = true;
             break;
         
         case 87:
