@@ -104,8 +104,9 @@ const p_torusknot = 2;                                        // 'p' parameter d
 const q_torusknot = 3;                                        // 'q' parameter defines how many times the curve winds around the tube
 
 // Materials
-const material_main = new THREE.MeshBasicMaterial({ color: 0x334363, wireframe: false });
-const material_misc = new THREE.MeshBasicMaterial({ color: 0x128ec3, wireframe: false });
+const material_main = new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: false });
+const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: false });
+const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: false });
 const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: false });
 
 function createMesh(geom, material, x, y, z) {
@@ -298,25 +299,25 @@ function addContainer(obj, x, y, z) {
     const baseGeometry = new THREE.PlaneGeometry(w_container, l_container);
 
     // Add the front wall
-    const frontWall = createMesh(frontGeometry, container_material, x, y, z - l_container / 2);
+    const frontWall = createMesh(frontGeometry, material_objs, x, y, z - l_container / 2);
     obj.add(frontWall);
 
     // Add the back wall
-    const backWall = createMesh(backGeometry, container_material, x, y, z + l_container / 2);
+    const backWall = createMesh(backGeometry, material_objs, x, y, z + l_container / 2);
     obj.add(backWall);
 
     // Add the left wall
-    const leftWall = createMesh(leftGeometry, container_material, x - w_container / 2, y, z);
+    const leftWall = createMesh(leftGeometry, material_objs, x - w_container / 2, y, z);
     leftWall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
     obj.add(leftWall);
 
     // Add the right wall
-    const rightWall = createMesh(rightGeometry, container_material, x + w_container / 2, y, z);
+    const rightWall = createMesh(rightGeometry, material_objs, x + w_container / 2, y, z);
     rightWall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
     obj.add(rightWall);
 
     // Add the base platform
-    const basePlatform = createMesh(baseGeometry, steel, x, y - h_container / 2, z);
+    const basePlatform = createMesh(baseGeometry, material_objs, x, y - h_container / 2, z);
     basePlatform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
     obj.add(basePlatform);
 }
@@ -325,14 +326,14 @@ function addDodecahedron(obj, x, y, z) {
     'use strict';
     const detail = 0; // Detail level (0 is default)
     const geom = new THREE.DodecahedronGeometry(r_dodecahedron, detail);
-    obj.add(createMesh(geom, material_main, x, y, z));
+    obj.add(createMesh(geom, material_objs, x, y, z));
 }
 
 function addIcosahedron(obj, x, y, z) {
     'use strict';
     const detail = 0; // Detail level (0 is default)
     const geom = new THREE.IcosahedronGeometry(d_icosahedron, detail);
-    obj.add(createMesh(geom, material_main, x, y, z));
+    obj.add(createMesh(geom, material_objs, x, y, z));
 }
 
 function addTorus(obj, x, y, z) {
@@ -341,13 +342,13 @@ function addTorus(obj, x, y, z) {
     const tubularSegments = 48; 
     const arc = Math.PI * 2; // Full circle arc
     const geom = new THREE.TorusGeometry(r_torus, tr_torus, radialSegments, tubularSegments, arc);
-    obj.add(createMesh(geom, material_main, x, y, z));
+    obj.add(createMesh(geom, material_objs, x, y, z));
 }
 
 function addTorusKnot(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusKnotGeometry(r_torusknot, tr_torusknot, ts_torusknot, rs_torusknot, p_torusknot, q_torusknot);
-    obj.add(createMesh(geom, material_main, x, y, z));
+    obj.add(createMesh(geom, material_objs, x, y, z));
 }
 
 
@@ -376,6 +377,7 @@ function toggleWireframe(){
     'use strict';
     material_main.wireframe = !material_main.wireframe;
     material_misc.wireframe = !material_misc.wireframe;
+    material_objs.wireframe = !material_objs.wireframe;
     material_wire.wireframe = !material_wire.wireframe;
 }
 
