@@ -463,7 +463,7 @@ function onKeyDown(e) {
         case '4':
         case '5':
         case '6':
-            camera = cameras[parseInt(e.key) - 1];
+            camera = cameras[e.keyCode - 49];
             break;
         // Toggle wireframe mode
         case '7':  
