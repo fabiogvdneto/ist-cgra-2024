@@ -72,10 +72,10 @@ let geom, mesh, material;
 let y_steelcable = 20;
 
 // Crane Objects
-let crane;    // parent
-let superior; // child
-let handle;   // grandchild
-let hook;     // ggrandchild
+let ref1; // parent
+let ref2; // child
+let ref3; // grandchild
+let ref4; // ggrandchild
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const l_base = 15, h_base = 5;                                // foundation
@@ -124,9 +124,9 @@ function createMesh(geom, material, x, y, z) {
 function addSteelCable(obj, x, y, z) {
     'use strict';
     geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, y_steelcable, 16);
-    const steelCable = createMesh(geom, material_wire, x, y, z);
-    obj.add(steelCable);
-    obj.userData.steelCable = steelCable; 
+    const mesh = createMesh(geom, material_wire, x, y, z);
+    obj.add(mesh);
+    obj.userData.steelCable = mesh; 
 }
 
 function addHookBlock(obj, x, y, z) {
@@ -143,16 +143,17 @@ function addClaws(obj, x, y, z) {
 
 function addHook(obj, x, y, z) {
     'use strict';
-    hook = new THREE.Object3D();
+    ref4 = new THREE.Group();
+    ref4.userData = { moving: false, step: 0.0 };
+    ref4.position.set(x, y, z);
 
-    addSteelCable(hook, 0, (y_steelcable/2), 0);
-    addHookBlock(hook, 0, -(h_hookblock/2), 0);
-    addClaws(hook, 0, -(h_hookblock + h_claw/2), 0);
+    addSteelCable(ref4, 0, (y_steelcable/2), 0);
+    addHookBlock(ref4, 0, -(h_hookblock/2), 0);
+    addClaws(ref4, 0, -(h_hookblock + h_claw/2), 0);
 
-    hook.position.set(x, y, z);
-    initialHookYPosition = hook.position.y;
+    initialHookYPosition = ref4.position.y;
 
-    obj.add(hook);
+    obj.add(ref4);
 }
 
 // grandchild ref: the handle (1x trolley)
@@ -165,15 +166,14 @@ function addTrolley(obj, x, y, z) {
 
 function addHandle(obj, x, y, z) {
     'use strict';
-    handle = new THREE.Object3D();
-    handle.userData = { moving: false, step: 0.0 };
+    ref3 = new THREE.Group();
+    ref3.userData = { moving: false, step: 0.0 };
+    ref3.position.set(x, y, z);
 
-    addTrolley(handle, 0, -h_trolley/2, 0);
-    addHook(handle, 0, -(h_trolley + y_steelcable), 0);
+    addTrolley(ref3, 0, -h_trolley/2, 0);
+    addHook(ref3, 0, -(h_trolley + y_steelcable), 0);
 
-    handle.position.set(x, y, z);
-
-    obj.add(handle);
+    obj.add(ref3);
 }
 
 // child ref: the superior (1x apex, 1x cab, 1x counterjib, 1x jib, 1x counterweights, 1x rear pendant, 1x fore pendant)
@@ -244,22 +244,21 @@ function addForePendant(obj, x, y, z) {
 
 function addSuperior(obj, x, y, z) {
     'use strict';
-    superior = new THREE.Object3D();
-    superior.userData = { moving: false, step: 0.0 };
+    ref2 = new THREE.Group();
+    ref2.userData = { moving: false, step: 0.0 };
+    ref2.position.set(x, y, z);
 
-    addCab(superior, 0, h_cab/2, 0);
-    addApex(superior, 0, (h_cab + h_apex/2), 0);
-    addCounterjib(superior, 0, (h_cab + h_cjib/2), (l_tower/2 + l_cjib/2));
-    addJib(superior, 0, (h_cab + h_jib/2), -(l_tower + l_jib)/2);
-    addCounterweigths(superior, 0, (h_cab - h_cweights/2), (l_tower/2 + l_cjib - l_cweights));
-    addMotors(superior, 0, (h_cab + h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
-    addRearPendant(superior, 0, (h_cab + h_apex/2 + h_cjib/2), (l_tower/2 + l_cjib*3/4)/2);
-    addForePendant(superior, 0, (h_cab + h_apex/2 + h_jib/2),  -(l_tower/2 + l_jib*3/4)/2);
-    addHandle(superior, 0, h_cab, -(l_tower/2 + l_trolley));
+    addCab(ref2, 0, h_cab/2, 0);
+    addApex(ref2, 0, (h_cab + h_apex/2), 0);
+    addCounterjib(ref2, 0, (h_cab + h_cjib/2), (l_tower/2 + l_cjib/2));
+    addJib(ref2, 0, (h_cab + h_jib/2), -(l_tower + l_jib)/2);
+    addCounterweigths(ref2, 0, (h_cab - h_cweights/2), (l_tower/2 + l_cjib - l_cweights));
+    addMotors(ref2, 0, (h_cab + h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
+    addRearPendant(ref2, 0, (h_cab + h_apex/2 + h_cjib/2), (l_tower/2 + l_cjib*3/4)/2);
+    addForePendant(ref2, 0, (h_cab + h_apex/2 + h_jib/2),  -(l_tower/2 + l_jib*3/4)/2);
+    addHandle(ref2, 0, h_cab, -(l_tower/2 + l_trolley));
 
-    superior.position.set(x, y, z);
-
-    obj.add(superior);
+    obj.add(ref2);
 }
 
 // parent ref: WCS (1x foundation, 1x tower)
@@ -278,14 +277,14 @@ function addTower(obj, x, y, z) {
 
 function addCrane(obj, x, y, z) {
     'use strict';
-    crane = new THREE.Object3D();
+    ref1 = new THREE.Object3D();
+    ref1.position.set(x, y, z);
     
-    addFoundation(crane, 0, (h_base/2), 0);
-    addTower(crane, 0, (h_base + h_tower/2), 0);
-    addSuperior(crane, 0, (h_base + h_tower), 0);
+    addFoundation(ref1, 0, (h_base/2), 0);
+    addTower(ref1, 0, (h_base + h_tower/2), 0);
+    addSuperior(ref1, 0, (h_base + h_tower), 0);
 
-    crane.position.set(x, y, z);
-    obj.add(crane);
+    obj.add(ref1);
 }
 
 function addObjects(obj) {
@@ -299,51 +298,42 @@ function addObjects(obj) {
 
 function addContainer(obj, x, y, z) {
     'use strict';
-    const front_geometry = new THREE.PlaneGeometry(w_container, h_container);
-    const back_geometry = new THREE.PlaneGeometry(w_container, h_container);
-    const left_geometry = new THREE.PlaneGeometry(l_container, h_container);
-    const right_geometry = new THREE.PlaneGeometry(l_container, h_container);
-    const base_geometry = new THREE.PlaneGeometry(w_container, l_container);
+    const side1_geom = new THREE.PlaneGeometry(w_container, h_container);
+    const side2_geom = new THREE.PlaneGeometry(l_container, h_container);
+    const floor_geom = new THREE.PlaneGeometry(w_container, l_container);
 
-    const front_wall = createMesh(front_geometry, material_objs, x, y, z - l_container / 2);
-    obj.add(front_wall);
+    const front_wall = createMesh(side1_geom, material_objs, x, y, z - l_container / 2);
+    const back_wall = createMesh(side1_geom, material_objs, x, y, z + l_container / 2);
+    const left_wall = createMesh(side2_geom, material_objs, x - w_container / 2, y, z);
+    const right_wall = createMesh(side2_geom, material_objs, x + w_container / 2, y, z);
+    const base_platform = createMesh(floor_geom, material_objs, x, y - h_container / 2, z);
 
-    const back_wall = createMesh(back_geometry, material_objs, x, y, z + l_container / 2);
-    obj.add(back_wall);
-
-    const left_wall = createMesh(left_geometry, material_objs, x - w_container / 2, y, z);
-    left_wall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
-    obj.add(left_wall);
-
-    const right_wall = createMesh(right_geometry, material_objs, x + w_container / 2, y, z);
     right_wall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
-    obj.add(right_wall);
-
-    const base_platform = createMesh(base_geometry, material_objs, x, y - h_container / 2, z);
+    left_wall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
     base_platform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
+    
+    obj.add(front_wall);
+    obj.add(back_wall);
+    obj.add(left_wall);
+    obj.add(right_wall);
     obj.add(base_platform);
 }
 
 function addDodecahedron(obj, x, y, z) {
     'use strict';
-    const detail = 0; // Detail level (0 is default)
-    const geom = new THREE.DodecahedronGeometry(r_dodecahedron, detail);
+    const geom = new THREE.DodecahedronGeometry(r_dodecahedron);
     obj.add(createMesh(geom, material_objs, x, y, z));
 }
 
 function addIcosahedron(obj, x, y, z) {
     'use strict';
-    const detail = 0; // Detail level (0 is default)
-    const geom = new THREE.IcosahedronGeometry(d_icosahedron, detail);
+    const geom = new THREE.IcosahedronGeometry(d_icosahedron);
     obj.add(createMesh(geom, material_objs, x, y, z));
 }
 
 function addTorus(obj, x, y, z) {
     'use strict';
-    const radial_segments = 24; 
-    const tubular_segments = 48; 
-    const arc = Math.PI * 2; // Full circle arc
-    const geom = new THREE.TorusGeometry(r_torus, tr_torus, radial_segments, tubular_segments, arc);
+    const geom = new THREE.TorusGeometry(r_torus, tr_torus);
     obj.add(createMesh(geom, material_objs, x, y, z));
 }
 
@@ -418,20 +408,20 @@ function init() {
 /////////////////////
 function update() {
     'use strict';
-    if (superior.userData.moving) {
-        superior.rotateY(superior.userData.step);
+    if (ref2.userData.moving) {
+        ref2.rotateY(ref2.userData.step);
     }
 
-    if (handle.userData.moving) {
-        handle.position.z -= handle.userData.step;
-        handle.position.z = Math.min(handle.position.z, -(l_tower/2 + l_trolley));
-        handle.position.z = Math.max(-(l_tower/2 + l_jib - l_trolley/2), handle.position.z);
+    if (ref3.userData.moving) {
+        ref3.position.z -= ref3.userData.step;
+        ref3.position.z = Math.min(ref3.position.z, -(l_tower/2 + l_trolley));
+        ref3.position.z = Math.max(-(l_tower/2 + l_jib - l_trolley/2), ref3.position.z);
     }
 
-    if (hook.userData.moving) {
-        hook.position.y -= hook.userData.step;
-        hook.position.y = Math.min(initialHookYPosition, hook.position.y);
-        hook.position.y = Math.max(-(h_tower + h_base), hook.position.y);
+    if (ref4.userData.moving) {
+        ref4.position.y -= ref4.userData.step;
+        ref4.position.y = Math.min(initialHookYPosition, ref4.position.y);
+        ref4.position.y = Math.max(-(h_tower + h_base), ref4.position.y);
         
         // const steel_cable = hook.userData.steelCable;
         // if (hook.position.y != initialHookYPosition && hook.position.y != -(h_tower + h_base)) {
@@ -482,38 +472,38 @@ function onKeyDown(e) {
         // Activate superior rotation to the left
         case 'a':
         case 'A':
-            superior.userData.moving = true;
-            superior.userData.step = 0.01;
+            ref2.userData.moving = true;
+            ref2.userData.step = 0.01;
             break;
         // Activate superior rotation to the right
         case 'q':
         case 'Q':
-            superior.userData.moving = true;
-            superior.userData.step = -0.01;
+            ref2.userData.moving = true;
+            ref2.userData.step = -0.01;
             break;
         // Activate handle forward movement
         case 'w':
         case 'W':
-            handle.userData.moving = true;
-            handle.userData.step = 0.1;
+            ref3.userData.moving = true;
+            ref3.userData.step = 0.1;
             break;
         // Activate handle backwards movement
         case 's':
         case 'S':
-            handle.userData.moving = true;
-            handle.userData.step = -0.1;
+            ref3.userData.moving = true;
+            ref3.userData.step = -0.1;
             break;
         // Activate hook movement upwards
         case 'e':
         case 'E':
-            hook.userData.moving = true;
-            hook.userData.step = -0.05;
+            ref4.userData.moving = true;
+            ref4.userData.step = -0.05;
             break;
         // Activate hook movement downwards
         case 'd':
         case 'D':
-            hook.userData.moving = true;
-            hook.userData.step = 0.05;
+            ref4.userData.moving = true;
+            ref4.userData.step = 0.05;
             break;
     }
 
@@ -532,21 +522,21 @@ function onKeyUp(e) {
         case 'a':
         case 'Q':
         case 'q':
-            superior.userData.moving = false;
+            ref2.userData.moving = false;
             break;
         // Deactivate handle movement
         case 'S':
         case 's':
         case 'W':
         case 'w':
-            handle.userData.moving = false;
+            ref3.userData.moving = false;
             break;
         // Deactivate hook movement
         case 'D':
         case 'd':
         case 'E':
         case 'e':
-            hook.userData.moving = false;
+            ref4.userData.moving = false;
             break;
     }
 
