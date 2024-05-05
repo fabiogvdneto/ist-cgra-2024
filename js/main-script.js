@@ -283,11 +283,11 @@ function addCrane(obj, x, y, z) {
 
 function addObjects(obj) {
     'use strict';
-    addContainer(obj, 20, -20, -60);
-    addDodecahedron(obj, -20, -20, -45);
-    addIcosahedron(obj, -20, -20, -70);
-    addTorus(obj, 20, -20, -20);
-    addTorusKnot(obj, 0, -20, -35);
+    addContainer(obj, 20, -20, -30);
+    addDodecahedron(obj, -15, -20, 30);
+    addIcosahedron(obj, -30, -20, 0);
+    addTorus(obj, -13, -20, -33);
+    addTorusKnot(obj, 20, -20, 5);
 }
 
 function addContainer(obj, x, y, z) {
@@ -467,13 +467,13 @@ function onKeyDown(e) {
         case 65:  /* A */
         case 97:  /* a */
             superior.userData.moving = true;
-            superior.userData.step = 0.02;
+            superior.userData.step = 0.01;
             break;
         // Activate superior rotation to the right
         case 81:  /* Q */
         case 113: /* q */
             superior.userData.moving = true;
-            superior.userData.step = -0.02;
+            superior.userData.step = -0.01;
             break;
         // Activate handle forward movement
         case 87:  /* W */
