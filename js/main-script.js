@@ -109,6 +109,9 @@ const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: 
 const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: false });
 const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: false });
 
+// Initial positions
+let initialHookYPosition;
+
 
 function createMesh(geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
@@ -121,7 +124,9 @@ function createMesh(geom, material, x, y, z) {
 function addSteelCable(obj, x, y, z) {
     'use strict';
     geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, y_steelcable, 16);
-    obj.add(createMesh(geom, material_wire, x, y, z));
+    const steelCable = createMesh(geom, material_wire, x, y, z);
+    obj.add(steelCable);
+    obj.userData.steelCable = steelCable; 
 }
 
 function addHookBlock(obj, x, y, z) {
@@ -145,6 +150,7 @@ function addHook(obj, x, y, z) {
     addClaws(hook, 0, -(h_hookblock + h_claw/2), 0);
 
     hook.position.set(x, y, z);
+    initialHookYPosition = hook.position.y;
 
     obj.add(hook);
 }
@@ -299,25 +305,20 @@ function addContainer(obj, x, y, z) {
     const right_geometry = new THREE.PlaneGeometry(l_container, h_container);
     const base_geometry = new THREE.PlaneGeometry(w_container, l_container);
 
-    // Add the front wall
     const front_wall = createMesh(front_geometry, material_objs, x, y, z - l_container / 2);
     obj.add(front_wall);
 
-    // Add the back wall
     const back_wall = createMesh(back_geometry, material_objs, x, y, z + l_container / 2);
     obj.add(back_wall);
 
-    // Add the left wall
     const left_wall = createMesh(left_geometry, material_objs, x - w_container / 2, y, z);
     left_wall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
     obj.add(left_wall);
 
-    // Add the right wall
     const right_wall = createMesh(right_geometry, material_objs, x + w_container / 2, y, z);
     right_wall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
     obj.add(right_wall);
 
-    // Add the base platform
     const base_platform = createMesh(base_geometry, material_objs, x, y - h_container / 2, z);
     base_platform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
     obj.add(base_platform);
@@ -415,8 +416,8 @@ function init() {
 /////////////////////
 /* ANIMATION CYCLE */
 /////////////////////
-function update(){
-    'use strict';
+'use strict';
+function update() {
     if (superior.userData.moving) {
         superior.rotateY(superior.userData.step);
     }
@@ -424,9 +425,22 @@ function update(){
     if (handle.userData.moving) {
         handle.position.z -= handle.userData.step;
         handle.position.z = Math.min(handle.position.z, -(l_tower/2 + l_trolley));
-        handle.position.z = Math.max(-(l_tower/2 + l_jib - l_trolley/2), handle.position.z)
+        handle.position.z = Math.max(-(l_tower/2 + l_jib - l_trolley/2), handle.position.z);
+    }
+    if (hook.userData.moving) {
+        hook.position.y -= hook.userData.step;
+        hook.position.y = Math.min(initialHookYPosition, hook.position.y);
+        hook.position.y = Math.max(-(h_tower + h_base), hook.position.y);
+        
+        // const steel_cable = hook.userData.steelCable;
+        // if (hook.position.y != initialHookYPosition && hook.position.y != -(h_tower + h_base)) {
+        //     y_steelcable -= hook.userData.step;
+        //     steel_cable.scale.y -= hook.userData.step;
+        //     steel_cable.position.y = y_steelcable;
+        // } 
     }
 }
+
 
 function animate() {
     'use strict';
@@ -450,46 +464,58 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-    switch (e.keyCode) {
+    switch (e.key) {
         // Switch camera when pressing numkeys (1-6)
-        case 49:  /* 1 */
-        case 50:  /* 2 */
-        case 51:  /* 3 */
-        case 52:  /* 4 */
-        case 53:  /* 5 */
-        case 54:  /* 6 */
-            camera = cameras[e.keyCode - 49];
+        case '1':  
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+            camera = cameras[parseInt(e.key) - 1];
             break;
         // Toggle wireframe mode
-        case 55:  /* 7 */
+        case '7':  
             toggleWireframe();
             break;
         // Activate superior rotation to the left
-        case 65:  /* A */
-        case 97:  /* a */
+        case 'a':
+        case 'A':
             superior.userData.moving = true;
             superior.userData.step = 0.01;
             break;
         // Activate superior rotation to the right
-        case 81:  /* Q */
-        case 113: /* q */
+        case 'q':
+        case 'Q':
             superior.userData.moving = true;
             superior.userData.step = -0.01;
             break;
         // Activate handle forward movement
-        case 87:  /* W */
-        case 119: /* w */
+        case 'w':
+        case 'W':
             handle.userData.moving = true;
             handle.userData.step = 0.1;
             break;
         // Activate handle backwards movement
-        case 83:  /* S */
-        case 115: /* s */
+        case 's':
+        case 'S':
             handle.userData.moving = true;
             handle.userData.step = -0.1;
             break;
+        // Activate hook movement upwards
+        case 'e':
+        case 'E':
+            hook.userData.moving = true;
+            hook.userData.step = -0.05;
+            break;
+        // Activate hook movement downwards
+        case 'd':
+        case 'D':
+            hook.userData.moving = true;
+            hook.userData.step = 0.05;
+            break;
     }
-    
+
     render();
 }
 
@@ -497,27 +523,35 @@ function onKeyDown(e) {
 ///////////////////////
 /* KEY UP CALLBACK */
 ///////////////////////
-function onKeyUp(e){
+function onKeyUp(e) {
     'use strict';
-    switch (e.keyCode) {
+    switch (e.key) {
         // Deactivate superior rotation
-        case 65:  /* A */
-        case 81:  /* Q */
-        case 97:  /* a */
-        case 113: /* q */
+        case 'A':
+        case 'a':
+        case 'Q':
+        case 'q':
             superior.userData.moving = false;
             break;
         // Deactivate handle movement
-        case 83:  /* S */
-        case 87:  /* W */
-        case 115: /* s */
-        case 119: /* w */
+        case 'S':
+        case 's':
+        case 'W':
+        case 'w':
             handle.userData.moving = false;
+            break;
+        // Deactivate hook movement
+        case 'D':
+        case 'd':
+        case 'E':
+        case 'e':
+            hook.userData.moving = false;
             break;
     }
 
     render();
 }
+
 
 init();
 animate();
