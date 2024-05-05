@@ -109,6 +109,7 @@ const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: 
 const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: false });
 const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: false });
 
+
 function createMesh(geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
@@ -292,34 +293,34 @@ function addObjects(obj) {
 
 function addContainer(obj, x, y, z) {
     'use strict';
-    const frontGeometry = new THREE.PlaneGeometry(w_container, h_container);
-    const backGeometry = new THREE.PlaneGeometry(w_container, h_container);
-    const leftGeometry = new THREE.PlaneGeometry(l_container, h_container);
-    const rightGeometry = new THREE.PlaneGeometry(l_container, h_container);
-    const baseGeometry = new THREE.PlaneGeometry(w_container, l_container);
+    const front_geometry = new THREE.PlaneGeometry(w_container, h_container);
+    const back_geometry = new THREE.PlaneGeometry(w_container, h_container);
+    const left_geometry = new THREE.PlaneGeometry(l_container, h_container);
+    const right_geometry = new THREE.PlaneGeometry(l_container, h_container);
+    const base_geometry = new THREE.PlaneGeometry(w_container, l_container);
 
     // Add the front wall
-    const frontWall = createMesh(frontGeometry, material_objs, x, y, z - l_container / 2);
-    obj.add(frontWall);
+    const front_wall = createMesh(front_geometry, material_objs, x, y, z - l_container / 2);
+    obj.add(front_wall);
 
     // Add the back wall
-    const backWall = createMesh(backGeometry, material_objs, x, y, z + l_container / 2);
-    obj.add(backWall);
+    const back_wall = createMesh(back_geometry, material_objs, x, y, z + l_container / 2);
+    obj.add(back_wall);
 
     // Add the left wall
-    const leftWall = createMesh(leftGeometry, material_objs, x - w_container / 2, y, z);
-    leftWall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
-    obj.add(leftWall);
+    const left_wall = createMesh(left_geometry, material_objs, x - w_container / 2, y, z);
+    left_wall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
+    obj.add(left_wall);
 
     // Add the right wall
-    const rightWall = createMesh(rightGeometry, material_objs, x + w_container / 2, y, z);
-    rightWall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
-    obj.add(rightWall);
+    const right_wall = createMesh(right_geometry, material_objs, x + w_container / 2, y, z);
+    right_wall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
+    obj.add(right_wall);
 
     // Add the base platform
-    const basePlatform = createMesh(baseGeometry, material_objs, x, y - h_container / 2, z);
-    basePlatform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
-    obj.add(basePlatform);
+    const base_platform = createMesh(base_geometry, material_objs, x, y - h_container / 2, z);
+    base_platform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
+    obj.add(base_platform);
 }
 
 function addDodecahedron(obj, x, y, z) {
@@ -338,10 +339,10 @@ function addIcosahedron(obj, x, y, z) {
 
 function addTorus(obj, x, y, z) {
     'use strict';
-    const radialSegments = 24; 
-    const tubularSegments = 48; 
+    const radial_segments = 24; 
+    const tubular_segments = 48; 
     const arc = Math.PI * 2; // Full circle arc
-    const geom = new THREE.TorusGeometry(r_torus, tr_torus, radialSegments, tubularSegments, arc);
+    const geom = new THREE.TorusGeometry(r_torus, tr_torus, radial_segments, tubular_segments, arc);
     obj.add(createMesh(geom, material_objs, x, y, z));
 }
 
