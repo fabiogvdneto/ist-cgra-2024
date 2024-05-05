@@ -416,8 +416,8 @@ function init() {
 /////////////////////
 /* ANIMATION CYCLE */
 /////////////////////
-'use strict';
 function update() {
+    'use strict';
     if (superior.userData.moving) {
         superior.rotateY(superior.userData.step);
     }
@@ -427,6 +427,7 @@ function update() {
         handle.position.z = Math.min(handle.position.z, -(l_tower/2 + l_trolley));
         handle.position.z = Math.max(-(l_tower/2 + l_jib - l_trolley/2), handle.position.z);
     }
+
     if (hook.userData.moving) {
         hook.position.y -= hook.userData.step;
         hook.position.y = Math.min(initialHookYPosition, hook.position.y);
