@@ -78,14 +78,14 @@ function initializeCameras() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-let geom, mesh, hook;
+let geom, mesh;
 let y_steelcable = 20;
 
 // Crane Objects
-let ref1; // parent
-let ref2; // child
-let ref3; // grandchild
-let ref4; // ggrandchild
+let ref1 = new THREE.Object3D(); // parent
+let ref2 = new THREE.Group();    // child
+let ref3 = new THREE.Group();    // grandchild
+let ref4 = new THREE.Group();    // ggrandchild
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const d_base = 8, h_base = 6;                                 // foundation
@@ -158,7 +158,6 @@ function addClaws(obj, x, y, z) {
 
 function addHook(obj, x, y, z) {
     'use strict';
-    ref4 = new THREE.Group();
     ref4.userData = { moving: false, step: 0.0 };
     ref4.position.set(x, y, z);
 
@@ -181,7 +180,6 @@ function addTrolley(obj, x, y, z) {
 
 function addHandle(obj, x, y, z) {
     'use strict';
-    ref3 = new THREE.Group();
     ref3.userData = { moving: false, step: 0.0 };
     ref3.position.set(x, y, z);
 
@@ -195,7 +193,6 @@ function addHandle(obj, x, y, z) {
 
 function addCab(obj, x, y, z) {
     'use strict';
-
     geom = new THREE.CylinderGeometry(d_cab, d_cab, h_cab, 16);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
@@ -260,7 +257,6 @@ function addForePendant(obj, x, y, z) {
 
 function addSuperior(obj, x, y, z) {
     'use strict';
-    ref2 = new THREE.Group();
     ref2.userData = { moving: false, step: 0.0 };
     ref2.position.set(x, y, z);
 
@@ -293,7 +289,6 @@ function addTower(obj, x, y, z) {
 
 function addCrane(obj, x, y, z) {
     'use strict';
-    ref1 = new THREE.Object3D();
     ref1.position.set(x, y, z);
     
     addFoundation(ref1, 0, (h_base/2), 0);
@@ -314,7 +309,6 @@ function addObjects(obj) {
 
 function addContainer(obj, x, y, z) {
     'use strict';
-
     const container = new THREE.Group();
 
     const side1_geom = new THREE.PlaneGeometry(w_container, h_container);
@@ -366,7 +360,6 @@ function addTorusKnot(obj, x, y, z) {
 
 function addPlane(obj, x, y, z){
     'use strict';
-
     const planeMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(100, 100),
         new THREE.MeshBasicMaterial({ color: 0x808076, wireframe: false, side: THREE.DoubleSide })
