@@ -123,10 +123,10 @@ function createMesh(geom, material, x, y, z) {
 
 function addSteelCable(obj, x, y, z) {
     'use strict';
-    geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, y_steelcable, 16);
+    geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, y_steelcable);
     const mesh = createMesh(geom, material_wire, x, y, z);
     obj.add(mesh);
-    obj.userData.steelCable = mesh; 
+    obj.userData.cable = mesh;
 }
 
 function addHookBlock(obj, x, y, z) {
@@ -419,9 +419,14 @@ function update() {
     }
 
     if (ref4.userData.moving) {
+        let prev = ref4.position.y;
         ref4.position.y -= ref4.userData.step;
         ref4.position.y = Math.min(initialHookYPosition, ref4.position.y);
         ref4.position.y = Math.max(-(h_tower + h_base), ref4.position.y);
+        let step = prev - ref4.position.y;
+
+        ref4.userData.cable.position.y += step/2;
+        ref4.userData.cable.scale.y += step/ref4.userData.cable.geometry.parameters.height;
         
         // const steel_cable = hook.userData.steelCable;
         // if (hook.position.y != initialHookYPosition && hook.position.y != -(h_tower + h_base)) {
