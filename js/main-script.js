@@ -314,6 +314,9 @@ function addObjects(obj) {
 
 function addContainer(obj, x, y, z) {
     'use strict';
+
+    const container = new THREE.Group();
+
     const side1_geom = new THREE.PlaneGeometry(w_container, h_container);
     const side2_geom = new THREE.PlaneGeometry(l_container, h_container);
     const floor_geom = new THREE.PlaneGeometry(w_container, l_container);
@@ -328,11 +331,13 @@ function addContainer(obj, x, y, z) {
     right_wall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
     left_wall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
     
-    obj.add(front_wall);
-    obj.add(back_wall);
-    obj.add(left_wall);
-    obj.add(right_wall);
-    obj.add(base_platform);
+    container.add(front_wall);
+    container.add(back_wall);
+    container.add(left_wall);
+    container.add(right_wall);
+    container.add(base_platform);
+
+    obj.add(container);
 }
 
 function addDodecahedron(obj, x, y, z) {
