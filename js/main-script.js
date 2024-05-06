@@ -78,14 +78,14 @@ let ref3; // grandchild
 let ref4; // ggrandchild
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
-const l_base = 15, h_base = 5;                                // foundation
-const l_tower = 8, h_tower = 50;                              // tower
-const l_cab = 6, h_cab = 5;                                   // cab
-const h_apex = 15;                                            // apex
+const d_base = 8, h_base = 6;                                 // foundation
+const l_tower = 5, h_tower = 50;                              // tower
+const d_cab = 4, h_cab = 5;                                   // cab
+const h_apex = 13;                                            // apex
 const w_cjib = 8, l_cjib = 20, h_cjib = 2.5;                  // counterjib
 const w_jib = 8, l_jib = 35, h_jib = 3;                       // jib
 const l_cweights = 6, h_cweights = 6, c_cweights = 5;         // counterweights
-const d_pendants = 0;                                         // (rear & fore) pendants
+const d_pendants = 0.05;                                         // (rear & fore) pendants
 const l_motor = 5, h_motor = 2;                               // motor
 const l_trolley = 4, h_trolley = 2;                           // trolley
 const d_steelcable = 0.1;                                     // steel cable
@@ -180,7 +180,8 @@ function addHandle(obj, x, y, z) {
 
 function addCab(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BoxGeometry(l_cab, h_cab, l_cab);
+
+    geom = new THREE.CylinderGeometry(d_cab, d_cab, h_cab, 16);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
 
@@ -265,7 +266,7 @@ function addSuperior(obj, x, y, z) {
 
 function addFoundation(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BoxGeometry(l_base, h_base, l_base);
+    geom = new THREE.CylinderGeometry(d_base, d_base, h_base, 16);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
 
