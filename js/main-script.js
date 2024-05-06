@@ -21,10 +21,10 @@ function createScene() {
     scene.add(new THREE.AxesHelper(10));
     scene.background = new THREE.Color('aliceblue');
 
+    addPlane(scene, 0, -1 , 0);
     addCrane(scene, 0, 0, 0);
     addObjects(scene);
 }
-
 
 //////////////////////
 /* CREATE CAMERA(S) */
@@ -108,10 +108,16 @@ const material_main = new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: 
 const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: false });
 const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: false });
 const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: false });
+const material_base_container = new THREE.MeshBasicMaterial({ color: 0x6E633D, wireframe: false });
+const material_container = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: false });
+const material_dodecahedron = new THREE.MeshBasicMaterial({ color: 0xBABD8D, wireframe: false });
+const material_icosahedron = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: false });
+const material_torus = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: false });
+const material_torusknot = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: false });
 
 // Initial positions
 let initialHookYPosition;
-
+1
 
 function createMesh(geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
@@ -303,15 +309,15 @@ function addContainer(obj, x, y, z) {
     const side2_geom = new THREE.PlaneGeometry(l_container, h_container);
     const floor_geom = new THREE.PlaneGeometry(w_container, l_container);
 
-    const front_wall = createMesh(side1_geom, material_objs, x, y, z - l_container / 2);
-    const back_wall = createMesh(side1_geom, material_objs, x, y, z + l_container / 2);
-    const left_wall = createMesh(side2_geom, material_objs, x - w_container / 2, y, z);
-    const right_wall = createMesh(side2_geom, material_objs, x + w_container / 2, y, z);
-    const base_platform = createMesh(floor_geom, material_objs, x, y - h_container / 2, z);
+    const front_wall = createMesh(side1_geom, material_container, x, y, z - l_container / 2);
+    const back_wall = createMesh(side1_geom, material_container, x, y, z + l_container / 2);
+    const left_wall = createMesh(side2_geom, material_container, x - w_container / 2, y, z);
+    const right_wall = createMesh(side2_geom, material_container, x + w_container / 2, y, z);
+    const base_platform = createMesh(floor_geom, material_base_container, x, y - h_container / 2, z);
 
+    base_platform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
     right_wall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
     left_wall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
-    base_platform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
     
     obj.add(front_wall);
     obj.add(back_wall);
@@ -323,25 +329,39 @@ function addContainer(obj, x, y, z) {
 function addDodecahedron(obj, x, y, z) {
     'use strict';
     const geom = new THREE.DodecahedronGeometry(r_dodecahedron);
-    obj.add(createMesh(geom, material_objs, x, y, z));
+    obj.add(createMesh(geom, material_dodecahedron, x, y, z));
 }
 
 function addIcosahedron(obj, x, y, z) {
     'use strict';
     const geom = new THREE.IcosahedronGeometry(d_icosahedron);
-    obj.add(createMesh(geom, material_objs, x, y, z));
+    obj.add(createMesh(geom, material_icosahedron, x, y, z));
 }
 
 function addTorus(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusGeometry(r_torus, tr_torus);
-    obj.add(createMesh(geom, material_objs, x, y, z));
+    obj.add(createMesh(geom, material_torus, x, y, z));
 }
 
 function addTorusKnot(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusKnotGeometry(r_torusknot, tr_torusknot, ts_torusknot, rs_torusknot, p_torusknot, q_torusknot);
-    obj.add(createMesh(geom, material_objs, x, y, z));
+    obj.add(createMesh(geom, material_torusknot, x, y, z));
+}
+
+function addPlane(obj, x, y, z){
+    'use strict';
+
+    const planeMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(100, 100),
+        new THREE.MeshBasicMaterial({ color: 0x808076, wireframe: false, side: THREE.DoubleSide })
+    );
+
+    planeMesh.position.set(x, y, z);
+    planeMesh.rotation.x = -Math.PI / 2;
+
+    obj.add(planeMesh);
 }
 
 
