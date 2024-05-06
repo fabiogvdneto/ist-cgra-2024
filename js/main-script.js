@@ -47,14 +47,24 @@ function createOrthographicCamera(x, y, z) {
     cameras.push(camera);
 }
 
+function createMovelCamera(x,y,z){ 
+    'use strict';
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(x, y, z);
+    camera.lookAt(x,y-1,z);
+
+    cameras.push(camera);
+    ref4.add(camera);
+}
+
 function initializeCameras() {
     'use strict';
-    createOrthographicCamera(110, 0, 0);      // frontal camera
-    createOrthographicCamera(0,0,110);        // side camera
-    createOrthographicCamera(0,110,0);        // top camera
-    createOrthographicCamera(140, 140, 140);  // orthogonal projection
-    createPerpectiveCamera(140, 140, 140);    // perspective projection
-    // createOrthographicCamera(); - movel camera
+    createOrthographicCamera(110, 0, 0);                // frontal camera
+    createOrthographicCamera(0,0,110);                  // side camera
+    createOrthographicCamera(0,110,0);                  // top camera
+    createOrthographicCamera(140, 140, 140);            // orthogonal projection
+    createPerpectiveCamera(140, 140, 140);              // perspective projection
+    createMovelCamera(0, -(h_hookblock + h_claw), 0);   // movel camera
 
     camera = cameras[3];
 }
@@ -68,7 +78,7 @@ function initializeCameras() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-let geom, mesh, material;
+let geom, mesh, hook;
 let y_steelcable = 20;
 
 // Crane Objects
@@ -85,7 +95,7 @@ const h_apex = 13;                                            // apex
 const w_cjib = 8, l_cjib = 20, h_cjib = 2.5;                  // counterjib
 const w_jib = 8, l_jib = 35, h_jib = 3;                       // jib
 const l_cweights = 6, h_cweights = 6, c_cweights = 5;         // counterweights
-const d_pendants = 0.05;                                         // (rear & fore) pendants
+const d_pendants = 0.05;                                      // (rear & fore) pendants
 const l_motor = 5, h_motor = 2;                               // motor
 const l_trolley = 4, h_trolley = 2;                           // trolley
 const d_steelcable = 0.1;                                     // steel cable
@@ -104,20 +114,19 @@ const p_torusknot = 2;                                        // 'p' parameter d
 const q_torusknot = 3;                                        // 'q' parameter defines how many times the curve winds around the tube
 
 // Materials
-const material_main = new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: false });
-const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: false });
-const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: false });
-const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: false });
-const material_base_container = new THREE.MeshBasicMaterial({ color: 0x6E633D, wireframe: false });
-const material_container = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: false });
-const material_dodecahedron = new THREE.MeshBasicMaterial({ color: 0xBABD8D, wireframe: false });
-const material_icosahedron = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: false });
-const material_torus = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: false });
-const material_torusknot = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: false });
+const material_main = new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true });        // main color
+const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: true });        // miscellaneous color
+const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: true });        // objects color - not used
+const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: true });        // cable's color
+const material_bcnt = new THREE.MeshBasicMaterial({ color: 0x6E633D, wireframe: true });        // base container color
+const material_cont = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });        // container color
+const material_dodd = new THREE.MeshBasicMaterial({ color: 0xBABD8D, wireframe: true });        // dodecahedron color
+const material_icod = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: true });        // icosahedron color
+const material_toru = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: true });        // torus color
+const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });        // torus knot color
 
 // Initial positions
 let initialHookYPosition;
-1
 
 function createMesh(geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
@@ -309,11 +318,11 @@ function addContainer(obj, x, y, z) {
     const side2_geom = new THREE.PlaneGeometry(l_container, h_container);
     const floor_geom = new THREE.PlaneGeometry(w_container, l_container);
 
-    const front_wall = createMesh(side1_geom, material_container, x, y, z - l_container / 2);
-    const back_wall = createMesh(side1_geom, material_container, x, y, z + l_container / 2);
-    const left_wall = createMesh(side2_geom, material_container, x - w_container / 2, y, z);
-    const right_wall = createMesh(side2_geom, material_container, x + w_container / 2, y, z);
-    const base_platform = createMesh(floor_geom, material_base_container, x, y - h_container / 2, z);
+    const front_wall = createMesh(side1_geom, material_cont, x, y, z - l_container / 2);
+    const back_wall = createMesh(side1_geom, material_cont, x, y, z + l_container / 2);
+    const left_wall = createMesh(side2_geom, material_cont, x - w_container / 2, y, z);
+    const right_wall = createMesh(side2_geom, material_cont, x + w_container / 2, y, z);
+    const base_platform = createMesh(floor_geom, material_bcnt, x, y - h_container / 2, z);
 
     base_platform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
     right_wall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
@@ -329,25 +338,25 @@ function addContainer(obj, x, y, z) {
 function addDodecahedron(obj, x, y, z) {
     'use strict';
     const geom = new THREE.DodecahedronGeometry(r_dodecahedron);
-    obj.add(createMesh(geom, material_dodecahedron, x, y, z));
+    obj.add(createMesh(geom, material_dodd, x, y, z));
 }
 
 function addIcosahedron(obj, x, y, z) {
     'use strict';
     const geom = new THREE.IcosahedronGeometry(d_icosahedron);
-    obj.add(createMesh(geom, material_icosahedron, x, y, z));
+    obj.add(createMesh(geom, material_icod, x, y, z));
 }
 
 function addTorus(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusGeometry(r_torus, tr_torus);
-    obj.add(createMesh(geom, material_torus, x, y, z));
+    obj.add(createMesh(geom, material_toru, x, y, z));
 }
 
 function addTorusKnot(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusKnotGeometry(r_torusknot, tr_torusknot, ts_torusknot, rs_torusknot, p_torusknot, q_torusknot);
-    obj.add(createMesh(geom, material_torusknot, x, y, z));
+    obj.add(createMesh(geom, material_tknt, x, y, z));
 }
 
 function addPlane(obj, x, y, z){
@@ -392,6 +401,12 @@ function toggleWireframe(){
     material_misc.wireframe = !material_misc.wireframe;
     material_objs.wireframe = !material_objs.wireframe;
     material_wire.wireframe = !material_wire.wireframe;
+    material_bcnt.wireframe = !material_bcnt.wireframe;
+    material_cont.wireframe = !material_cont.wireframe;
+    material_dodd.wireframe = !material_dodd.wireframe;
+    material_icod.wireframe = !material_icod.wireframe;
+    material_toru.wireframe = !material_toru.wireframe;
+    material_tknt.wireframe = !material_tknt.wireframe;
 }
 
 
