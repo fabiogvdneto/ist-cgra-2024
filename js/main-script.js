@@ -21,7 +21,7 @@ function createScene() {
     scene.add(new THREE.AxesHelper(10));
     scene.background = new THREE.Color('aliceblue');
 
-    addCrane(scene, 0, -20, 0);
+    addCrane(scene, 0, 0, 0);
     addObjects(scene);
 }
 
@@ -289,11 +289,11 @@ function addCrane(obj, x, y, z) {
 
 function addObjects(obj) {
     'use strict';
-    addContainer(obj, 20, -20, -30);
-    addDodecahedron(obj, -15, -20, 30);
-    addIcosahedron(obj, -30, -20, 0);
-    addTorus(obj, -13, -20, -33);
-    addTorusKnot(obj, 20, -20, 5);
+    addContainer(obj, 20, h_container/2, -30);
+    addDodecahedron(obj, -15, r_dodecahedron, 30);
+    addIcosahedron(obj, -30, d_icosahedron, 0);
+    addTorus(obj, -13, r_torus + tr_torus, -33);
+    addTorusKnot(obj, 20, r_torusknot + 1.5, 5);
 }
 
 function addContainer(obj, x, y, z) {
