@@ -32,7 +32,7 @@ const l_motor = 5, h_motor = 2;                               // motor
 const l_trolley = 4, h_trolley = 2;                           // trolley
 const d_steelcable = 0.1;                                     // steel cable
 const l_hookblock = 5, h_hookblock = 2;                       // hook block
-const l_claw = 6, h_claw = 4;                                 // claw
+const l_claw = 6, h_claw = 6;                                 // claw
 
 // Objects to be loaded by the crane
 const w_container = 20, h_container = 14.5, l_container = 25; // container
@@ -235,8 +235,40 @@ function addHookBlock(obj, x, y, z) {
 
 function addClaws(obj, x, y, z) {
     'use strict';
-    geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_claw,2), 1/2)/2), -h_claw , 4, 1, false, 0.782, 6.3);
-    obj.add(createMesh(geom, material_misc, x, y, z));
+    geom = new THREE.BufferGeometry();
+
+    var vertices = [
+        0, 0, -5/8 * l_hookblock/2,               // Vertex 0
+        l_hookblock/2, 0, -l_hookblock/2,         // Vertex 1
+        -l_hookblock/2, 0, -l_hookblock/2,        // Vertex 2
+        0, -h_claw, -7.5/8 * l_hookblock/2        // Vertex 3
+    ];
+
+    var indices = [
+        0, 1, 2,  // Face 0
+        0, 3, 1,  // Face 1
+        0, 2, 3,  // Face 2
+        1, 3, 2   // Face 3
+    ];
+
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geom.setIndex(indices);
+
+    var claw1 = createMesh(geom, material_toru, x, y, z);
+    var claw2 = createMesh(geom, material_toru, x ,y, z);
+    var claw3 = createMesh(geom, material_toru, x ,y, z);
+    var claw4 = createMesh(geom, material_toru, x ,y, z);
+
+    claw2.rotateY(Math.PI / 2); // Adjust rotation for claw 2
+    claw3.rotateY(-Math.PI / 2); // Adjust rotation for claw 3
+    claw4.rotateY(Math.PI); // Adjust rotation for claw 4
+
+
+    obj.add(claw1);
+    obj.add(claw2);
+    obj.add(claw3);
+    obj.add(claw4);
+
 }
 
 function addHook(obj, x, y, z) {
@@ -246,7 +278,7 @@ function addHook(obj, x, y, z) {
 
     addSteelCable(ref4, 0, (y_steelcable/2), 0);
     addHookBlock(ref4, 0, -(h_hookblock/2), 0);
-    addClaws(ref4, 0, -(h_hookblock + h_claw/2), 0);
+    addClaws(ref4, 0, -(h_hookblock), 0);
 
     initial_hook_y_position = ref4.position.y;
 
