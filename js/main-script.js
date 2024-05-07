@@ -104,6 +104,7 @@ const l_claw = 6, h_claw = 4;                                 // claw
 
 // Objects to be loaded by the crane
 const w_container = 20, h_container = 14.5, l_container = 25; // container
+const l_cube = 4, h_cube = 4;                                 // cube
 const r_dodecahedron = 4;                                     // dodecahedron
 const d_icosahedron = 4;                                      // icosahedron
 const r_torus = 4, tr_torus = 1.5;                            // torus
@@ -124,9 +125,10 @@ const material_dodd = new THREE.MeshBasicMaterial({ color: 0xBABD8D, wireframe: 
 const material_icod = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: true });        // icosahedron color
 const material_toru = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: true });        // torus color
 const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });        // torus knot color
+const material_cube = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });        // cube color
 
 // Initial positions
-let initialHookYPosition;
+let initial_hook_y_position;
 
 function createMesh(geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
@@ -165,7 +167,7 @@ function addHook(obj, x, y, z) {
     addHookBlock(ref4, 0, -(h_hookblock/2), 0);
     addClaws(ref4, 0, -(h_hookblock + h_claw/2), 0);
 
-    initialHookYPosition = ref4.position.y;
+    initial_hook_y_position = ref4.position.y;
 
     obj.add(ref4);
 }
@@ -305,6 +307,7 @@ function addObjects(obj) {
     addIcosahedron(obj, -30, d_icosahedron, 0);
     addTorus(obj, -13, r_torus + tr_torus, -33);
     addTorusKnot(obj, 20, r_torusknot + 1.5, 5);
+    addCube(obj, 15, h_cube/2, 30);
 }
 
 function addContainer(obj, x, y, z) {
@@ -313,7 +316,7 @@ function addContainer(obj, x, y, z) {
 
     const side1_geom = new THREE.BoxGeometry(w_container, h_container, 0.2, 3, 3);
     const side2_geom = new THREE.BoxGeometry(l_container, h_container, 0.2, 3, 3);
-    const floor_geom = new THREE.PlaneGeometry(w_container, l_container,3, 3);
+    const floor_geom = new THREE.PlaneGeometry(w_container, l_container, 3, 3);
 
     const front_wall = createMesh(side1_geom, material_cont, x, y, z - l_container / 2);
     const back_wall = createMesh(side1_geom, material_cont, x, y, z + l_container / 2);
@@ -332,6 +335,12 @@ function addContainer(obj, x, y, z) {
     container.add(base_platform);
 
     obj.add(container);
+}
+
+function addCube(obj, x, y, z) {
+    'use strict';
+    const geom = new THREE.BoxGeometry(l_cube, h_cube, l_cube);
+    obj.add(createMesh(geom, material_cube, x, y, z));
 }
 
 function addDodecahedron(obj, x, y, z) {
@@ -405,6 +414,7 @@ function toggleWireframe(){
     material_icod.wireframe = !material_icod.wireframe;
     material_toru.wireframe = !material_toru.wireframe;
     material_tknt.wireframe = !material_tknt.wireframe;
+    material_cube.wireframe = !material_cube.wireframe;
 }
 
 
@@ -455,19 +465,12 @@ function update() {
     if (ref4.userData.moving) {
         let prev = ref4.position.y;
         ref4.position.y -= ref4.userData.step;
-        ref4.position.y = Math.min(initialHookYPosition, ref4.position.y);
+        ref4.position.y = Math.min(initial_hook_y_position, ref4.position.y);
         ref4.position.y = Math.max(-(h_tower + h_base), ref4.position.y);
         let step = prev - ref4.position.y;
 
         ref4.userData.cable.position.y += step/2;
         ref4.userData.cable.scale.y += step/ref4.userData.cable.geometry.parameters.height;
-        
-        // const steel_cable = hook.userData.steelCable;
-        // if (hook.position.y != initialHookYPosition && hook.position.y != -(h_tower + h_base)) {
-        //     y_steelcable -= hook.userData.step;
-        //     steel_cable.scale.y -= hook.userData.step;
-        //     steel_cable.position.y = y_steelcable;
-        // } 
     }
 }
 
