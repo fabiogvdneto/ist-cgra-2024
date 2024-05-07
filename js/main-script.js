@@ -4,88 +4,20 @@ import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
+let camera, cameras = [];
 
-//////////////////////
-/* GLOBAL VARIABLES */
-//////////////////////
-let camera, scene, renderer;
-let cameras = [];
+const scene = new THREE.Scene();
+const clock = new THREE.Clock();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 
+/* Crane Referentials */
+const ref1 = new THREE.Object3D(); // parent
+const ref2 = new THREE.Group();    // child
+const ref3 = new THREE.Group();    // grandchild
+const ref4 = new THREE.Group();    // ggrandchild
 
-/////////////////////
-/* CREATE SCENE(S) */
-/////////////////////
-function createScene() {
-    'use strict';
-    scene = new THREE.Scene();
-    scene.add(new THREE.AxesHelper(10));
-    scene.background = new THREE.Color('aliceblue');
-
-    addPlane(scene, 0, -1 , 0);
-    addCrane(scene, 0, 0, 0);
-    addObjects(scene);
-}
-
-//////////////////////
-/* CREATE CAMERA(S) */
-//////////////////////
-function createPerpectiveCamera(x, y, z) {
-    'use strict';
-    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(x, y, z);
-    camera.lookAt(scene.position);
-
-    cameras.push(camera);
-}
-
-function createOrthographicCamera(x, y, z) {
-    'use strict';
-    camera = new THREE.OrthographicCamera(window.innerWidth / -12, window.innerWidth / 12, window.innerHeight / 12, window.innerHeight / -12, 0.1, 1000);
-    camera.position.set(x, y, z);
-    camera.lookAt(scene.position);
-
-    cameras.push(camera);
-}
-
-function createMovelCamera(x,y,z){ 
-    'use strict';
-    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(x, y, z);
-    camera.lookAt(x,y-1,z);
-
-    cameras.push(camera);
-    ref4.add(camera);
-}
-
-function initializeCameras() {
-    'use strict';
-    createOrthographicCamera(110, 0, 0);                // frontal camera
-    createOrthographicCamera(0,0,110);                  // side camera
-    createOrthographicCamera(0,110,0);                  // top camera
-    createOrthographicCamera(140, 140, 140);            // orthogonal projection
-    createPerpectiveCamera(140, 140, 140);              // perspective projection
-    createMovelCamera(0, -(h_hookblock + h_claw), 0);   // movel camera
-
-    camera = cameras[3];
-}
-
-
-/////////////////////
-/* CREATE LIGHT(S) */
-/////////////////////
-
-
-////////////////////////
-/* CREATE OBJECT3D(S) */
-////////////////////////
 let geom, mesh;
 let y_steelcable = 20;
-
-// Crane Objects
-let ref1 = new THREE.Object3D(); // parent
-let ref2 = new THREE.Group();    // child
-let ref3 = new THREE.Group();    // grandchild
-let ref4 = new THREE.Group();    // ggrandchild
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const d_base = 8, h_base = 6;                                 // foundation
@@ -129,6 +61,155 @@ const material_cube = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: 
 
 // Initial positions
 let initial_hook_y_position;
+
+/* ---------------- */
+/* ---- EVENTS ---- */
+/* ---------------- */
+
+function toggleWireframe(){
+    'use strict';
+    material_main.wireframe = !material_main.wireframe;
+    material_misc.wireframe = !material_misc.wireframe;
+    material_objs.wireframe = !material_objs.wireframe;
+    material_wire.wireframe = !material_wire.wireframe;
+    material_bcnt.wireframe = !material_bcnt.wireframe;
+    material_cont.wireframe = !material_cont.wireframe;
+    material_dodd.wireframe = !material_dodd.wireframe;
+    material_icod.wireframe = !material_icod.wireframe;
+    material_toru.wireframe = !material_toru.wireframe;
+    material_tknt.wireframe = !material_tknt.wireframe;
+}
+
+function updateCameras() {
+    const WIDTH = window.innerWidth;
+    const HEIGHT = window.innerHeight;
+    const RATIO = WIDTH / HEIGHT;
+
+    cameras.forEach(camera => {
+        if (camera.isPerspectiveCamera) {
+            camera.aspect = RATIO;
+        } else {
+            camera.right = WIDTH/12;
+            camera.left = -WIDTH/12;
+            camera.top = HEIGHT/12;
+            camera.bottom = -HEIGHT/12;
+        }
+        camera.updateProjectionMatrix();
+    });
+}
+
+function onResize() { 
+    'use strict';
+    updateCameras();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function onKeyDown(e) {
+    'use strict';
+    switch (e.key) {
+        // Switch camera when pressing numkeys (1-6)
+        case '1':  
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+            camera = cameras[e.keyCode - 49];
+            break;
+        // Toggle wireframe mode
+        case '7':  
+            toggleWireframe();
+            break;
+        // Activate superior rotation to the left
+        case 'a':
+        case 'A':
+            ref2.userData.moving_left = true;
+            break;
+        // Activate superior rotation to the right
+        case 'q':
+        case 'Q':
+            ref2.userData.moving_right = true;
+            break;
+        // Activate handle forward movement
+        case 'w':
+        case 'W':
+            ref3.userData.moving_backwards = true;
+            break;
+        // Activate handle backwards movement
+        case 's':
+        case 'S':
+            ref3.userData.moving_forward = true;
+            break;
+        // Activate hook movement upwards
+        case 'e':
+        case 'E':
+            ref4.userData.moving_up = true;
+            break;
+        // Activate hook movement downwards
+        case 'd':
+        case 'D':
+            ref4.userData.moving_down = true;
+            break;
+    }
+
+    render();
+}
+
+function onKeyUp(e) {
+    'use strict';
+    switch (e.key) {
+        // Deactivate superior rotation to the left
+        case 'a':
+        case 'A':
+            ref2.userData.moving_left = false;
+            break;
+        // Deactivate superior rotation to the right
+        case 'q':
+        case 'Q':
+            ref2.userData.moving_right = false;
+            break;
+        // Deactivate handle forward movement
+        case 'w':
+        case 'W':
+            ref3.userData.moving_backwards = false;
+            break;
+        // Deactivate handle backwards movement
+        case 's':
+        case 'S':
+            ref3.userData.moving_forward = false;
+            break;
+        // Deactivate hook movement upwards
+        case 'e':
+        case 'E':
+            ref4.userData.moving_up = false;
+            break;
+        // Deactivate hook movement downwards
+        case 'd':
+        case 'D':
+            ref4.userData.moving_down = false;
+            break;
+    }
+
+    render();
+}
+
+/* -------------------- */
+/* ---- COLLISIONS ---- */
+/* -------------------- */
+
+function checkCollisions(){
+    'use strict';
+
+}
+
+function handleCollisions(){
+    'use strict';
+
+}
+
+/* --------------- */
+/* ---- CRANE ---- */
+/* --------------- */
 
 function createMesh(geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
@@ -300,6 +381,10 @@ function addCrane(obj, x, y, z) {
     obj.add(ref1);
 }
 
+/* ----------------------- */
+/* ---- OTHER OBJECTS ---- */
+/* ----------------------- */
+
 function addObjects(obj) {
     'use strict';
     addContainer(obj, 20, h_container/2, -30);
@@ -380,64 +465,71 @@ function addPlane(obj, x, y, z){
     obj.add(planeMesh);
 }
 
+/* -------------- */
+/* ---- INIT ---- */
+/* -------------- */
 
-//////////////////////
-/* CHECK COLLISIONS */
-//////////////////////
-function checkCollisions(){
+function createOrthographicCamera(x, y, z) {
     'use strict';
+    camera = new THREE.OrthographicCamera();
+    camera.position.set(x, y, z);
+    camera.lookAt(scene.position);
 
+    cameras.push(camera);
 }
 
-
-///////////////////////
-/* HANDLE COLLISIONS */
-///////////////////////
-function handleCollisions(){
+function createPerspectiveCamera(x, y, z) {
     'use strict';
+    camera = new THREE.PerspectiveCamera();
+    camera.position.set(x, y, z);
+    camera.lookAt(scene.position);
 
+    cameras.push(camera);
 }
 
-
-///////////////////////
-/* HANDLE WIREFRAME */
-///////////////////////
-function toggleWireframe(){
+function createMovelCamera(x, y, z){
     'use strict';
-    material_main.wireframe = !material_main.wireframe;
-    material_misc.wireframe = !material_misc.wireframe;
-    material_objs.wireframe = !material_objs.wireframe;
-    material_wire.wireframe = !material_wire.wireframe;
-    material_bcnt.wireframe = !material_bcnt.wireframe;
-    material_cont.wireframe = !material_cont.wireframe;
-    material_dodd.wireframe = !material_dodd.wireframe;
-    material_icod.wireframe = !material_icod.wireframe;
-    material_toru.wireframe = !material_toru.wireframe;
-    material_tknt.wireframe = !material_tknt.wireframe;
-    material_cube.wireframe = !material_cube.wireframe;
+    camera = new THREE.PerspectiveCamera();
+    camera.position.set(x, y, z);
+    camera.lookAt(x, y-1, z);
+
+    cameras.push(camera);
+    ref4.add(camera);
 }
 
+function createCameras() {
+    'use strict';
+    createOrthographicCamera(60, 20, 0);                     // frontal camera
+    createOrthographicCamera(0, 20, 60);                     // side camera
+    createOrthographicCamera(0, 80, 0);                      // top camera
+    createOrthographicCamera(120, 120, 120);                 // orthogonal projection
+    createPerspectiveCamera(120, 120, 120);                   // perspective projection
+    createMovelCamera(0, -(h_hookblock + h_claw)-1, 0);      // movel camera
+    updateCameras();                                         // sync cameras with window dimension
+    camera = cameras[3];
+}
 
-/////////////
-/* DISPLAY */
-/////////////
+function createScene() {
+    'use strict';
+    scene.background = new THREE.Color('aliceblue');
+
+    addPlane(scene, 0, -1 , 0);
+    addCrane(scene, 0, 0, 0);
+    addObjects(scene);
+}
+
 function render() {
     'use strict';
     renderer.render(scene, camera);
 }
 
-
-////////////////////////////////
-/* INITIALIZE ANIMATION CYCLE */
-////////////////////////////////
 function init() {
     'use strict';
-    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
     createScene();
-    initializeCameras();
+    createCameras();
 
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
@@ -446,34 +538,41 @@ function init() {
     render();
 }
 
+/* ------------------- */
+/* ---- ANIMATION ---- */
+/* ------------------- */
 
-/////////////////////
-/* ANIMATION CYCLE */
-/////////////////////
 function update() {
     'use strict';
-    if (ref2.userData.moving) {
-        ref2.rotateY(ref2.userData.step);
+    var delta = clock.getDelta();
+
+    if (ref2.userData.moving_left || ref2.userData.moving_right) {
+        let step = 0.5 * delta * (ref2.userData.moving_left ? -1 : 1);
+
+        ref2.rotateY(step);
     }
 
-    if (ref3.userData.moving) {
-        ref3.position.z -= ref3.userData.step;
+    if (ref3.userData.moving_forward || ref3.userData.moving_backwards) {
+        let velocity = 5 * (ref3.userData.moving_forward ? -1 : 1);
+
+        ref3.position.z = velocity * delta + ref3.position.z;
         ref3.position.z = Math.min(ref3.position.z, -(l_tower/2 + l_trolley));
         ref3.position.z = Math.max(-(l_tower/2 + l_jib - l_trolley/2), ref3.position.z);
     }
 
-    if (ref4.userData.moving) {
+    if (ref4.userData.moving_up || ref4.userData.moving_down) {
+        let step = 10 * delta * (ref4.userData.moving_up ? -1 : 1);
+
         let prev = ref4.position.y;
         ref4.position.y -= ref4.userData.step;
         ref4.position.y = Math.min(initial_hook_y_position, ref4.position.y);
         ref4.position.y = Math.max(-(h_tower + h_base), ref4.position.y);
-        let step = prev - ref4.position.y;
+        step = prev - ref4.position.y;
 
         ref4.userData.cable.position.y += step/2;
         ref4.userData.cable.scale.y += step/ref4.userData.cable.geometry.parameters.height;
     }
 }
-
 
 function animate() {
     'use strict';
@@ -481,110 +580,6 @@ function animate() {
     render();
     requestAnimationFrame(animate);
 }
-
-
-////////////////////////////
-/* RESIZE WINDOW CALLBACK */
-////////////////////////////
-function onResize() { 
-    'use strict';
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-
-///////////////////////
-/* KEY DOWN CALLBACK */
-///////////////////////
-function onKeyDown(e) {
-    'use strict';
-    switch (e.key) {
-        // Switch camera when pressing numkeys (1-6)
-        case '1':  
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-            camera = cameras[e.keyCode - 49];
-            break;
-        // Toggle wireframe mode
-        case '7':  
-            toggleWireframe();
-            break;
-        // Activate superior rotation to the left
-        case 'a':
-        case 'A':
-            ref2.userData.moving = true;
-            ref2.userData.step = 0.01;
-            break;
-        // Activate superior rotation to the right
-        case 'q':
-        case 'Q':
-            ref2.userData.moving = true;
-            ref2.userData.step = -0.01;
-            break;
-        // Activate handle forward movement
-        case 'w':
-        case 'W':
-            ref3.userData.moving = true;
-            ref3.userData.step = 0.1;
-            break;
-        // Activate handle backwards movement
-        case 's':
-        case 'S':
-            ref3.userData.moving = true;
-            ref3.userData.step = -0.1;
-            break;
-        // Activate hook movement upwards
-        case 'e':
-        case 'E':
-            ref4.userData.moving = true;
-            ref4.userData.step = -0.05;
-            break;
-        // Activate hook movement downwards
-        case 'd':
-        case 'D':
-            ref4.userData.moving = true;
-            ref4.userData.step = 0.05;
-            break;
-    }
-
-    render();
-}
-
-
-///////////////////////
-/* KEY UP CALLBACK */
-///////////////////////
-function onKeyUp(e) {
-    'use strict';
-    switch (e.key) {
-        // Deactivate superior rotation
-        case 'A':
-        case 'a':
-        case 'Q':
-        case 'q':
-            ref2.userData.moving = false;
-            break;
-        // Deactivate handle movement
-        case 'S':
-        case 's':
-        case 'W':
-        case 'w':
-            ref3.userData.moving = false;
-            break;
-        // Deactivate hook movement
-        case 'D':
-        case 'd':
-        case 'E':
-        case 'e':
-            ref4.userData.moving = false;
-            break;
-    }
-
-    render();
-}
-
 
 init();
 animate();
