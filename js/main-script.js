@@ -16,16 +16,13 @@ const ref2 = new THREE.Group();    // child
 const ref3 = new THREE.Group();    // grandchild
 const ref4 = new THREE.Group();    // ggrandchild
 
-let geom, mesh;
-let y_steelcable = 20;
-
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const d_base = 8, h_base = 6;                                 // foundation
-const l_tower = 5, h_tower = 50;                              // tower
+const l_tower = 5, h_tower = 80;                              // tower
 const d_cab = 4, h_cab = 5;                                   // cab
 const h_apex = 13;                                            // apex
-const w_cjib = 8, l_cjib = 20, h_cjib = 2.5;                  // counterjib
-const w_jib = 8, l_jib = 35, h_jib = 3;                       // jib
+const w_cjib = 8, l_cjib = 30, h_cjib = 2.5;                  // counterjib
+const w_jib = 8, l_jib = 70, h_jib = 3;                       // jib
 const l_cweights = 6, h_cweights = 6, c_cweights = 5;         // counterweights
 const d_pendants = 0.05;                                      // (rear & fore) pendants
 const l_motor = 5, h_motor = 2;                               // motor
@@ -33,6 +30,12 @@ const l_trolley = 4, h_trolley = 2;                           // trolley
 const d_steelcable = 0.1;                                     // steel cable
 const l_hookblock = 5, h_hookblock = 2;                       // hook block
 const l_claw = 6, h_claw = 6;                                 // claw
+
+const max_ref3_z = -(d_cab/2 + l_trolley + 5)
+const min_ref3_z = -(d_cab + l_jib - l_trolley);
+
+const max_ref4_y = h_trolley + 5;
+const min_ref4_y = h_tower - 5;
 
 // Objects to be loaded by the crane
 const w_container = 20, h_container = 14.5, l_container = 25; // container
@@ -58,9 +61,6 @@ const material_icod = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: 
 const material_toru = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: true });        // torus color
 const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });        // torus knot color
 const material_cube = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });        // cube color
-
-// Initial positions
-let initial_hook_y_position;
 
 /* ---------------- */
 /* ---- EVENTS ---- */
@@ -89,10 +89,10 @@ function updateCameras() {
         if (camera.isPerspectiveCamera) {
             camera.aspect = RATIO;
         } else {
-            camera.right = WIDTH/12;
-            camera.left = -WIDTH/12;
-            camera.top = HEIGHT/12;
-            camera.bottom = -HEIGHT/12;
+            camera.right = WIDTH/10;
+            camera.left = -WIDTH/10;
+            camera.top = HEIGHT/10;
+            camera.bottom = -HEIGHT/10;
         }
         camera.updateProjectionMatrix();
     });
@@ -221,7 +221,7 @@ function createMesh(geom, material, x, y, z) {
 
 function addSteelCable(obj, x, y, z) {
     'use strict';
-    geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, y_steelcable);
+    const geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, max_ref4_y);
     const mesh = createMesh(geom, material_wire, x, y, z);
     obj.add(mesh);
     obj.userData.cable = mesh;
@@ -229,22 +229,22 @@ function addSteelCable(obj, x, y, z) {
 
 function addHookBlock(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BoxGeometry(l_hookblock, h_hookblock, l_hookblock);
+    const geom = new THREE.BoxGeometry(l_hookblock, h_hookblock, l_hookblock);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
 
 function addClaws(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BufferGeometry();
+    const geom = new THREE.BufferGeometry();
 
-    var vertices = [
+    let vertices = [
         0, 0, -5/8 * l_hookblock/2,               // Vertex 0
         l_hookblock/2, 0, -l_hookblock/2,         // Vertex 1
         -l_hookblock/2, 0, -l_hookblock/2,        // Vertex 2
         0, -h_claw, -7.5/8 * l_hookblock/2        // Vertex 3
     ];
 
-    var indices = [
+    let indices = [
         0, 1, 2,  // Face 0
         0, 3, 1,  // Face 1
         0, 2, 3,  // Face 2
@@ -254,33 +254,28 @@ function addClaws(obj, x, y, z) {
     geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     geom.setIndex(indices);
 
-    var claw1 = createMesh(geom, material_toru, x, y, z);
-    var claw2 = createMesh(geom, material_toru, x ,y, z);
-    var claw3 = createMesh(geom, material_toru, x ,y, z);
-    var claw4 = createMesh(geom, material_toru, x ,y, z);
+    let claw1 = createMesh(geom, material_toru, x, y, z);
+    let claw2 = createMesh(geom, material_toru, x ,y, z);
+    let claw3 = createMesh(geom, material_toru, x ,y, z);
+    let claw4 = createMesh(geom, material_toru, x ,y, z);
 
     claw2.rotateY(Math.PI / 2); // Adjust rotation for claw 2
     claw3.rotateY(-Math.PI / 2); // Adjust rotation for claw 3
     claw4.rotateY(Math.PI); // Adjust rotation for claw 4
 
-
     obj.add(claw1);
     obj.add(claw2);
     obj.add(claw3);
     obj.add(claw4);
-
 }
 
 function addHook(obj, x, y, z) {
     'use strict';
-    ref4.userData = { moving: false, step: 0.0 };
     ref4.position.set(x, y, z);
 
-    addSteelCable(ref4, 0, (y_steelcable/2), 0);
-    addHookBlock(ref4, 0, -(h_hookblock/2), 0);
-    addClaws(ref4, 0, -(h_hookblock), 0);
-
-    initial_hook_y_position = ref4.position.y;
+    addSteelCable(ref4, 0, -(max_ref4_y/2), 0);
+    addHookBlock( ref4, 0, -(max_ref4_y+h_hookblock/2),  0);
+    addClaws(     ref4, 0, -(max_ref4_y+h_hookblock),    0);
 
     obj.add(ref4);
 }
@@ -289,17 +284,16 @@ function addHook(obj, x, y, z) {
 
 function addTrolley(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BoxGeometry(l_trolley, h_trolley, l_trolley);
+    const geom = new THREE.BoxGeometry(l_trolley, h_trolley, l_trolley);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
 
 function addHandle(obj, x, y, z) {
     'use strict';
-    ref3.userData = { moving: false, step: 0.0 };
     ref3.position.set(x, y, z);
 
-    addTrolley(ref3, 0, -h_trolley/2, 0);
-    addHook(ref3, 0, -(h_trolley + y_steelcable), 0);
+    addTrolley(ref3, 0, -(h_trolley/2), 0);
+    addHook(   ref3, 0, -(h_trolley), 0);
 
     obj.add(ref3);
 }
@@ -308,37 +302,37 @@ function addHandle(obj, x, y, z) {
 
 function addCab(obj, x, y, z) {
     'use strict';
-    geom = new THREE.CylinderGeometry(d_cab, d_cab, h_cab, 16);
+    const geom = new THREE.CylinderGeometry(d_cab, d_cab, h_cab, 16);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
 
 function addApex(obj, x, y, z) {
     'use strict';
-    geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_tower,2), 1/2)/2), h_apex, 4, 1, false, 0.782, 6.3);
+    const geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_tower,2), 1/2)/2), h_apex, 4, 1, false, 0.782, 6.3);
     obj.add(createMesh(geom, material_main, x, y, z));
 }
 
 function addCounterjib(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BoxGeometry(w_jib, h_cjib, l_cjib);
+    const geom = new THREE.BoxGeometry(w_jib, h_cjib, l_cjib);
     obj.add(createMesh(geom, material_main, x, y, z));
 }
 
 function addJib(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BoxGeometry(w_cjib, h_jib, l_jib);
+    const geom = new THREE.BoxGeometry(w_cjib, h_jib, l_jib);
     obj.add(createMesh(geom, material_main, x, y, z));
 }
 
 function addCounterweigths(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BoxGeometry(c_cweights, h_cweights, l_cweights);
+    const geom = new THREE.BoxGeometry(c_cweights, h_cweights, l_cweights);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
 
 function addMotors(obj, x, y, z) { 
     'use strict';
-    geom = new THREE.BoxGeometry(w_jib, h_motor, l_motor);
+    const geom = new THREE.BoxGeometry(w_jib, h_motor, l_motor);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
 
@@ -350,8 +344,8 @@ function addRearPendant(obj, x, y, z) {
     const length = Math.hypot(c1, c2); // h² = c² + c²
     const angle = Math.atan(c2 / c1);  // angle = arctan(c2 / c1)
 
-    geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
-    mesh = createMesh(geom, material_wire, x, y, z);
+    const geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
+    const mesh = createMesh(geom, material_wire, x, y, z);
     mesh.rotateX(-angle);
     obj.add(mesh);
 }
@@ -364,27 +358,25 @@ function addForePendant(obj, x, y, z) {
     const length = Math.hypot(c1, c2); // h² = c² + c²
     const angle = Math.atan(c2 / c1);  // angle = arctan(c2 / c1)
 
-    geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
-    mesh = createMesh(geom, material_wire, x, y, z);
+    const geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
+    const mesh = createMesh(geom, material_wire, x, y, z);
     mesh.rotateX(angle);
     obj.add(mesh);
 }
 
 function addSuperior(obj, x, y, z) {
     'use strict';
-    ref2.userData = { moving: false, step: 0.0 };
     ref2.position.set(x, y, z);
 
-    addCab(ref2, 0, h_cab/2, 0);
-    addApex(ref2, 0, (h_cab + h_apex/2), 0);
-    addCounterjib(ref2, 0, (h_cab + h_cjib/2), (l_tower/2 + l_cjib/2));
-    addJib(ref2, 0, (h_cab + h_jib/2), -(l_tower + l_jib)/2);
-    addCounterweigths(ref2, 0, (h_cab - h_cweights/2), (l_tower/2 + l_cjib - l_cweights));
-    addMotors(ref2, 0, (h_cab + h_motor/2 + h_cjib), (l_cjib + l_tower/2 - l_motor/2));
-    addRearPendant(ref2, 0, (h_cab + h_apex/2 + h_cjib/2), (l_tower/2 + l_cjib*3/4)/2);
-    addForePendant(ref2, 0, (h_cab + h_apex/2 + h_jib/2),  -(l_tower/2 + l_jib*3/4)/2);
-    addHandle(ref2, 0, h_cab, -(l_tower/2 + l_trolley));
-
+    addCab(           ref2, 0, (h_cab/2), 0);
+    addApex(          ref2, 0, (h_cab + h_apex/2), 0);
+    addCounterjib(    ref2, 0, (h_cab + h_cjib/2),             (l_tower/2 + l_cjib/2));
+    addJib(           ref2, 0, (h_cab + h_jib/2),             -(l_tower + l_jib)/2);
+    addCounterweigths(ref2, 0, (h_cab - h_cweights/2),         (l_tower/2 + l_cjib - l_cweights));
+    addMotors(        ref2, 0, (h_cab + h_motor/2 + h_cjib),   (l_cjib + l_tower/2 - l_motor/2));
+    addRearPendant(   ref2, 0, (h_cab + h_apex/2 + h_cjib/2),  (l_tower/2 + l_cjib*3/4)/2);
+    addForePendant(   ref2, 0, (h_cab + h_apex/2 + h_jib/2),  -(l_tower/2 + l_jib*3/4)/2);
+    addHandle(        ref2, 0,  h_cab,                         max_ref3_z);
     obj.add(ref2);
 }
 
@@ -392,13 +384,13 @@ function addSuperior(obj, x, y, z) {
 
 function addFoundation(obj, x, y, z) {
     'use strict';
-    geom = new THREE.CylinderGeometry(d_base, d_base, h_base, 16);
+    const geom = new THREE.CylinderGeometry(d_base, d_base, h_base, 16);
     obj.add(createMesh(geom, material_misc, x, y, z));
 }
 
 function addTower(obj, x, y, z) {
     'use strict';
-    geom = new THREE.BoxGeometry(l_tower, h_tower, l_tower);
+    const geom = new THREE.BoxGeometry(l_tower, h_tower, l_tower);
     obj.add(createMesh(geom, material_main, x, y, z));
 }
 
@@ -487,7 +479,7 @@ function addTorusKnot(obj, x, y, z) {
 function addPlane(obj, x, y, z){
     'use strict';
     const planeMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(100, 100),
+        new THREE.PlaneGeometry(200, 200),
         new THREE.MeshBasicMaterial({ color: 0x808076, wireframe: false, side: THREE.DoubleSide })
     );
 
@@ -501,43 +493,33 @@ function addPlane(obj, x, y, z){
 /* ---- INIT ---- */
 /* -------------- */
 
-function createOrthographicCamera(x, y, z) {
+function createOrthographicCamera(x, y, z, lookAtY) {
     'use strict';
     camera = new THREE.OrthographicCamera();
+    camera.far = 3000;
     camera.position.set(x, y, z);
-    camera.lookAt(scene.position);
-
+    camera.lookAt(0, lookAtY, 0);
     cameras.push(camera);
 }
 
-function createPerspectiveCamera(x, y, z) {
+function createPerspectiveCamera(x, y, z, lookAtY) {
     'use strict';
     camera = new THREE.PerspectiveCamera();
     camera.position.set(x, y, z);
-    camera.lookAt(scene.position);
-
+    camera.lookAt(0, lookAtY, 0);
     cameras.push(camera);
-}
-
-function createMovelCamera(x, y, z){
-    'use strict';
-    camera = new THREE.PerspectiveCamera();
-    camera.position.set(x, y, z);
-    camera.lookAt(x, y-1, z);
-
-    cameras.push(camera);
-    ref4.add(camera);
 }
 
 function createCameras() {
     'use strict';
-    createOrthographicCamera(60, 20, 0);                     // frontal camera
-    createOrthographicCamera(0, 20, 60);                     // side camera
-    createOrthographicCamera(0, 80, 0);                      // top camera
-    createOrthographicCamera(120, 120, 120);                 // orthogonal projection
-    createPerspectiveCamera(120, 120, 120);                   // perspective projection
-    createMovelCamera(0, -(h_hookblock + h_claw)-1, 0);      // movel camera
-    updateCameras();                                         // sync cameras with window dimension
+    createOrthographicCamera(120,  h_tower/2, 0, h_tower/2);  // frontal camera
+    createOrthographicCamera(0, h_tower/2, 120, h_tower/2);   // side camera
+    createOrthographicCamera(0, h_tower+40, 0, 0);            // top camera
+    createOrthographicCamera(120, h_tower, 120, h_tower/2);   // orthogonal projection
+    createPerspectiveCamera( 120, h_tower, 120, h_tower/2);   // perspective projection
+    createPerspectiveCamera(0, -(h_hookblock + h_claw), 0, -(h_hookblock+h_claw)-1);  // movel camera
+    updateCameras();                                          // sync cameras with window dimension
+    ref4.add(cameras[5]);
     camera = cameras[3];
 }
 
@@ -548,6 +530,7 @@ function createScene() {
     addPlane(scene, 0, -1 , 0);
     addCrane(scene, 0, 0, 0);
     addObjects(scene);
+    createCameras();
 }
 
 function render() {
@@ -561,7 +544,6 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     createScene();
-    createCameras();
 
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
@@ -584,12 +566,24 @@ function update() {
         ref2.rotateY(step);
     }
 
-    if (ref3.userData.moving_forward || ref3.userData.moving_backwards) {
-        let velocity = 5 * (ref3.userData.moving_forward ? -1 : 1);
+    if (ref3.userData.moving_forward) {
+        let velocity = -10;
 
         ref3.position.z = velocity * delta + ref3.position.z;
-        ref3.position.z = Math.min(ref3.position.z, -(l_tower/2 + l_trolley));
-        ref3.position.z = Math.max(-(l_tower/2 + l_jib - l_trolley/2), ref3.position.z);
+
+        if (ref3.position.z < min_ref3_z) {
+            ref3.position.z = min_ref3_z;
+        }
+    }
+
+    if (ref3.userData.moving_backwards) {
+        let velocity = 10;
+
+        ref3.position.z = velocity * delta + ref3.position.z;
+
+        if (ref3.position.z > max_ref3_z) {
+            ref3.position.z = max_ref3_z;
+        }
     }
 
     if (ref4.userData.moving_up || ref4.userData.moving_down) {
@@ -597,7 +591,7 @@ function update() {
 
         let prev = ref4.position.y;
         ref4.position.y -= step;
-        ref4.position.y = Math.min(initial_hook_y_position, ref4.position.y);
+        ref4.position.y = Math.min(max_ref4_y, ref4.position.y);
         ref4.position.y = Math.max(-(h_tower + h_base/2), ref4.position.y);
         step = prev - ref4.position.y;
 
