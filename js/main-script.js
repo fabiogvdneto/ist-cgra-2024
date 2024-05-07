@@ -133,12 +133,12 @@ function onKeyDown(e) {
         // Activate handle forward movement
         case 'w':
         case 'W':
-            ref3.userData.moving_backwards = true;
+            ref3.userData.moving_forward = true;
             break;
         // Activate handle backwards movement
         case 's':
         case 'S':
-            ref3.userData.moving_forward = true;
+            ref3.userData.moving_backwards = true;
             break;
         // Activate hook movement upwards
         case 'e':
@@ -171,12 +171,12 @@ function onKeyUp(e) {
         // Deactivate handle forward movement
         case 'w':
         case 'W':
-            ref3.userData.moving_backwards = false;
+            ref3.userData.moving_forward = false;
             break;
         // Deactivate handle backwards movement
         case 's':
         case 'S':
-            ref3.userData.moving_forward = false;
+            ref3.userData.moving_backwards = false;
             break;
         // Deactivate hook movement upwards
         case 'e':
@@ -564,9 +564,9 @@ function update() {
         let step = 10 * delta * (ref4.userData.moving_up ? -1 : 1);
 
         let prev = ref4.position.y;
-        ref4.position.y -= ref4.userData.step;
+        ref4.position.y -= step;
         ref4.position.y = Math.min(initial_hook_y_position, ref4.position.y);
-        ref4.position.y = Math.max(-(h_tower + h_base), ref4.position.y);
+        ref4.position.y = Math.max(-(h_tower + h_base/2), ref4.position.y);
         step = prev - ref4.position.y;
 
         ref4.userData.cable.position.y += step/2;
