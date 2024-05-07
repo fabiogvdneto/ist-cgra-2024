@@ -118,8 +118,8 @@ const material_main = new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: 
 const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: true });        // miscellaneous color
 const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: true });        // objects color - not used
 const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: true });        // cable's color
-const material_bcnt = new THREE.MeshBasicMaterial({ color: 0x6E633D, wireframe: true });        // base container color
-const material_cont = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });        // container color
+const material_bcnt = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: true });        // base container color
+const material_cont = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });        // container color
 const material_dodd = new THREE.MeshBasicMaterial({ color: 0xBABD8D, wireframe: true });        // dodecahedron color
 const material_icod = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: true });        // icosahedron color
 const material_toru = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: true });        // torus color
@@ -311,9 +311,9 @@ function addContainer(obj, x, y, z) {
     'use strict';
     const container = new THREE.Group();
 
-    const side1_geom = new THREE.PlaneGeometry(w_container, h_container);
-    const side2_geom = new THREE.PlaneGeometry(l_container, h_container);
-    const floor_geom = new THREE.PlaneGeometry(w_container, l_container);
+    const side1_geom = new THREE.BoxGeometry(w_container, h_container, 0.2, 3, 3);
+    const side2_geom = new THREE.BoxGeometry(l_container, h_container, 0.2, 3, 3);
+    const floor_geom = new THREE.PlaneGeometry(w_container, l_container,3, 3);
 
     const front_wall = createMesh(side1_geom, material_cont, x, y, z - l_container / 2);
     const back_wall = createMesh(side1_geom, material_cont, x, y, z + l_container / 2);
