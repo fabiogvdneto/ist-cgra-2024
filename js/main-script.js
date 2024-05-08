@@ -28,15 +28,15 @@ const l_cweights = 6, h_cweights = 6, c_cweights = 5;         // counterweights
 const d_pendants = 0.05;                                      // (rear & fore) pendants
 const l_motor = 5, h_motor = 2;                               // motor
 const l_trolley = 4, h_trolley = 2;                           // trolley
-const d_steelcable = 0.1;                                     // steel cable
+const d_steelcable = 0.1, h_steelcable = h_tower/4;           // steel cable
 const l_hookblock = 5, h_hookblock = 2;                       // hook block
 const h_claw = 6;                                             // claw
 
 const max_ref3_z = -(d_cab/2 + l_trolley + 5)
 const min_ref3_z = -(d_cab + l_jib - l_trolley);
 
-const max_ref4_y = h_trolley + 5;
-const min_ref4_y = -(h_tower - h_base/2 - 1);
+const max_ref4_y = -(h_tower/4);
+const min_ref4_y = -(h_tower);
 
 // Objects to be loaded by the crane
 const w_container = 20, h_container = 14.5, l_container = 25; // container
@@ -159,7 +159,7 @@ function onKeyDown(e) {
             break;
         case 'f':
         case 'F':
-            class.userData.closing = true;
+            claws.userData.closing = true;
             break;
     }
 
@@ -241,7 +241,7 @@ function createMesh(geom, material, x, y, z) {
 
 function addSteelCable(obj, x, y, z) {
     'use strict';
-    const geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, max_ref4_y);
+    const geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, h_steelcable);
     const mesh = createMesh(geom, material_wire, x, y, z);
     obj.add(mesh);
     obj.userData.cable = mesh;
@@ -277,9 +277,9 @@ function addClaws(obj, x, y, z) {
     geom.setIndex(indices);
 
     let claw1 = createMesh(geom, material_toru, x, y, z);
-    let claw2 = createMesh(geom, material_toru, x ,y, z);
-    let claw3 = createMesh(geom, material_toru, x ,y, z);
-    let claw4 = createMesh(geom, material_toru, x ,y, z);
+    let claw2 = createMesh(geom, material_toru, x, y, z);
+    let claw3 = createMesh(geom, material_toru, x, y, z);
+    let claw4 = createMesh(geom, material_toru, x, y, z);
 
     claw2.rotateY(Math.PI / 2); // Adjust rotation for claw 2
     claw3.rotateY(-Math.PI / 2); // Adjust rotation for claw 3
@@ -297,9 +297,9 @@ function addHook(obj, x, y, z) {
     'use strict';
     ref4.position.set(x, y, z);
 
-    addSteelCable(ref4, 0, -(max_ref4_y/2), 0);
-    addHookBlock( ref4, 0, -(max_ref4_y+h_hookblock/2),  0);
-    addClaws(     ref4, 0, -(max_ref4_y+h_hookblock),    0);
+    addSteelCable(ref4, 0, (h_steelcable/2), 0);
+    addHookBlock( ref4, 0, -(h_hookblock/2),  0);
+    addClaws(     ref4, 0, -(h_hookblock),    0);
 
     obj.add(ref4);
 }
@@ -317,7 +317,7 @@ function addHandle(obj, x, y, z) {
     ref3.position.set(x, y, z);
 
     addTrolley(ref3, 0, -(h_trolley/2), 0);
-    addHook(   ref3, 0, -(h_trolley), 0);
+    addHook(   ref3, 0, -(h_trolley+h_steelcable), 0);
 
     obj.add(ref3);
 }
@@ -582,45 +582,32 @@ function init() {
 
 function update() {
     'use strict';
-    var delta = clock.getDelta();
+    const delta = clock.getDelta();
 
-    if (ref2.userData.moving_left || ref2.userData.moving_right) {
-        let step = 0.5 * delta * (ref2.userData.moving_left ? -1 : 1);
+    if (!!ref2.userData.moving_left != !!ref2.userData.moving_right) {
+        const step = (ref2.userData.moving_left ? -0.5 : 0.5) * delta;
 
         ref2.rotateY(step);
     }
 
-    if (ref3.userData.moving_forward) {
-        let velocity = -10;
+    if (!!ref3.userData.moving_forward != !!ref3.userData.moving_backwards) {
+        const step = (ref3.userData.moving_forward ? -10 : 10) * delta;
+        const z = step + ref3.position.z;
 
-        ref3.position.z = velocity * delta + ref3.position.z;
-
-        if (ref3.position.z < min_ref3_z) {
-            ref3.position.z = min_ref3_z;
+        if (z > min_ref3_z && z < max_ref3_z) {
+            ref3.position.z = z;
         }
     }
 
-    if (ref3.userData.moving_backwards) {
-        let velocity = 10;
+    if (!!ref4.userData.moving_up != !!ref4.userData.moving_down) {
+        const step = (ref4.userData.moving_down ? -10 : 10) * delta;
+        const y = step + ref4.position.y;
 
-        ref3.position.z = velocity * delta + ref3.position.z;
-
-        if (ref3.position.z > max_ref3_z) {
-            ref3.position.z = max_ref3_z;
+        if (y > min_ref4_y && y < max_ref4_y) {
+            ref4.position.y = y;
+            ref4.userData.cable.position.y -= step/2;
+            ref4.userData.cable.scale.y -= step/h_steelcable;
         }
-    }
-
-    if (ref4.userData.moving_up || ref4.userData.moving_down) {
-        let step = 10 * delta * (ref4.userData.moving_up ? -1 : 1);
-
-        let prev = ref4.position.y;
-        ref4.position.y -= step;
-        ref4.position.y = Math.min(max_ref4_y - h_trolley, ref4.position.y);
-        ref4.position.y = Math.max(min_ref4_y, ref4.position.y);
-        step = prev - ref4.position.y;
-
-        ref4.userData.cable.position.y += step/2;
-        ref4.userData.cable.scale.y += step/ref4.userData.cable.geometry.parameters.height;
     }
 }
 
