@@ -9,8 +9,7 @@ body {
     top: 10px; 
     left: 10px; 
     padding: 15px; 
-    background-color: rgba(0, 0, 0, 0.63);
-    color: white; 
+    background-color: rgba(0, 0, 0, 0.66);
     font-family: Arial, sans-serif; 
     font-weight: bold;
     border-radius: 6px; /* Add rounded corners to the div */

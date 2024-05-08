@@ -122,10 +122,15 @@ function onResize() {
 function updateKeyStatus() {
     const keyStatusDiv = document.getElementById('keyStatus');
     let statusText = '';
+
     for (const key in keyState) {
-        statusText += `${key}: ${keyState[key] ? 'Active' : 'Inactive'}<br>`;
+        const isActive = keyState[key];
+        const color = isActive ? 'white' : 'lightGray';
+
+        statusText += `<span style="color: ${color};">${key}: ${isActive ? 'Active' : 'Inactive'}</span><br>`;
     }
-    keyStatusDiv.innerHTML = statusText; 
+
+    keyStatusDiv.innerHTML = statusText;
 }
 
 function onKeyDown(e) {
