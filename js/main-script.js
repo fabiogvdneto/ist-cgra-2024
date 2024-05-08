@@ -63,6 +63,19 @@ const material_toru = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: 
 const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });        // torus knot color
 const material_cube = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });        // cube color
 
+// Constants to keep track of key state
+const keyState = {
+    'Left Rotation (A)': false,
+    'Right Rotation (Q)': false,
+    'Move Forward (W)': false,
+    'Move Backwards (S)': false,
+    'Move Up (E)': false,
+    'Move Down (D)': false,
+    'Open Claws (R)': false,
+    'Close Claws (F)': false,
+};
+
+
 /* ---------------- */
 /* ---- EVENTS ---- */
 /* ---------------- */
@@ -106,11 +119,20 @@ function onResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+function updateKeyStatus() {
+    const keyStatusDiv = document.getElementById('keyStatus');
+    let statusText = '';
+    for (const key in keyState) {
+        statusText += `${key}: ${keyState[key] ? 'Active' : 'Inactive'}<br>`;
+    }
+    keyStatusDiv.innerHTML = statusText; 
+}
+
 function onKeyDown(e) {
     'use strict';
     switch (e.key) {
-        // Switch camera when pressing numkeys (1-6)
-        case '1':  
+        // Switch camera when pressing num keys (1-6)
+        case '1':
         case '2':
         case '3':
         case '4':
@@ -119,50 +141,60 @@ function onKeyDown(e) {
             camera = cameras[e.keyCode - 49];
             break;
         // Toggle wireframe mode
-        case '7':  
+        case '7':
             toggleWireframe();
             break;
         // Activate superior rotation to the left
         case 'a':
         case 'A':
             ref2.userData.moving_left = true;
+            keyState['Left Rotation (A)'] = true; 
             break;
         // Activate superior rotation to the right
         case 'q':
         case 'Q':
             ref2.userData.moving_right = true;
+            keyState['Right Rotation (Q)'] = true; 
             break;
         // Activate handle forward movement
         case 'w':
         case 'W':
             ref3.userData.moving_forward = true;
+            keyState['Move Forward (W)'] = true; 
             break;
-        // Activate handle backwards movement
+        // Activate handle backward movement
         case 's':
         case 'S':
             ref3.userData.moving_backwards = true;
+            keyState['Move Backwards (S)'] = true; 
             break;
         // Activate hook movement upwards
         case 'e':
         case 'E':
             ref4.userData.moving_up = true;
+            keyState['Move Up (E)'] = true; 
             break;
         // Activate hook movement downwards
         case 'd':
         case 'D':
             ref4.userData.moving_down = true;
+            keyState['Move Down (D)'] = true; 
             break;
-        // Activate claws movement
+        // Activate claw movement
         case 'r':
         case 'R':
             claws.userData.opening = true;
+            keyState['Open Claws (R)'] = true; 
             break;
         case 'f':
         case 'F':
             claws.userData.closing = true;
+            keyState['Close Claws (F)'] = true; 
             break;
     }
 
+    // Update the text displayed on the screen with the status of the keys
+    updateKeyStatus();
     render();
 }
 
@@ -173,45 +205,54 @@ function onKeyUp(e) {
         case 'a':
         case 'A':
             ref2.userData.moving_left = false;
+            keyState['Left Rotation (A)'] = false; 
             break;
         // Deactivate superior rotation to the right
         case 'q':
         case 'Q':
             ref2.userData.moving_right = false;
-            break;
+            keyState['Right Rotation (Q)'] = false; 
         // Deactivate handle forward movement
         case 'w':
         case 'W':
             ref3.userData.moving_forward = false;
-            break;
-        // Deactivate handle backwards movement
+            keyState['Move Forward (W)'] = false; 
+        // Deactivate handle backward movement
         case 's':
         case 'S':
             ref3.userData.moving_backwards = false;
+            keyState['Move Backwards (S)'] = false; 
             break;
         // Deactivate hook movement upwards
         case 'e':
         case 'E':
             ref4.userData.moving_up = false;
+            keyState['Move Up (E)'] = false; 
             break;
         // Deactivate hook movement downwards
         case 'd':
         case 'D':
             ref4.userData.moving_down = false;
+            keyState['Move Down (D)'] = false; 
             break;
-        // Deactivate claws movement
+        // Deactivate claw movement
         case 'r':
         case 'R':
             claws.userData.opening = false;
+            keyState['Open Claws (R)'] = false; 
             break;
         case 'f':
         case 'F':
             claws.userData.closing = false;
+            keyState['Close Claws (F)'] = false; 
             break;
     }
 
+    // Update the text displayed on the screen with the status of the keys
+    updateKeyStatus();
     render();
 }
+
 
 /* -------------------- */
 /* ---- COLLISIONS ---- */
@@ -513,6 +554,7 @@ function addPlane(obj, x, y, z){
     obj.add(planeMesh);
 }
 
+
 /* -------------- */
 /* ---- INIT ---- */
 /* -------------- */
@@ -580,6 +622,7 @@ function init() {
     render();
 }
 
+
 /* ------------------- */
 /* ---- ANIMATION ---- */
 /* ------------------- */
@@ -613,6 +656,7 @@ function update() {
             ref4.userData.cable.scale.y -= step/h_steelcable;
         }
     }
+    updateKeyStatus();
 }
 
 function animate() {
