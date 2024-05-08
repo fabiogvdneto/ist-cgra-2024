@@ -15,6 +15,7 @@ const ref1 = new THREE.Object3D(); // parent
 const ref2 = new THREE.Group();    // child
 const ref3 = new THREE.Group();    // grandchild
 const ref4 = new THREE.Group();    // ggrandchild
+const claws = new THREE.Group();   // claws
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const d_base = 8, h_base = 6;                                 // foundation
@@ -29,13 +30,13 @@ const l_motor = 5, h_motor = 2;                               // motor
 const l_trolley = 4, h_trolley = 2;                           // trolley
 const d_steelcable = 0.1;                                     // steel cable
 const l_hookblock = 5, h_hookblock = 2;                       // hook block
-const l_claw = 6, h_claw = 6;                                 // claw
+const h_claw = 6;                                             // claw
 
 const max_ref3_z = -(d_cab/2 + l_trolley + 5)
 const min_ref3_z = -(d_cab + l_jib - l_trolley);
 
 const max_ref4_y = h_trolley + 5;
-const min_ref4_y = h_tower - 5;
+const min_ref4_y = -(h_tower - h_base/2 - 1);
 
 // Objects to be loaded by the crane
 const w_container = 20, h_container = 14.5, l_container = 25; // container
@@ -78,6 +79,7 @@ function toggleWireframe(){
     material_icod.wireframe = !material_icod.wireframe;
     material_toru.wireframe = !material_toru.wireframe;
     material_tknt.wireframe = !material_tknt.wireframe;
+    material_cube.wireframe = !material_cube.wireframe;
 }
 
 function updateCameras() {
@@ -150,6 +152,15 @@ function onKeyDown(e) {
         case 'D':
             ref4.userData.moving_down = true;
             break;
+        // Activate claws movement
+        case 'r':
+        case 'R':
+            claws.userData.opening = true;
+            break;
+        case 'f':
+        case 'F':
+            class.userData.closing = true;
+            break;
     }
 
     render();
@@ -187,6 +198,15 @@ function onKeyUp(e) {
         case 'd':
         case 'D':
             ref4.userData.moving_down = false;
+            break;
+        // Deactivate claws movement
+        case 'r':
+        case 'R':
+            claws.userData.opening = false;
+            break;
+        case 'f':
+        case 'F':
+            claws.userData.closing = false;
             break;
     }
 
@@ -235,6 +255,8 @@ function addHookBlock(obj, x, y, z) {
 
 function addClaws(obj, x, y, z) {
     'use strict';
+
+
     const geom = new THREE.BufferGeometry();
 
     let vertices = [
@@ -263,10 +285,12 @@ function addClaws(obj, x, y, z) {
     claw3.rotateY(-Math.PI / 2); // Adjust rotation for claw 3
     claw4.rotateY(Math.PI); // Adjust rotation for claw 4
 
-    obj.add(claw1);
-    obj.add(claw2);
-    obj.add(claw3);
-    obj.add(claw4);
+    claws.add(claw1);
+    claws.add(claw2);
+    claws.add(claw3);
+    claws.add(claw4);
+
+    obj.add(claws);
 }
 
 function addHook(obj, x, y, z) {
@@ -512,13 +536,13 @@ function createPerspectiveCamera(x, y, z, lookAtY) {
 
 function createCameras() {
     'use strict';
-    createOrthographicCamera(120,  h_tower/2, 0, h_tower/2);  // frontal camera
-    createOrthographicCamera(0, h_tower/2, 120, h_tower/2);   // side camera
-    createOrthographicCamera(0, h_tower+40, 0, 0);            // top camera
-    createOrthographicCamera(120, h_tower, 120, h_tower/2);   // orthogonal projection
-    createPerspectiveCamera( 120, h_tower, 120, h_tower/2);   // perspective projection
-    createPerspectiveCamera(0, -(h_hookblock + h_claw), 0, -(h_hookblock+h_claw)-1);  // movel camera
-    updateCameras();                                          // sync cameras with window dimension
+    createOrthographicCamera(120,  h_tower/2, 0, h_tower/2);                            // frontal camera
+    createOrthographicCamera(0, h_tower/2, 120, h_tower/2);                             // side camera
+    createOrthographicCamera(0, h_tower+40, 0, 0);                                      // top camera
+    createOrthographicCamera(120, h_tower, 120, h_tower/2);                             // orthogonal projection
+    createPerspectiveCamera( 120, h_tower, 120, h_tower/2);                             // perspective projection
+    createPerspectiveCamera(0, -(h_hookblock + h_claw), 0, -(h_hookblock+h_claw)-1);    // movel camera
+    updateCameras();                                                                    // sync cameras with window dimension
     ref4.add(cameras[5]);
     camera = cameras[3];
 }
@@ -591,8 +615,8 @@ function update() {
 
         let prev = ref4.position.y;
         ref4.position.y -= step;
-        ref4.position.y = Math.min(max_ref4_y, ref4.position.y);
-        ref4.position.y = Math.max(-(h_tower + h_base/2), ref4.position.y);
+        ref4.position.y = Math.min(max_ref4_y - h_trolley, ref4.position.y);
+        ref4.position.y = Math.max(min_ref4_y, ref4.position.y);
         step = prev - ref4.position.y;
 
         ref4.userData.cable.position.y += step/2;
