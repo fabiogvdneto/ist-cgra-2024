@@ -567,6 +567,10 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    ref2.userData = { moving_left: false,    moving_right: false };
+    ref3.userData = { moving_forward: false, moving_backwards: false };
+    ref4.userData = { moving_up: false,      moving_down: false };
+
     createScene();
 
     window.addEventListener("resize", onResize);
@@ -584,13 +588,13 @@ function update() {
     'use strict';
     const delta = clock.getDelta();
 
-    if (!!ref2.userData.moving_left != !!ref2.userData.moving_right) {
+    if (ref2.userData.moving_left != ref2.userData.moving_right) {
         const step = (ref2.userData.moving_left ? -0.5 : 0.5) * delta;
 
         ref2.rotateY(step);
     }
 
-    if (!!ref3.userData.moving_forward != !!ref3.userData.moving_backwards) {
+    if (ref3.userData.moving_forward != ref3.userData.moving_backwards) {
         const step = (ref3.userData.moving_forward ? -10 : 10) * delta;
         const z = step + ref3.position.z;
 
@@ -599,7 +603,7 @@ function update() {
         }
     }
 
-    if (!!ref4.userData.moving_up != !!ref4.userData.moving_down) {
+    if (ref4.userData.moving_up != ref4.userData.moving_down) {
         const step = (ref4.userData.moving_down ? -10 : 10) * delta;
         const y = step + ref4.position.y;
 
