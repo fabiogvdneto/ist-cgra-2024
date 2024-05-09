@@ -347,7 +347,9 @@ function handleCollisions() {
     obj.position.set(0, -(h_hookblock + h_claw/2 + obj.userData.bbradius), 0);
     ref4.add(obj);
 
-    // REMOVE THE FOLLOWING COMMENT TO UNBLOCK MOVEMENT KEYS
+    // INSERT HERE ANIMATION CODE
+
+    objs.userData.collision = undefined;
 }
 
 /* --------------- */
