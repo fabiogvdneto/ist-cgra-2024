@@ -115,10 +115,10 @@ function updateCameras() {
         if (camera.isPerspectiveCamera) {
             camera.aspect = RATIO;
         } else {
-            camera.right = WIDTH/10;
-            camera.left = -WIDTH/10;
-            camera.top = HEIGHT/10;
-            camera.bottom = -HEIGHT/10;
+            camera.right = WIDTH/8;
+            camera.left = -WIDTH/8;
+            camera.top = HEIGHT/8;
+            camera.bottom = -HEIGHT/8;
         }
 
         camera.updateProjectionMatrix();
@@ -661,7 +661,7 @@ function createCameras() {
     createOrthographicCamera(0, h_tower/2, 120, h_tower/2);                             // side camera
     createOrthographicCamera(0, h_tower+40, 0, 0);                                      // top camera
     createOrthographicCamera(120, h_tower, 120, h_tower/2);                             // orthogonal projection
-    createPerspectiveCamera( 120, h_tower, 120, h_tower/2);                             // perspective projection
+    createPerspectiveCamera( 160, h_tower*2, 160, 0);                                   // perspective projection
     createPerspectiveCamera(0, -(h_hookblock + h_claw/4), 0, -(h_hookblock+h_claw)-1);  // movel camera
     updateCameras();                                                                    // sync cameras with window dimension
     ref4.add(cameras[5]);
