@@ -155,8 +155,6 @@ function updateKeyStatus() {
 
 function onKeyDown(e) {
     'use strict';
-    if (objs.userData.collision) return;
-
     switch (e.key) {
         // Switch camera when pressing num keys (1-6)
         case '1':
@@ -188,53 +186,61 @@ function onKeyDown(e) {
             toggleWireframe();
             key_state['Toggle Wireframe (7)'] = true;
             break;
-        // Activate superior rotation to the left
-        case 'a':
-        case 'A':
-            ref2.userData.moving_left = true;
-            key_state['Left Rotation (A)'] = true; 
-            break;
-        // Activate superior rotation to the right
-        case 'q':
-        case 'Q':
-            ref2.userData.moving_right = true;
-            key_state['Right Rotation (Q)'] = true; 
-            break;
-        // Activate handle forward movement
-        case 'w':
-        case 'W':
-            ref3.userData.moving_forward = true;
-            key_state['Move Forward (W)'] = true; 
-            break;
-        // Activate handle backward movement
-        case 's':
-        case 'S':
-            ref3.userData.moving_backwards = true;
-            key_state['Move Backwards (S)'] = true; 
-            break;
-        // Activate hook movement upwards
-        case 'e':
-        case 'E':
-            ref4.userData.moving_up = true;
-            key_state['Move Up (E)'] = true; 
-            break;
-        // Activate hook movement downwards
-        case 'd':
-        case 'D':
-            ref4.userData.moving_down = true;
-            key_state['Move Down (D)'] = true; 
-            break;
-        // Activate claw movement
-        case 'r':
-        case 'R':
-            claws.userData.opening = true;
-            key_state['Open Claws (R)'] = true; 
-            break;
-        case 'f':
-        case 'F':
-            claws.userData.closing = true;
-            key_state['Close Claws (F)'] = true; 
-            break;
+    }
+    
+    if (!objs.userData.collision) {
+
+        // Movement-Related Keys
+
+        switch (e.key) {
+            // Activate superior rotation to the left
+            case 'a':
+            case 'A':
+                ref2.userData.moving_left = true;
+                key_state['Left Rotation (A)'] = true; 
+                break;
+            // Activate superior rotation to the right
+            case 'q':
+            case 'Q':
+                ref2.userData.moving_right = true;
+                key_state['Right Rotation (Q)'] = true; 
+                break;
+            // Activate handle forward movement
+            case 'w':
+            case 'W':
+                ref3.userData.moving_forward = true;
+                key_state['Move Forward (W)'] = true; 
+                break;
+            // Activate handle backward movement
+            case 's':
+            case 'S':
+                ref3.userData.moving_backwards = true;
+                key_state['Move Backwards (S)'] = true; 
+                break;
+            // Activate hook movement upwards
+            case 'e':
+            case 'E':
+                ref4.userData.moving_up = true;
+                key_state['Move Up (E)'] = true; 
+                break;
+            // Activate hook movement downwards
+            case 'd':
+            case 'D':
+                ref4.userData.moving_down = true;
+                key_state['Move Down (D)'] = true; 
+                break;
+            // Activate claw movement
+            case 'r':
+            case 'R':
+                claws.userData.opening = true;
+                key_state['Open Claws (R)'] = true; 
+                break;
+            case 'f':
+            case 'F':
+                claws.userData.closing = true;
+                key_state['Close Claws (F)'] = true; 
+                break;
+        }
     }
 
     render();
@@ -340,6 +346,8 @@ function handleCollisions() {
     obj.removeFromParent();
     obj.position.set(0, -(h_hookblock + h_claw/2 + obj.userData.bbradius), 0);
     ref4.add(obj);
+
+    // REMOVE THE FOLLOWING COMMENT TO UNBLOCK MOVEMENT KEYS
 }
 
 /* --------------- */
@@ -680,10 +688,10 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     
-    ref2.userData = { moving_left: false,    moving_right: false };
+    ref2.userData = { moving_left: false, moving_right: false };
     ref3.userData = { moving_forward: false, moving_backwards: false };
-    ref4.userData = { moving_up: false,      moving_down: false };
-    claws.userData = { theta: 0 }
+    ref4.userData = { moving_up: false, moving_down: false };
+    claws.userData = { opening: false, closing: false, theta: 0 }
     
     createScene();
     
@@ -741,7 +749,7 @@ function update() {
         }
     }
 
-    if (checkCollisions()) {
+    if (!objs.userData.collision && checkCollisions()) {
         handleCollisions();
     }
 
