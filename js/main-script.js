@@ -341,6 +341,15 @@ function checkCollisions() {
 
 function handleCollisions() {
     'use strict';
+    ref2.userData.moving_left = false;
+    ref2.userData.moving_right = false;
+    ref3.userData.moving_forward = false;
+    ref3.userData.moving_backwards = false;
+    ref4.userData.moving_up = false;
+    ref4.userData.moving_down = false;
+    claws.userData.opening = false;
+    claws.userData.closing = false;
+    
     const obj = objs.userData.collision;
 
     obj.removeFromParent();
