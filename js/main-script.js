@@ -15,6 +15,7 @@ const ref1 = new THREE.Object3D(); // parent
 const ref2 = new THREE.Group();    // child
 const ref3 = new THREE.Group();    // grandchild
 const ref4 = new THREE.Group();    // ggrandchild
+const objs = new THREE.Group();    // objects
 const claws = new THREE.Group();   // claws
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
@@ -45,7 +46,7 @@ const min_theta = -Math.PI / 10;
 const w_container = 20, h_container = 14.5, l_container = 25; // container
 const l_cube = 4, h_cube = 4;                                 // cube
 const r_dodecahedron = 4;                                     // dodecahedron
-const d_icosahedron = 4;                                      // icosahedron
+const r_icosahedron = 4;                                      // icosahedron
 const r_torus = 4, tr_torus = 1.5;                            // torus
 const r_torusknot = 2.5, tr_torusknot = 0.75;                 // torus knot
 const ts_torusknot = 50;                                      // Tubular segments for smoothness in torus knot
@@ -153,6 +154,8 @@ function updateKeyStatus() {
 
 function onKeyDown(e) {
     'use strict';
+    if ()
+
     switch (e.key) {
         // Switch camera when pressing num keys (1-6)
         case '1':
@@ -320,7 +323,17 @@ function onKeyUp(e) {
 
 function checkCollisions(){
     'use strict';
+    const c1 = new THREE.Vector3();
+    const r1 = h_hookblock + h_claw;
 
+    ref4.getWorldPosition(c1);
+
+    return objs.children.find(obj => {
+        const c2 = obj.position;
+        const r2 = obj.userData.bbradius;
+
+        return Math.pow(r1 + r2, 2) >= Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2);
+    });
 }
 
 function handleCollisions(){
@@ -534,12 +547,13 @@ function addCrane(obj, x, y, z) {
 
 function addObjects(obj) {
     'use strict';
-    addContainer(obj, 20, h_container/2, -30);
-    addDodecahedron(obj, -15, r_dodecahedron, 30);
-    addIcosahedron(obj, -30, d_icosahedron, 0);
-    addTorus(obj, -13, r_torus + tr_torus, -33);
-    addTorusKnot(obj, 20, r_torusknot + 1.5, 5);
-    addCube(obj, 15, h_cube/2, 30);
+    addContainer(objs, 20, h_container/2, -30);
+    addDodecahedron(objs, -15, r_dodecahedron, 30);
+    addIcosahedron(objs, -30, r_icosahedron, 0);
+    addTorus(objs, -13, r_torus + tr_torus, -33);
+    addTorusKnot(objs, 20, r_torusknot + 1.5, 5);
+    addCube(objs, 15, h_cube/2, 30);
+    obj.add(objs);
 }
 
 function addContainer(obj, x, y, z) {
@@ -572,31 +586,51 @@ function addContainer(obj, x, y, z) {
 function addCube(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BoxGeometry(l_cube, h_cube, l_cube);
-    obj.add(createMesh(geom, material_cube, x, y, z));
+    const mesh = createMesh(geom, material_cube, x, y, z);
+
+    mesh.userData.bbradius = h_cube;
+
+    obj.add(mesh);
 }
 
 function addDodecahedron(obj, x, y, z) {
     'use strict';
     const geom = new THREE.DodecahedronGeometry(r_dodecahedron);
-    obj.add(createMesh(geom, material_dodd, x, y, z));
+    const mesh = createMesh(geom, material_dodd, x, y, z);
+    
+    mesh.userData.bbradius = r_dodecahedron;
+
+    obj.add(mesh);
 }
 
 function addIcosahedron(obj, x, y, z) {
     'use strict';
-    const geom = new THREE.IcosahedronGeometry(d_icosahedron);
-    obj.add(createMesh(geom, material_icod, x, y, z));
+    const geom = new THREE.IcosahedronGeometry(r_icosahedron);
+    const mesh = createMesh(geom, material_icod, x, y, z);
+
+    mesh.userData.bbradius = r_icosahedron
+
+    obj.add(mesh);
 }
 
 function addTorus(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusGeometry(r_torus, tr_torus);
-    obj.add(createMesh(geom, material_toru, x, y, z));
+    const mesh = createMesh(geom, material_toru, x, y, z);
+
+    mesh.userData.bbradius = r_torus;
+
+    obj.add(mesh);
 }
 
 function addTorusKnot(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusKnotGeometry(r_torusknot, tr_torusknot, ts_torusknot, rs_torusknot, p_torusknot, q_torusknot);
-    obj.add(createMesh(geom, material_tknt, x, y, z));
+    const mesh = createMesh(geom, material_tknt, x, y, z);
+
+    mesh.userData.bbradius = r_torusknot;
+
+    obj.add(mesh);
 }
 
 function addPlane(obj, x, y, z){
@@ -716,20 +750,25 @@ function update() {
         }
     }
 
-    if (claws.userData.opening || claws.userData.closing) {
+    if (claws.userData.opening != claws.userData.closing) {
         const rotation_step = 0.5 * delta * (claws.userData.opening ? 1 : -1);
 
         const theta = claws.userData.theta + rotation_step;
 
-        if(theta < max_theta && theta > min_theta) {
+        if (theta < max_theta && theta > min_theta) {
             claws.userData.theta += rotation_step;
             claws.children.forEach(claw => {
                 claw.rotateX(rotation_step);
             });
         }
-
     }
-    
+
+    const obj = checkCollisions();
+
+    if (obj) {
+        handleCollisions();
+    }
+
     updateKeyStatus();
 }
 
