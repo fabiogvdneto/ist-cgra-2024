@@ -248,27 +248,7 @@ function onKeyUp(e) {
             key_state['Lateral (2)'] = false;
             break;
         case '3':
-            key_state['Top (3)'] = false;function updateKeyStatus() {
-                const keyStatusDiv = document.getElementById('keyStatus');
-                let status_text = '';
-                status_text += '<span style ="color : white">Cameras:</span><br><hr>';
-            
-                for (const key in key_state) {
-                    const isActive = key_state[key];
-                    const color = isActive ? 'white' : 'lightGray';
-                    
-                    status_text += `<span style="color: ${color};">${key}: ${isActive ? 'Active' : 'Inactive'}</span><br>`;
-            
-                    if (key == 'Mobile (6)') {
-                        status_text += '<span style ="color : white"><hr>Wireframe:</span><br><hr>';
-                    }
-                    if (key == 'Toggle Wireframe (7)') {
-                        status_text += '<span style ="color : white"><hr>Movements:</span><br><hr>';
-                    }
-                }
-            
-                keyStatusDiv.innerHTML = status_text;
-            }
+            key_state['Top (3)'] = false;
             break;
         case '4':
             key_state['Fixed w/ ortogonal proj (4)'] = false;
@@ -376,15 +356,13 @@ function addHookBlock(obj, x, y, z) {
 
 function addClaws(obj, x, y, z) {
     'use strict';
-
-
     const geom = new THREE.BufferGeometry();
 
     let vertices = [
-        0, h_hookblock/2, -5/8 * l_hookblock/2,               // Vertex 0
-        l_hookblock/2, h_hookblock/2, -11/13 * l_hookblock/2,         // Vertex 1
-        -l_hookblock/2, h_hookblock/2,-11/13 * l_hookblock/2,        // Vertex 2
-        0, -h_claw, -7.5/8 * l_hookblock/2        // Vertex 3
+        0, h_hookblock/2, -5/8 * l_hookblock/2,                 // Vertex 0
+        l_hookblock/2, h_hookblock/2, -11/13 * l_hookblock/2,   // Vertex 1
+        -l_hookblock/2, h_hookblock/2,-11/13 * l_hookblock/2,   // Vertex 2
+        0, -h_claw, -7.5/8 * l_hookblock/2                      // Vertex 3
     ];
 
     let indices = [
@@ -402,9 +380,9 @@ function addClaws(obj, x, y, z) {
     let claw3 = createMesh(geom, material_toru, x, y, z);
     let claw4 = createMesh(geom, material_toru, x, y, z);
 
-    claw2.rotateY(Math.PI / 2); // Adjust rotation for claw 2
-    claw3.rotateY(-Math.PI / 2); // Adjust rotation for claw 3
-    claw4.rotateY(Math.PI); // Adjust rotation for claw 4
+    claw2.rotateY(Math.PI / 2);   // Adjust rotation for claw 2
+    claw3.rotateY(-Math.PI / 2);  // Adjust rotation for claw 3
+    claw4.rotateY(Math.PI);       // Adjust rotation for claw 4
 
     claws.add(claw1);
     claws.add(claw2);
@@ -578,9 +556,9 @@ function addContainer(obj, x, y, z) {
     const right_wall = createMesh(side2_geom, material_cont, x + w_container / 2, y, z);
     const base_platform = createMesh(floor_geom, material_bcnt, x, y - h_container / 2, z);
 
-    base_platform.rotation.x = -Math.PI / 2; // Rotate the base platform to lie flat
-    right_wall.rotation.y = -Math.PI / 2; // Rotate to face the correct direction
-    left_wall.rotation.y = Math.PI / 2; // Rotate to face the correct direction
+    base_platform.rotation.x = -Math.PI / 2;  // Rotate the base platform to lie flat
+    right_wall.rotation.y = -Math.PI / 2;     // Rotate to face the correct direction
+    left_wall.rotation.y = Math.PI / 2;       // Rotate to face the correct direction
     
     container.add(front_wall);
     container.add(back_wall);
@@ -663,7 +641,7 @@ function createCameras() {
     createOrthographicCamera(0, h_tower+40, 0, 0);                                      // top camera
     createOrthographicCamera(120, h_tower, 120, h_tower/2);                             // orthogonal projection
     createPerspectiveCamera( 120, h_tower, 120, h_tower/2);                             // perspective projection
-    createPerspectiveCamera(0, -(h_hookblock + h_claw/4), 0, -(h_hookblock+h_claw)-1);    // movel camera
+    createPerspectiveCamera(0, -(h_hookblock + h_claw/4), 0, -(h_hookblock+h_claw)-1);  // movel camera
     updateCameras();                                                                    // sync cameras with window dimension
     ref4.add(cameras[5]);
     camera = cameras[3];
@@ -751,23 +729,7 @@ function update() {
         }
 
     }
-
-    // if (claws.userData.opening || claws.userData.closing) {
-    //     let maxRotation = Math.PI / 4;
-    //     let rotationStep = 0.5 * delta * (claws.userData.opening ? -1 : 1);
-
-    //     let currentRotation = claws.userData.claw1.rotation.x;
-    //     let newRotation = currentRotation + rotationStep;
-
-    //     if(newRotation >-maxRotation && newRotation < maxRotation) {
-    //         claws.children.forEach(claw => {
-
-    //             let rotationDiff = newRotation - currentRotation;
-    //             claw.rotateX(rotationDiff);
-    //         });
-    //     }
-        
-    // }
+    
     updateKeyStatus();
 }
 
