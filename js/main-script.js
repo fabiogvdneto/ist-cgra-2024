@@ -154,8 +154,6 @@ function updateKeyStatus() {
 
 function onKeyDown(e) {
     'use strict';
-    if ()
-
     switch (e.key) {
         // Switch camera when pressing num keys (1-6)
         case '1':
