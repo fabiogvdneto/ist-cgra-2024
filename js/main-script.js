@@ -120,6 +120,7 @@ function updateCameras() {
             camera.top = HEIGHT/10;
             camera.bottom = -HEIGHT/10;
         }
+
         camera.updateProjectionMatrix();
     });
 }
@@ -132,8 +133,7 @@ function onResize() {
 
 function updateKeyStatus() {
     const key_status_div = document.getElementById('keyStatus');
-    let status_text = '';
-    status_text += '<span style ="color : white">Cameras:</span><br><hr>';
+    let status_text = '<span style ="color : white">Cameras:</span><br><hr>';
 
     for (const key in key_state) {
         const isActive = key_state[key];
@@ -144,6 +144,7 @@ function updateKeyStatus() {
         if (key == 'Mobile (6)') {
             status_text += '<span style ="color : white"><hr>Wireframe:</span><br><hr>';
         }
+
         if (key == 'Toggle Wireframe (7)') {
             status_text += '<span style ="color : white"><hr>Movements:</span><br><hr>';
         }
@@ -154,6 +155,8 @@ function updateKeyStatus() {
 
 function onKeyDown(e) {
     'use strict';
+    if (objs.userData.collision) return;
+
     switch (e.key) {
         // Switch camera when pressing num keys (1-6)
         case '1':
@@ -304,7 +307,7 @@ function onKeyUp(e) {
         case 'F':
             claws.userData.closing = false;
             key_state['Close Claws (F)'] = false; 
-                break;
+            break;
     }
 
     render();
@@ -315,33 +318,38 @@ function onKeyUp(e) {
 /* ---- COLLISIONS ---- */
 /* -------------------- */
 
-function checkCollisions(){
+function checkCollisions() {
     'use strict';
-    const c1 = new THREE.Vector3();
-    const r1 = h_hookblock + h_claw;
+    const c1 = new THREE.Vector3();   // centroid of hook sphere bouding box
+    const r1 = h_hookblock + h_claw;  // radius of hook sphere bounding box
 
     ref4.getWorldPosition(c1);
 
-    return objs.children.find(obj => {
-        const c2 = obj.position;
-        const r2 = obj.userData.bbradius;
+    return objs.userData.collision = objs.children.find(obj => {
+        const c2 = obj.position;           // centroid of object sphere bounding box
+        const r2 = obj.userData.bbradius;  // radius of object sphere bounding box
 
         return Math.pow(r1 + r2, 2) >= Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2);
     });
 }
 
-function handleCollisions(){
+function handleCollisions() {
     'use strict';
+    const obj = objs.userData.collision;
 
+    obj.removeFromParent();
+
+    ref4.add(obj);
 }
 
 /* --------------- */
 /* ---- CRANE ---- */
 /* --------------- */
 
-function createMesh(geom, material, x, y, z) {
+function addMesh(obj, geom, material, x, y, z) {
     const mesh = new THREE.Mesh(geom, material);
     mesh.position.set(x, y, z);
+    obj.add(mesh);
     return mesh;
 }
 
@@ -350,15 +358,13 @@ function createMesh(geom, material, x, y, z) {
 function addSteelCable(obj, x, y, z) {
     'use strict';
     const geom = new THREE.CylinderGeometry(d_steelcable, d_steelcable, h_steelcable);
-    const mesh = createMesh(geom, material_wire, x, y, z);
-    obj.add(mesh);
-    obj.userData.cable = mesh;
+    obj.userData.cable = addMesh(obj, geom, material_wire, x, y, z);
 }
 
 function addHookBlock(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BoxGeometry(l_hookblock, h_hookblock, l_hookblock);
-    obj.add(createMesh(geom, material_misc, x, y, z));
+    addMesh(obj, geom, material_misc, x, y, z);
 }
 
 function addClaws(obj, x, y, z) {
@@ -382,19 +388,14 @@ function addClaws(obj, x, y, z) {
     geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     geom.setIndex(indices);
 
-    let claw1 = createMesh(geom, material_toru, x, y, z);
-    let claw2 = createMesh(geom, material_toru, x, y, z);
-    let claw3 = createMesh(geom, material_toru, x, y, z);
-    let claw4 = createMesh(geom, material_toru, x, y, z);
+    let claw1 = addMesh(claws, geom, material_toru, x, y, z);
+    let claw2 = addMesh(claws, geom, material_toru, x, y, z);
+    let claw3 = addMesh(claws, geom, material_toru, x, y, z);
+    let claw4 = addMesh(claws, geom, material_toru, x, y, z);
 
     claw2.rotateY(Math.PI / 2);   // Adjust rotation for claw 2
     claw3.rotateY(-Math.PI / 2);  // Adjust rotation for claw 3
     claw4.rotateY(Math.PI);       // Adjust rotation for claw 4
-
-    claws.add(claw1);
-    claws.add(claw2);
-    claws.add(claw3);
-    claws.add(claw4);
 
     obj.add(claws);
 }
@@ -415,7 +416,7 @@ function addHook(obj, x, y, z) {
 function addTrolley(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BoxGeometry(l_trolley, h_trolley, l_trolley);
-    obj.add(createMesh(geom, material_misc, x, y, z));
+    addMesh(obj, geom, material_misc, x, y, z);
 }
 
 function addHandle(obj, x, y, z) {
@@ -433,37 +434,37 @@ function addHandle(obj, x, y, z) {
 function addCab(obj, x, y, z) {
     'use strict';
     const geom = new THREE.CylinderGeometry(d_cab, d_cab, h_cab, 16);
-    obj.add(createMesh(geom, material_misc, x, y, z));
+    addMesh(obj, geom, material_misc, x, y, z);
 }
 
 function addApex(obj, x, y, z) {
     'use strict';
     const geom = new THREE.ConeGeometry((Math.pow(2*Math.pow(l_tower,2), 1/2)/2), h_apex, 4, 1, false, 0.782, 6.3);
-    obj.add(createMesh(geom, material_main, x, y, z));
+    addMesh(obj, geom, material_main, x, y, z);
 }
 
 function addCounterjib(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BoxGeometry(w_jib, h_cjib, l_cjib);
-    obj.add(createMesh(geom, material_main, x, y, z));
+    addMesh(obj, geom, material_main, x, y, z);
 }
 
 function addJib(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BoxGeometry(w_cjib, h_jib, l_jib);
-    obj.add(createMesh(geom, material_main, x, y, z));
+    addMesh(obj, geom, material_main, x, y, z);
 }
 
 function addCounterweigths(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BoxGeometry(c_cweights, h_cweights, l_cweights);
-    obj.add(createMesh(geom, material_misc, x, y, z));
+    addMesh(obj, geom, material_misc, x, y, z);
 }
 
 function addMotors(obj, x, y, z) { 
     'use strict';
     const geom = new THREE.BoxGeometry(w_jib, h_motor, l_motor);
-    obj.add(createMesh(geom, material_misc, x, y, z));
+    addMesh(obj, geom, material_misc, x, y, z);
 }
 
 function addRearPendant(obj, x, y, z) {
@@ -475,9 +476,9 @@ function addRearPendant(obj, x, y, z) {
     const angle = Math.atan(c2 / c1);  // angle = arctan(c2 / c1)
 
     const geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
-    const mesh = createMesh(geom, material_wire, x, y, z);
+    const mesh = addMesh(obj, geom, material_wire, x, y, z);
+
     mesh.rotateX(-angle);
-    obj.add(mesh);
 }
 
 function addForePendant(obj, x, y, z) {
@@ -489,9 +490,9 @@ function addForePendant(obj, x, y, z) {
     const angle = Math.atan(c2 / c1);  // angle = arctan(c2 / c1)
 
     const geom = new THREE.CylinderGeometry(d_pendants, d_pendants, length, 16);
-    const mesh = createMesh(geom, material_wire, x, y, z);
+    const mesh = addMesh(obj, geom, material_wire, x, y, z);
+
     mesh.rotateX(angle);
-    obj.add(mesh);
 }
 
 function addSuperior(obj, x, y, z) {
@@ -515,13 +516,13 @@ function addSuperior(obj, x, y, z) {
 function addFoundation(obj, x, y, z) {
     'use strict';
     const geom = new THREE.CylinderGeometry(d_base, d_base, h_base, 16);
-    obj.add(createMesh(geom, material_misc, x, y, z));
+    addMesh(obj, geom, material_misc, x, y, z);
 }
 
 function addTower(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BoxGeometry(l_tower, h_tower, l_tower);
-    obj.add(createMesh(geom, material_main, x, y, z));
+    addMesh(obj, geom, material_main, x, y, z);
 }
 
 function addCrane(obj, x, y, z) {
@@ -558,21 +559,15 @@ function addContainer(obj, x, y, z) {
     const side2_geom = new THREE.BoxGeometry(l_container, h_container, 0.2, 3, 3);
     const floor_geom = new THREE.PlaneGeometry(w_container, l_container, 3, 3);
 
-    const front_wall = createMesh(side1_geom, material_cont, x, y, z - l_container / 2);
-    const back_wall = createMesh(side1_geom, material_cont, x, y, z + l_container / 2);
-    const left_wall = createMesh(side2_geom, material_cont, x - w_container / 2, y, z);
-    const right_wall = createMesh(side2_geom, material_cont, x + w_container / 2, y, z);
-    const base_platform = createMesh(floor_geom, material_bcnt, x, y - h_container / 2, z);
+    const front_wall = addMesh(container, side1_geom, material_cont, x, y, z - l_container / 2);
+    const back_wall = addMesh(container, side1_geom, material_cont, x, y, z + l_container / 2);
+    const left_wall = addMesh(container, side2_geom, material_cont, x - w_container / 2, y, z);
+    const right_wall = addMesh(container, side2_geom, material_cont, x + w_container / 2, y, z);
+    const base_platform = addMesh(container, floor_geom, material_bcnt, x, y - h_container / 2, z);
 
     base_platform.rotation.x = -Math.PI / 2;  // Rotate the base platform to lie flat
     right_wall.rotation.y = -Math.PI / 2;     // Rotate to face the correct direction
     left_wall.rotation.y = Math.PI / 2;       // Rotate to face the correct direction
-    
-    container.add(front_wall);
-    container.add(back_wall);
-    container.add(left_wall);
-    container.add(right_wall);
-    container.add(base_platform);
 
     obj.add(container);
 }
@@ -580,51 +575,41 @@ function addContainer(obj, x, y, z) {
 function addCube(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BoxGeometry(l_cube, h_cube, l_cube);
-    const mesh = createMesh(geom, material_cube, x, y, z);
+    const mesh = addMesh(obj, geom, material_cube, x, y, z);
 
     mesh.userData.bbradius = h_cube;
-
-    obj.add(mesh);
 }
 
 function addDodecahedron(obj, x, y, z) {
     'use strict';
     const geom = new THREE.DodecahedronGeometry(r_dodecahedron);
-    const mesh = createMesh(geom, material_dodd, x, y, z);
+    const mesh = addMesh(obj, geom, material_dodd, x, y, z);
     
     mesh.userData.bbradius = r_dodecahedron;
-
-    obj.add(mesh);
 }
 
 function addIcosahedron(obj, x, y, z) {
     'use strict';
     const geom = new THREE.IcosahedronGeometry(r_icosahedron);
-    const mesh = createMesh(geom, material_icod, x, y, z);
+    const mesh = addMesh(obj, geom, material_icod, x, y, z);
 
     mesh.userData.bbradius = r_icosahedron
-
-    obj.add(mesh);
 }
 
 function addTorus(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusGeometry(r_torus, tr_torus);
-    const mesh = createMesh(geom, material_toru, x, y, z);
+    const mesh = addMesh(obj, geom, material_toru, x, y, z);
 
     mesh.userData.bbradius = r_torus;
-
-    obj.add(mesh);
 }
 
 function addTorusKnot(obj, x, y, z) {
     'use strict';
     const geom = new THREE.TorusKnotGeometry(r_torusknot, tr_torusknot, ts_torusknot, rs_torusknot, p_torusknot, q_torusknot);
-    const mesh = createMesh(geom, material_tknt, x, y, z);
+    const mesh = addMesh(obj, geom, material_tknt, x, y, z);
 
     mesh.userData.bbradius = r_torusknot;
-
-    obj.add(mesh);
 }
 
 function addPlane(obj, x, y, z){
@@ -698,7 +683,7 @@ function init() {
     ref2.userData = { moving_left: false,    moving_right: false };
     ref3.userData = { moving_forward: false, moving_backwards: false };
     ref4.userData = { moving_up: false,      moving_down: false };
-    claws.userData = { theta: 0}
+    claws.userData = { theta: 0 }
     
     createScene();
     
@@ -748,20 +733,15 @@ function update() {
 
     if (claws.userData.opening != claws.userData.closing) {
         const rotation_step = 0.5 * delta * (claws.userData.opening ? 1 : -1);
-
         const theta = claws.userData.theta + rotation_step;
 
         if (theta < max_theta && theta > min_theta) {
             claws.userData.theta += rotation_step;
-            claws.children.forEach(claw => {
-                claw.rotateX(rotation_step);
-            });
+            claws.children.forEach(claw => claw.rotateX(rotation_step));
         }
     }
 
-    const obj = checkCollisions();
-
-    if (obj) {
+    if (checkCollisions()) {
         handleCollisions();
     }
 
