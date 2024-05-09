@@ -131,7 +131,7 @@ function onResize() {
 }
 
 function updateKeyStatus() {
-    const keyStatusDiv = document.getElementById('keyStatus');
+    const key_status_div = document.getElementById('keyStatus');
     let status_text = '';
     status_text += '<span style ="color : white">Cameras:</span><br><hr>';
 
@@ -149,7 +149,7 @@ function updateKeyStatus() {
         }
     }
 
-    keyStatusDiv.innerHTML = status_text;
+    key_status_div.innerHTML = status_text;
 }
 
 function onKeyDown(e) {
@@ -234,8 +234,6 @@ function onKeyDown(e) {
             break;
     }
 
-    // Update the text displayed on the screen with the status of the keys
-    updateKeyStatus();
     render();
 }
 
@@ -306,11 +304,9 @@ function onKeyUp(e) {
         case 'F':
             claws.userData.closing = false;
             key_state['Close Claws (F)'] = false; 
-            break;
+                break;
     }
 
-    // Update the text displayed on the screen with the status of the keys
-    updateKeyStatus();
     render();
 }
 
@@ -698,18 +694,20 @@ function init() {
     'use strict';
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
+    
     ref2.userData = { moving_left: false,    moving_right: false };
     ref3.userData = { moving_forward: false, moving_backwards: false };
     ref4.userData = { moving_up: false,      moving_down: false };
     claws.userData = { theta: 0}
-
+    
     createScene();
-
+    
+    new OrbitControls(camera, renderer.domElement);
+    
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
-
+    
     render();
 }
 
