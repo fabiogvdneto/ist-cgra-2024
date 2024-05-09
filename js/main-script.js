@@ -320,16 +320,16 @@ function onKeyUp(e) {
 
 function checkCollisions() {
     'use strict';
-    const c1 = new THREE.Vector3();   // centroid of hook sphere bouding box
-    const r1 = h_hookblock + h_claw;  // radius of hook sphere bounding box
+    const c1 = new THREE.Vector3();   // centroid of hook bouding box
+    const r1 = h_hookblock + h_claw;  // radius of hook bounding box
 
     ref4.getWorldPosition(c1);
 
     return objs.userData.collision = objs.children.find(obj => {
-        const c2 = obj.position;           // centroid of object sphere bounding box
-        const r2 = obj.userData.bbradius;  // radius of object sphere bounding box
+        const c2 = obj.position;           // centroid of object bounding box
+        const r2 = obj.userData.bbradius;  // radius of object bounding box
 
-        return Math.pow(r1 + r2, 2) >= Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2);
+        return Math.pow(r1 + r2, 2) >= c1.distanceToSquared(c2);
     });
 }
 
@@ -338,7 +338,7 @@ function handleCollisions() {
     const obj = objs.userData.collision;
 
     obj.removeFromParent();
-
+    obj.position.set(0, -(h_hookblock + h_claw/2 + obj.userData.bbradius), 0);
     ref4.add(obj);
 }
 
