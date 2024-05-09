@@ -67,7 +67,14 @@ const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: 
 const material_cube = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });        // cube color
 
 // Constants to keep track of key state
-const keyState = {
+const key_state = {
+    'Frontal (1)' : false,
+    'Lateral (2)' : false,
+    'Top (3)' : false,
+    'Fixed w/ ortogonal proj (4)' : false,
+    'Fixed w/ perspective proj (5)' : false,
+    'Mobile (6)' : false,
+    'Toggle Wireframe (7)' : false,
     'Left Rotation (A)': false,
     'Right Rotation (Q)': false,
     'Move Forward (W)': false,
@@ -124,16 +131,24 @@ function onResize() {
 
 function updateKeyStatus() {
     const keyStatusDiv = document.getElementById('keyStatus');
-    let statusText = '';
+    let status_text = '';
+    status_text += '<span style ="color : white">Cameras:</span><br><hr>';
 
-    for (const key in keyState) {
-        const isActive = keyState[key];
-        const color = isActive ? 'white' : 'lightGray';
+    for (const key in key_state) {
+        const isActive = key_state[key];
+        const color = isActive ? 'lightGreen' : 'lightGray';
+        
+        status_text += `<span style="color: ${color};">${key}: ${isActive ? 'Active' : 'Inactive'}</span><br>`;
 
-        statusText += `<span style="color: ${color};">${key}: ${isActive ? 'Active' : 'Inactive'}</span><br>`;
+        if (key == 'Mobile (6)') {
+            status_text += '<span style ="color : white"><hr>Wireframe:</span><br><hr>';
+        }
+        if (key == 'Toggle Wireframe (7)') {
+            status_text += '<span style ="color : white"><hr>Movements:</span><br><hr>';
+        }
     }
 
-    keyStatusDiv.innerHTML = statusText;
+    keyStatusDiv.innerHTML = status_text;
 }
 
 function onKeyDown(e) {
@@ -141,63 +156,80 @@ function onKeyDown(e) {
     switch (e.key) {
         // Switch camera when pressing num keys (1-6)
         case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
             camera = cameras[e.keyCode - 49];
+            key_state['Frontal (1)'] = true;
+            break;
+        case '2':
+            camera = cameras[e.keyCode - 49];
+            key_state['Lateral (2)'] = true;
+            break;
+        case '3':
+            camera = cameras[e.keyCode - 49];
+            key_state['Top (3)'] = true;
+            break;
+        case '4':
+            camera = cameras[e.keyCode - 49];
+            key_state['Fixed w/ ortogonal proj (4)'] = true;
+            break;
+        case '5':
+            camera = cameras[e.keyCode - 49];
+            key_state['Fixed w/ perspective proj (5)'] = true;
+            break;
+        case '6':    
+            camera = cameras[e.keyCode - 49];
+            key_state['Mobile (6)'] = true;
             break;
         // Toggle wireframe mode
         case '7':
             toggleWireframe();
+            key_state['Toggle Wireframe (7)'] = true;
             break;
         // Activate superior rotation to the left
         case 'a':
         case 'A':
             ref2.userData.moving_left = true;
-            keyState['Left Rotation (A)'] = true; 
+            key_state['Left Rotation (A)'] = true; 
             break;
         // Activate superior rotation to the right
         case 'q':
         case 'Q':
             ref2.userData.moving_right = true;
-            keyState['Right Rotation (Q)'] = true; 
+            key_state['Right Rotation (Q)'] = true; 
             break;
         // Activate handle forward movement
         case 'w':
         case 'W':
             ref3.userData.moving_forward = true;
-            keyState['Move Forward (W)'] = true; 
+            key_state['Move Forward (W)'] = true; 
             break;
         // Activate handle backward movement
         case 's':
         case 'S':
             ref3.userData.moving_backwards = true;
-            keyState['Move Backwards (S)'] = true; 
+            key_state['Move Backwards (S)'] = true; 
             break;
         // Activate hook movement upwards
         case 'e':
         case 'E':
             ref4.userData.moving_up = true;
-            keyState['Move Up (E)'] = true; 
+            key_state['Move Up (E)'] = true; 
             break;
         // Activate hook movement downwards
         case 'd':
         case 'D':
             ref4.userData.moving_down = true;
-            keyState['Move Down (D)'] = true; 
+            key_state['Move Down (D)'] = true; 
             break;
         // Activate claw movement
         case 'r':
         case 'R':
             claws.userData.opening = true;
-            keyState['Open Claws (R)'] = true; 
+            key_state['Open Claws (R)'] = true; 
             break;
         case 'f':
         case 'F':
             claws.userData.closing = true;
-            keyState['Close Claws (F)'] = true; 
+            key_state['Close Claws (F)'] = true; 
             break;
     }
 
@@ -209,50 +241,90 @@ function onKeyDown(e) {
 function onKeyUp(e) {
     'use strict';
     switch (e.key) {
+        case '1':
+            key_state['Frontal (1)'] = false;
+            break;
+        case '2':
+            key_state['Lateral (2)'] = false;
+            break;
+        case '3':
+            key_state['Top (3)'] = false;function updateKeyStatus() {
+                const keyStatusDiv = document.getElementById('keyStatus');
+                let status_text = '';
+                status_text += '<span style ="color : white">Cameras:</span><br><hr>';
+            
+                for (const key in key_state) {
+                    const isActive = key_state[key];
+                    const color = isActive ? 'white' : 'lightGray';
+                    
+                    status_text += `<span style="color: ${color};">${key}: ${isActive ? 'Active' : 'Inactive'}</span><br>`;
+            
+                    if (key == 'Mobile (6)') {
+                        status_text += '<span style ="color : white"><hr>Wireframe:</span><br><hr>';
+                    }
+                    if (key == 'Toggle Wireframe (7)') {
+                        status_text += '<span style ="color : white"><hr>Movements:</span><br><hr>';
+                    }
+                }
+            
+                keyStatusDiv.innerHTML = status_text;
+            }
+            break;
+        case '4':
+            key_state['Fixed w/ ortogonal proj (4)'] = false;
+            break;
+        case '5':
+            key_state['Fixed w/ perspective proj (5)'] = false;
+            break;
+        case '6':    
+            key_state['Mobile (6)'] = false;
+            break;
+        case '7':
+            key_state['Toggle Wireframe (7)'] = false;
         // Deactivate superior rotation to the left
         case 'a':
         case 'A':
             ref2.userData.moving_left = false;
-            keyState['Left Rotation (A)'] = false; 
+            key_state['Left Rotation (A)'] = false; 
             break;
         // Deactivate superior rotation to the right
         case 'q':
         case 'Q':
             ref2.userData.moving_right = false;
-            keyState['Right Rotation (Q)'] = false; 
+            key_state['Right Rotation (Q)'] = false; 
         // Deactivate handle forward movement
         case 'w':
         case 'W':
             ref3.userData.moving_forward = false;
-            keyState['Move Forward (W)'] = false; 
+            key_state['Move Forward (W)'] = false; 
         // Deactivate handle backward movement
         case 's':
         case 'S':
             ref3.userData.moving_backwards = false;
-            keyState['Move Backwards (S)'] = false; 
+            key_state['Move Backwards (S)'] = false; 
             break;
         // Deactivate hook movement upwards
         case 'e':
         case 'E':
             ref4.userData.moving_up = false;
-            keyState['Move Up (E)'] = false; 
+            key_state['Move Up (E)'] = false; 
             break;
         // Deactivate hook movement downwards
         case 'd':
         case 'D':
             ref4.userData.moving_down = false;
-            keyState['Move Down (D)'] = false; 
+            key_state['Move Down (D)'] = false; 
             break;
         // Deactivate claw movement
         case 'r':
         case 'R':
             claws.userData.opening = false;
-            keyState['Open Claws (R)'] = false; 
+            key_state['Open Claws (R)'] = false; 
             break;
         case 'f':
         case 'F':
             claws.userData.closing = false;
-            keyState['Close Claws (F)'] = false; 
+            key_state['Close Claws (F)'] = false; 
             break;
     }
 
