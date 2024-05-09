@@ -35,8 +35,11 @@ const h_claw = 6;                                             // claw
 const max_ref3_z = -(d_cab/2 + l_trolley + 5)
 const min_ref3_z = -(d_cab + l_jib - l_trolley);
 
-const max_ref4_y = -(h_tower/4);
-const min_ref4_y = -(h_tower);
+const max_ref4_y = -(h_trolley);
+const min_ref4_y = -(h_tower + h_base/2 - 1);
+
+const max_theta = Math.PI / 6;
+const min_theta = -Math.PI / 10;
 
 // Objects to be loaded by the crane
 const w_container = 20, h_container = 14.5, l_container = 25; // container
@@ -306,9 +309,9 @@ function addClaws(obj, x, y, z) {
     const geom = new THREE.BufferGeometry();
 
     let vertices = [
-        0, 0, -5/8 * l_hookblock/2,               // Vertex 0
-        l_hookblock/2, 0, -l_hookblock/2,         // Vertex 1
-        -l_hookblock/2, 0, -l_hookblock/2,        // Vertex 2
+        0, h_hookblock/2, -5/8 * l_hookblock/2,               // Vertex 0
+        l_hookblock/2, h_hookblock/2, -11/13 * l_hookblock/2,         // Vertex 1
+        -l_hookblock/2, h_hookblock/2,-11/13 * l_hookblock/2,        // Vertex 2
         0, -h_claw, -7.5/8 * l_hookblock/2        // Vertex 3
     ];
 
@@ -588,7 +591,7 @@ function createCameras() {
     createOrthographicCamera(0, h_tower+40, 0, 0);                                      // top camera
     createOrthographicCamera(120, h_tower, 120, h_tower/2);                             // orthogonal projection
     createPerspectiveCamera( 120, h_tower, 120, h_tower/2);                             // perspective projection
-    createPerspectiveCamera(0, -(h_hookblock + h_claw), 0, -(h_hookblock+h_claw)-1);    // movel camera
+    createPerspectiveCamera(0, -(h_hookblock + h_claw/4), 0, -(h_hookblock+h_claw)-1);    // movel camera
     updateCameras();                                                                    // sync cameras with window dimension
     ref4.add(cameras[5]);
     camera = cameras[3];
@@ -617,6 +620,7 @@ function init() {
     ref2.userData = { moving_left: false,    moving_right: false };
     ref3.userData = { moving_forward: false, moving_backwards: false };
     ref4.userData = { moving_up: false,      moving_down: false };
+    claws.userData = { theta: 0}
 
     createScene();
 
@@ -661,6 +665,37 @@ function update() {
             ref4.userData.cable.scale.y -= step/h_steelcable;
         }
     }
+
+    if (claws.userData.opening || claws.userData.closing) {
+        const rotation_step = 0.5 * delta * (claws.userData.opening ? 1 : -1);
+
+        const theta = claws.userData.theta + rotation_step;
+
+        if(theta < max_theta && theta > min_theta) {
+            claws.userData.theta += rotation_step;
+            claws.children.forEach(claw => {
+                claw.rotateX(rotation_step);
+            });
+        }
+
+    }
+
+    // if (claws.userData.opening || claws.userData.closing) {
+    //     let maxRotation = Math.PI / 4;
+    //     let rotationStep = 0.5 * delta * (claws.userData.opening ? -1 : 1);
+
+    //     let currentRotation = claws.userData.claw1.rotation.x;
+    //     let newRotation = currentRotation + rotationStep;
+
+    //     if(newRotation >-maxRotation && newRotation < maxRotation) {
+    //         claws.children.forEach(claw => {
+
+    //             let rotationDiff = newRotation - currentRotation;
+    //             claw.rotateX(rotationDiff);
+    //         });
+    //     }
+        
+    // }
     updateKeyStatus();
 }
 
