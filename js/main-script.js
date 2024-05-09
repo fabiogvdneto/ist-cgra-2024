@@ -641,7 +641,6 @@ function addPlane(obj, x, y, z){
 function createOrthographicCamera(x, y, z, lookAtY) {
     'use strict';
     camera = new THREE.OrthographicCamera();
-    camera.far = 3000;
     camera.position.set(x, y, z);
     camera.lookAt(0, lookAtY, 0);
     cameras.push(camera);
