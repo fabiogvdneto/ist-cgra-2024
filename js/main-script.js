@@ -55,25 +55,25 @@ const p_torusknot = 2;                                        // 'p' parameter d
 const q_torusknot = 3;                                        // 'q' parameter defines how many times the curve winds around the tube
 
 // Materials
-const material_main = new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true });        // main color
-const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: true });        // miscellaneous color
-const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: true });        // objects color - not used
-const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: true });        // cable's color
-const material_bcnt = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: true });        // base container color
-const material_cont = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });        // container color
-const material_dodd = new THREE.MeshBasicMaterial({ color: 0xBABD8D, wireframe: true });        // dodecahedron color
-const material_icod = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: true });        // icosahedron color
-const material_toru = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: true });        // torus color
-const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });        // torus knot color
-const material_cube = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });        // cube color
+const material_main = new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true });     // main color
+const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: true });     // miscellaneous color
+const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: true });     // objects color - not used
+const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: true });     // cable's color
+const material_bcnt = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: true });     // base container color
+const material_cont = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });     // container color
+const material_dodd = new THREE.MeshBasicMaterial({ color: 0xBABD8D, wireframe: true });     // dodecahedron color
+const material_icod = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: true });     // icosahedron color
+const material_toru = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: true });     // torus color
+const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });     // torus knot color
+const material_cube = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });     // cube color
 
 // Constants to keep track of key state
 const key_state = {
-    'Frontal (1)' : false,
-    'Lateral (2)' : false,
-    'Top (3)' : false,
-    'Fixed w/ ortogonal proj (4)' : false,
-    'Fixed w/ perspective proj (5)' : false,
+    'Frontal View (1)' : false,
+    'Lateral View (2)' : false,
+    'Top View (3)' : false,
+    'Orthogonal Projection (4)' : false,
+    'Perspective Projection (5)' : false,
     'Mobile (6)' : false,
     'Toggle Wireframe (7)' : false,
     'Left Rotation (A)': false,
@@ -159,23 +159,23 @@ function onKeyDown(e) {
         // Switch camera when pressing num keys (1-6)
         case '1':
             camera = cameras[e.keyCode - 49];
-            key_state['Frontal (1)'] = true;
+            key_state['Frontal View (1)'] = true;
             break;
         case '2':
             camera = cameras[e.keyCode - 49];
-            key_state['Lateral (2)'] = true;
+            key_state['Lateral View (2)'] = true;
             break;
         case '3':
             camera = cameras[e.keyCode - 49];
-            key_state['Top (3)'] = true;
+            key_state['Top View (3)'] = true;
             break;
         case '4':
             camera = cameras[e.keyCode - 49];
-            key_state['Fixed w/ ortogonal proj (4)'] = true;
+            key_state['Orthogonal Projection (4)'] = true;
             break;
         case '5':
             camera = cameras[e.keyCode - 49];
-            key_state['Fixed w/ perspective proj (5)'] = true;
+            key_state['Perspective Projection (5)'] = true;
             break;
         case '6':    
             camera = cameras[e.keyCode - 49];
@@ -250,19 +250,19 @@ function onKeyUp(e) {
     'use strict';
     switch (e.key) {
         case '1':
-            key_state['Frontal (1)'] = false;
+            key_state['Frontal View (1)'] = false;
             break;
         case '2':
-            key_state['Lateral (2)'] = false;
+            key_state['Lateral View (2)'] = false;
             break;
         case '3':
-            key_state['Top (3)'] = false;
+            key_state['Top View (3)'] = false;
             break;
         case '4':
-            key_state['Fixed w/ ortogonal proj (4)'] = false;
+            key_state['Orthogonal Projection (4)'] = false;
             break;
         case '5':
-            key_state['Fixed w/ perspective proj (5)'] = false;
+            key_state['Perspective Projection (5)'] = false;
             break;
         case '6':    
             key_state['Mobile (6)'] = false;
@@ -349,7 +349,7 @@ function handleCollisions() {
     ref4.userData.moving_down = false;
     claws.userData.opening = false;
     claws.userData.closing = false;
-    
+
     const obj = objs.userData.collision;
 
     obj.removeFromParent();
