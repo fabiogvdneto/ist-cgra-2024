@@ -60,13 +60,13 @@ const material_main = new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: 
 const material_misc = new THREE.MeshBasicMaterial({ color: 0x128293, wireframe: true });     // miscellaneous color
 const material_objs = new THREE.MeshBasicMaterial({ color: 0xd2b2a3, wireframe: true });     // objects color - not used
 const material_wire = new THREE.MeshBasicMaterial({ color: 0x121342, wireframe: true });     // cable's color
-const material_bcnt = new THREE.MeshBasicMaterial({ color: 0xB5C0C9, wireframe: true });     // base container color
-const material_cont = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });     // container color
+const material_bcnt = new THREE.MeshBasicMaterial({ color: 0x4FB286, wireframe: true });     // base container color
+const material_cont = new THREE.MeshBasicMaterial({ color: 0xA7C4A0, wireframe: true });     // container color
 const material_dodd = new THREE.MeshBasicMaterial({ color: 0xBABD8D, wireframe: true });     // dodecahedron color
 const material_icod = new THREE.MeshBasicMaterial({ color: 0x355834, wireframe: true });     // icosahedron color
 const material_toru = new THREE.MeshBasicMaterial({ color: 0x14281D, wireframe: true });     // torus color
 const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: true });     // torus knot color
-const material_cube = new THREE.MeshBasicMaterial({ color: 0xcacdcd, wireframe: true });     // cube color
+const material_cube = new THREE.MeshBasicMaterial({ color: 0xB0413E, wireframe: true });     // cube color
 
 // Constants to keep track of key state
 const key_state = {
@@ -570,11 +570,11 @@ function addCrane(obj, x, y, z) {
 function addObjects(obj) {
     'use strict';
     addContainer(objs, 40, 0, -40);
-    addDodecahedron(objs, -15, r_dodecahedron, 30);
-    addIcosahedron(objs, -30, r_icosahedron, 0);
+    addDodecahedron(objs, -35, r_dodecahedron, 50);
+    addIcosahedron(objs, -60, r_icosahedron, 0);
     addTorus(objs, -13, r_torus + tr_torus, -33);
-    addTorusKnot(objs, 20, r_torusknot + 1.5, 5);
-    addCube(objs, 15, h_cube/2, 30);
+    addTorusKnot(objs, 60, r_torusknot + 1.5, 5);
+    addCube(objs, 10, h_cube/2, 20);
     obj.add(objs);
 }
 
@@ -726,7 +726,7 @@ function init() {
 /* ---- ANIMATION ---- */
 /* ------------------- */
 
-function portas() {
+function colision_animation() {
     const dest = ref4.userData.next_points[0];
 
     if (claws.userData.theta > dest.theta + 0.2) {
@@ -793,7 +793,7 @@ function update() {
     const delta = clock.getDelta();
 
     if (objs.userData.collision) {
-        portas();
+        colision_animation();
     }
 
     if (ref2.userData.moving_left != ref2.userData.moving_right) {
