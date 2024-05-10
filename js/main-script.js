@@ -184,7 +184,7 @@ function onKeyDown(e) {
             break;
     }
     
-    if (!objs.userData.collision) {
+    if (!objs.userData.collected) {
         
         // Movement-Related Keys
 
@@ -315,7 +315,7 @@ function checkCollisions() {
 
     ref4.getWorldPosition(c1);
 
-    return objs.userData.collision = objs.children.find(obj => {
+    return objs.userData.collected = objs.children.find(obj => {
         const c2 = obj.position;           // centroid of object bounding box
         const r2 = obj.userData.bbradius;  // radius of object bounding box
 
@@ -325,29 +325,19 @@ function checkCollisions() {
 
 function handleCollisions() {
     'use strict';
-    ref2.userData.moving_left = false;
-    ref2.userData.moving_right = false;
-    ref3.userData.moving_forward = false;
-    ref3.userData.moving_backwards = false;
-    ref4.userData.moving_up = false;
-    ref4.userData.moving_down = false;
-    claws.userData.opening = false;
-    claws.userData.closing = false;
+    const obj = objs.userData.collected.removeFromParent();
 
-    const obj = objs.userData.collision;
-
-    obj.removeFromParent();
     obj.position.set(0, -(h_hookblock + h_claw/2 + obj.userData.bbradius), 0);
 
     const dist = container.position.length();
     const angle = ref1.position.angleTo(container.position);
 
     ref4.add(obj);
-    ref4.userData.next_points = [
-        { height: -h_tower/2, distance: dist, angle: angle, theta: min_theta },
+    ref4.userData.next_points = [ // move to the following coordinates in the given order
+        { height: -h_tower/2,                       distance: dist, angle: angle, theta: min_theta, drop: false },
         { height: -h_tower+obj.userData.bbradius*2, distance: dist, angle: angle, theta: max_theta, drop: true },
-        { height: -h_tower/2, distance: dist, angle: angle, theta: max_theta },
-        { height: -h_tower/2, distance: dist, angle: angle, theta: min_theta }
+        { height: -h_tower/2,                       distance: dist, angle: angle, theta: max_theta, drop: false },
+        { height: -h_tower/2,                       distance: dist, angle: angle, theta: min_theta, drop: false }
     ];
 }
 
@@ -380,14 +370,14 @@ function addClaws(obj, x, y, z) {
     'use strict';
     const geom = new THREE.BufferGeometry();
 
-    let vertices = [
+    const vertices = [
         0, h_hookblock/2, -5/8 * l_hookblock/2,                 // Vertex 0
         l_hookblock/2, h_hookblock/2, -11/13 * l_hookblock/2,   // Vertex 1
         -l_hookblock/2, h_hookblock/2,-11/13 * l_hookblock/2,   // Vertex 2
         0, -h_claw, -7.5/8 * l_hookblock/2                      // Vertex 3
     ];
 
-    let indices = [
+    const indices = [
         0, 1, 2,  // Face 0
         0, 3, 1,  // Face 1
         0, 2, 3,  // Face 2
@@ -397,14 +387,10 @@ function addClaws(obj, x, y, z) {
     geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     geom.setIndex(indices);
 
-    let claw1 = addMesh(claws, geom, material_toru, x, y, z);
-    let claw2 = addMesh(claws, geom, material_toru, x, y, z);
-    let claw3 = addMesh(claws, geom, material_toru, x, y, z);
-    let claw4 = addMesh(claws, geom, material_toru, x, y, z);
-
-    claw2.rotateY(Math.PI / 2);   // Adjust rotation for claw 2
-    claw3.rotateY(-Math.PI / 2);  // Adjust rotation for claw 3
-    claw4.rotateY(Math.PI);       // Adjust rotation for claw 4
+    addMesh(claws, geom, material_toru, x, y, z);
+    addMesh(claws, geom, material_toru, x, y, z).rotateY(Math.PI / 2);
+    addMesh(claws, geom, material_toru, x, y, z).rotateY(-Math.PI / 2);
+    addMesh(claws, geom, material_toru, x, y, z).rotateY(Math.PI);
 
     obj.add(claws);
 }
@@ -656,13 +642,13 @@ function createPerspectiveCamera(x, y, z, lookAtY) {
 
 function createCameras() {
     'use strict';
-    createOrthographicCamera(120,  h_tower/2, 0, h_tower/2);                            // frontal camera
-    createOrthographicCamera(0, h_tower/2, 120, h_tower/2);                             // side camera
-    createOrthographicCamera(0, h_tower+40, 0, 0);                                      // top camera
+    createOrthographicCamera(120,  h_tower/2, 0, h_tower/2);                            // frontal view
+    createOrthographicCamera(0, h_tower/2, 120, h_tower/2);                             // side view
+    createOrthographicCamera(0, h_tower+40, 0, 0);                                      // top view
     createOrthographicCamera(120, h_tower, 120, h_tower/2);                             // orthogonal projection
     createPerspectiveCamera( 160, h_tower*2, 160, 0);                                   // perspective projection
     createPerspectiveCamera(0, -(h_hookblock + h_claw/4), 0, -(h_hookblock+h_claw)-1);  // movel camera
-    updateCameras();                                                                    // sync cameras with window dimension
+    updateCameras(); // sync cameras with window aspect ratio
     ref4.add(cameras[5]);
     camera = cameras[3];
 }
@@ -687,10 +673,10 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     
-    ref2.userData = { moving_left: false, moving_right: false };
-    ref3.userData = { moving_forward: false, moving_backwards: false };
-    ref4.userData = { moving_up: false, moving_down: false };
-    claws.userData = { opening: false, closing: false, theta: 0 }
+    ref2.userData = { moving_left: false,    moving_right: false               };
+    ref3.userData = { moving_forward: false, moving_backwards: false           };
+    ref4.userData = { moving_up: false,      moving_down: false                };
+    claws.userData = { opening: false,       closing: false,          theta: 0 };
     
     createScene();
     
@@ -709,7 +695,7 @@ function init() {
 /* ------------------- */
 
 function collision_animation() {
-    const dest = ref4.userData.next_points[0];
+    const destination = ref4.userData.next_points[0];
     
     ref2.userData.moving_left = false;
     ref2.userData.moving_right = false;
@@ -719,22 +705,22 @@ function collision_animation() {
     claws.userData.closing = false;
     claws.userData.opening = false;
 
-    if (claws.userData.theta > dest.theta + 0.2) {
+    if (claws.userData.theta > destination.theta + 0.2) {
         claws.userData.closing = true;
         return;
     }
 
-    if (ref4.position.y < dest.height - 0.5) {
+    if (ref4.position.y < destination.height - 0.5) {
         ref4.userData.moving_up = true;
         return;
     }
 
-    if (ref4.position.y > dest.height + 0.5) {
+    if (ref4.position.y > destination.height + 0.5) {
         ref4.userData.moving_down = true;
         return;
     }
 
-    if (-ref3.position.z < dest.distance) {
+    if (-ref3.position.z < destination.distance) {
         ref3.userData.moving_forward = true;
         return;
     }
@@ -753,23 +739,23 @@ function collision_animation() {
         return;
     }
 
-    if (claws.userData.theta < dest.theta - 0.2) {
+    if (claws.userData.theta < destination.theta - 0.2) {
         claws.userData.opening = true;
         return;
     }
 
-    if (dest.drop) {
-        const obj = objs.userData.collision;
+    if (destination.drop) {
+        const obj = objs.userData.collected.removeFromParent();
 
-        obj.removeFromParent();
         obj.position.set(container.position.x, obj.userData.bbradius*2, container.position.z);
+
         ref1.add(obj);
     }
 
     ref4.userData.next_points.shift();
 
     if (ref4.userData.next_points.length == 0) {
-        objs.userData.collision = undefined;
+        objs.userData.collected = undefined;
     }
 }
 
@@ -777,16 +763,19 @@ function update() {
     'use strict';
     const delta = clock.getDelta();
 
-    if (objs.userData.collision) {
+    // if there is an object being collected, process collision animation
+    if (objs.userData.collected) {
         collision_animation();
     }
 
+    // move to the right/left if key is being pressed
     if (ref2.userData.moving_left != ref2.userData.moving_right) {
         const step = (ref2.userData.moving_left ? 0.5 : -0.5) * delta;
 
         ref2.rotateY(step);
     }
 
+    // move forward/backwards if key is being pressed
     if (ref3.userData.moving_forward != ref3.userData.moving_backwards) {
         const step = (ref3.userData.moving_forward ? -10 : 10) * delta;
         const z = step + ref3.position.z;
@@ -794,6 +783,7 @@ function update() {
         ref3.position.z = THREE.MathUtils.clamp(z, min_ref3_z, max_ref3_z);
     }
 
+    // move up/down if key is being pressed
     if (ref4.userData.moving_up != ref4.userData.moving_down) {
         const step = (ref4.userData.moving_down ? -10 : 10) * delta;
         const y = step + ref4.position.y;
@@ -805,6 +795,7 @@ function update() {
         }
     }
 
+    // open/close claws if key is being pressed
     if (claws.userData.opening != claws.userData.closing) {
         const rotation_step = (claws.userData.opening ? 0.5 : -0.5) * delta;
         const theta = claws.userData.theta + rotation_step;
@@ -815,10 +806,12 @@ function update() {
         }
     }
 
-    if (!objs.userData.collision && checkCollisions()) {
+    // check for collision with objects (only if no object is being collected)
+    if (!objs.userData.collected && checkCollisions()) {
         handleCollisions();
     }
 
+    // update HUD
     updateKeyStatus();
 }
 
