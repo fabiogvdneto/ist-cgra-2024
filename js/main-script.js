@@ -66,23 +66,23 @@ const material_tknt = new THREE.MeshBasicMaterial({ color: 0xC2A878, wireframe: 
 const material_cube = new THREE.MeshBasicMaterial({ color: 0xB0413E, wireframe: true });     // cube color
 
 // Constants to keep track of key state
-const key_state = {
-    'Frontal View (1)' : false,
-    'Lateral View (2)' : false,
-    'Top View (3)' : false,
-    'Orthogonal Projection (4)' : false,
-    'Perspective Projection (5)' : false,
-    'Mobile (6)' : false,
-    'Toggle Wireframe (7)' : false,
-    'Left Rotation (A)': false,
-    'Right Rotation (Q)': false,
-    'Move Forward (W)': false,
-    'Move Backwards (S)': false,
-    'Move Up (E)': false,
-    'Move Down (D)': false,
-    'Open Claws (R)': false,
-    'Close Claws (F)': false,
-};
+const keys = {
+    '1': { isActive: false, description: 'Frontal View (1)' },
+    '2': { isActive: false, description: 'Lateral View (2)' },
+    '3': { isActive: false, description: 'Top View (3)' },
+    '4': { isActive: false, description: 'Orthogonal Projection (4)' },
+    '5': { isActive: false, description: 'Perspective Projection (5)' },
+    '6': { isActive: false, description: 'Mobile (6)' },
+    '7': { isActive: false, description: 'Toggle Wireframe (7)' },
+    'A': { isActive: false, description: 'Left Rotation (A)' },
+    'Q': { isActive: false, description: 'Right Rotation (Q)' },
+    'W': { isActive: false, description: 'Move Forward (W)' },
+    'S': { isActive: false, description: 'Move Backwards (S)' },
+    'E': { isActive: false, description: 'Move Up (E)' },
+    'D': { isActive: false, description: 'Move Down (D)' },
+    'R': { isActive: false, description: 'Open Claws (R)' },
+    'F': { isActive: false, description: 'Close Claws (F)' }
+}
 
 
 /* ---------------- */
@@ -133,17 +133,17 @@ function updateKeyStatus() {
     const key_status_div = document.getElementById('keyStatus');
     let status_text = '<span style ="color : white">Cameras:</span><br><hr>';
 
-    for (const key in key_state) {
-        const isActive = key_state[key];
-        const color = isActive ? 'lightGreen' : 'lightGray';
+    for (const [key, value] of Object.entries(keys)) {
+        const state = value.isActive ? 'Active' : 'Inactive';
+        const color = value.isActive ? 'lightGreen' : 'lightGray';
         
-        status_text += `<span style="color: ${color};">${key}: ${isActive ? 'Active' : 'Inactive'}</span><br>`;
+        status_text += `<span style="color: ${color};">${value.description}: ${state}</span><br>`;
 
-        if (key == 'Mobile (6)') {
+        if (key == '6') {
             status_text += '<span style ="color : white"><hr>Wireframe:</span><br><hr>';
         }
 
-        if (key == 'Toggle Wireframe (7)') {
+        else if (key == '7') {
             status_text += '<span style ="color : white"><hr>Movements:</span><br><hr>';
         }
     }
@@ -153,154 +153,101 @@ function updateKeyStatus() {
 
 function onKeyDown(e) {
     'use strict';
-    if (e.key >= '1' && e.key <= '6') {
+    const key = e.key.toUpperCase();
+
+    if (!keys[key]) return;
+
+    keys[key].isActive = true;
+
+    if (key >= '1' && key <= '6') {
         camera = cameras[e.keyCode - 49];
+        return;
     }
     
-    switch (e.key) {
-        // Switch camera when pressing num keys (1-6)
-        case '1':
-            key_state['Frontal View (1)'] = true;
-            break;
-        case '2':
-            key_state['Lateral View (2)'] = true;
-            break;
-        case '3':
-            key_state['Top View (3)'] = true;
-            break;
-        case '4':
-            key_state['Orthogonal Projection (4)'] = true;
-            break;
-        case '5':
-            key_state['Perspective Projection (5)'] = true;
-            break;
-        case '6':    
-            key_state['Mobile (6)'] = true;
-            break;
-        // Toggle wireframe mode
-        case '7':
-            toggleWireframe();
-            key_state['Toggle Wireframe (7)'] = true;
-            break;
+    if (key == '7') {
+        toggleWireframe();
+        return;
     }
     
+    // movement-related keys (only enable if animation is not occurring)
     if (!objs.userData.collected) {
-        
-        // Movement-Related Keys
-
-        const key = e.key.toUpperCase();
-
         switch (key) {
             // Activate superior rotation to the left
             case 'A':
                 ref2.userData.moving_left = true;
-                key_state['Left Rotation (A)'] = true; 
                 break;
             // Activate superior rotation to the right
             case 'Q':
                 ref2.userData.moving_right = true;
-                key_state['Right Rotation (Q)'] = true; 
                 break;
             // Activate handle forward movement
             case 'W':
                 ref3.userData.moving_forward = true;
-                key_state['Move Forward (W)'] = true; 
                 break;
             // Activate handle backward movement
             case 'S':
                 ref3.userData.moving_backwards = true;
-                key_state['Move Backwards (S)'] = true; 
                 break;
             // Activate hook movement upwards
             case 'E':
                 ref4.userData.moving_up = true;
-                key_state['Move Up (E)'] = true; 
                 break;
             // Activate hook movement downwards
             case 'D':
                 ref4.userData.moving_down = true;
-                key_state['Move Down (D)'] = true; 
                 break;
-            // Activate claw movement
+            // Activate claws opening movement
             case 'R':
                 claws.userData.opening = true;
-                key_state['Open Claws (R)'] = true; 
                 break;
+            // Activate claws closing movement
             case 'F':
                 claws.userData.closing = true;
-                key_state['Close Claws (F)'] = true; 
                 break;
         }
     }
-
-    render();
 }
 
 function onKeyUp(e) {
     'use strict';
     const key = e.key.toUpperCase();
 
+    if (!keys[key]) return;
+    
+    keys[key].isActive = false;
+
     switch (key) {
-        case '1':
-            key_state['Frontal View (1)'] = false;
-            break;
-        case '2':
-            key_state['Lateral View (2)'] = false;
-            break;
-        case '3':
-            key_state['Top View (3)'] = false;
-            break;
-        case '4':
-            key_state['Orthogonal Projection (4)'] = false;
-            break;
-        case '5':
-            key_state['Perspective Projection (5)'] = false;
-            break;
-        case '6':    
-            key_state['Mobile (6)'] = false;
-            break;
-        case '7':
-            key_state['Toggle Wireframe (7)'] = false;
         // Deactivate superior rotation to the left
         case 'A':
             ref2.userData.moving_left = false;
-            key_state['Left Rotation (A)'] = false; 
             break;
         // Deactivate superior rotation to the right
         case 'Q':
             ref2.userData.moving_right = false;
-            key_state['Right Rotation (Q)'] = false; 
         // Deactivate handle forward movement
         case 'W':
             ref3.userData.moving_forward = false;
-            key_state['Move Forward (W)'] = false; 
         // Deactivate handle backward movement
         case 'S':
             ref3.userData.moving_backwards = false;
-            key_state['Move Backwards (S)'] = false; 
             break;
         // Deactivate hook movement upwards
         case 'E':
             ref4.userData.moving_up = false;
-            key_state['Move Up (E)'] = false; 
             break;
         // Deactivate hook movement downwards
         case 'D':
             ref4.userData.moving_down = false;
-            key_state['Move Down (D)'] = false; 
             break;
-        // Deactivate claw movement
+        // Deactivate claws opening movement
         case 'R':
             claws.userData.opening = false;
-            key_state['Open Claws (R)'] = false; 
             break;
+        // Deactivate claws closing movement
         case 'F':
             claws.userData.closing = false;
-            key_state['Close Claws (F)'] = false; 
             break;
     }
-
-    render();
 }
 
 
