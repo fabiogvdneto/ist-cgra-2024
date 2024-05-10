@@ -197,13 +197,13 @@ function onKeyDown(e) {
             // Activate superior rotation to the left
             case 'a':
             case 'A':
-                ref2.userData.moving_left = true;
+                ref2.userData.moving_right = true;
                 key_state['Left Rotation (A)'] = true; 
                 break;
             // Activate superior rotation to the right
             case 'q':
             case 'Q':
-                ref2.userData.moving_right = true;
+                ref2.userData.moving_left = true;
                 key_state['Right Rotation (Q)'] = true; 
                 break;
             // Activate handle forward movement
@@ -273,13 +273,13 @@ function onKeyUp(e) {
         // Deactivate superior rotation to the left
         case 'a':
         case 'A':
-            ref2.userData.moving_left = false;
+            ref2.userData.moving_right = false;
             key_state['Left Rotation (A)'] = false; 
             break;
         // Deactivate superior rotation to the right
         case 'q':
         case 'Q':
-            ref2.userData.moving_right = false;
+            ref2.userData.moving_left = false;
             key_state['Right Rotation (Q)'] = false; 
         // Deactivate handle forward movement
         case 'w':
@@ -725,7 +725,7 @@ function init() {
 /* ---- ANIMATION ---- */
 /* ------------------- */
 
-function colision_animation() {
+function collision_animation() {
     const dest = ref4.userData.next_points[0];
 
     if (claws.userData.theta > dest.theta + 0.2) {
@@ -759,11 +759,12 @@ function colision_animation() {
     const vector = ref3.getWorldPosition(new THREE.Vector3()).setY(0);
 
     if (vector.angleTo(container.position) > 0.2) {
-        ref2.userData.moving_left = true;
+
+        ref2.userData.moving_right = true;
         return;
     }
     
-    ref2.userData.moving_left = false;
+    ref2.userData.moving_right = false;
 
     if (claws.userData.theta < dest.theta - 0.2) {
         claws.userData.opening = true;
@@ -792,11 +793,11 @@ function update() {
     const delta = clock.getDelta();
 
     if (objs.userData.collision) {
-        colision_animation();
+        collision_animation();
     }
 
     if (ref2.userData.moving_left != ref2.userData.moving_right) {
-        const step = (ref2.userData.moving_left ? -0.5 : 0.5) * delta;
+        const step = (ref2.userData.moving_left ? 0.5 : -0.5) * delta;
 
         ref2.rotateY(step);
     }
