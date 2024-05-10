@@ -141,9 +141,10 @@ function updateKeyStatus() {
 
         if (key == '6') {
             status_text += '<span style ="color : white"><hr>Wireframe:</span><br><hr>';
+            continue;
         }
 
-        else if (key == '7') {
+        if (key == '7') {
             status_text += '<span style ="color : white"><hr>Movements:</span><br><hr>';
         }
     }
@@ -154,10 +155,11 @@ function updateKeyStatus() {
 function onKeyDown(e) {
     'use strict';
     const key = e.key.toUpperCase();
+    const value = keys[key];
 
-    if (!keys[key]) return;
+    if (!value) return;
 
-    keys[key].isActive = true;
+    value.isActive = true;
 
     if (key >= '1' && key <= '6') {
         camera = cameras[e.keyCode - 49];
@@ -211,10 +213,11 @@ function onKeyDown(e) {
 function onKeyUp(e) {
     'use strict';
     const key = e.key.toUpperCase();
+    const value = keys[key];
 
-    if (!keys[key]) return;
-    
-    keys[key].isActive = false;
+    if (!value) return;
+
+    value.isActive = false;
 
     switch (key) {
         // Deactivate superior rotation to the left
@@ -257,10 +260,10 @@ function onKeyUp(e) {
 
 function checkCollisions() {
     'use strict';
-    const c1 = new THREE.Vector3();   // centroid of hook bouding box
-    const r1 = h_hookblock + h_claw;  // radius of hook bounding box
-
-    ref4.getWorldPosition(c1);
+    // c1: centroid of the hook bounding box (sphere)
+    // r1:   radius of the hook bounding box (sphere)
+    const c1 = ref4.getWorldPosition(new THREE.Vector3());
+    const r1 = h_hookblock + h_claw;
 
     return objs.userData.collected = objs.children.find(obj => {
         const c2 = obj.position;           // centroid of object bounding box
@@ -276,15 +279,26 @@ function handleCollisions() {
 
     obj.position.set(0, -(h_hookblock + h_claw/2 + obj.userData.bbradius), 0);
 
+    // distance from the container to the origin (WCS)
     const dist = container.position.length();
-    const angle = ref1.position.angleTo(container.position);
 
-    ref4.add(obj);
-    ref4.userData.next_points = [ // move to the following coordinates in the given order
-        { height: -h_tower/2,                       distance: dist, angle: angle, theta: min_theta, drop: false },
-        { height: -h_tower+obj.userData.bbradius*2, distance: dist, angle: angle, theta: max_theta, drop: true },
-        { height: -h_tower/2,                       distance: dist, angle: angle, theta: max_theta, drop: false },
-        { height: -h_tower/2,                       distance: dist, angle: angle, theta: min_theta, drop: false }
+    // list of actions to be executed in order
+    // * height:      y from referential 3
+    // * distance:    z from referential 3 (modulus)
+    // * theta:       claws angle
+    // * drop:        if the object should be dropped inside the container
+    ref4.add(obj).userData.next_points = [
+        // 1. move the hook above the container
+        { drop: false, distance: dist, theta: min_theta, height: -h_tower/2 },
+
+        // 2. move the hook inside the container and drop the object there
+        { drop: true,  distance: dist, theta: max_theta, height: -h_tower+obj.userData.bbradius*2 },
+
+        // 3. move the hook above the container
+        { drop: false, distance: dist, theta: max_theta, height: -h_tower/2 },
+
+        // 4. close the claws
+        { drop: false, distance: dist, theta: min_theta, height: -h_tower/2 }
     ];
 }
 
@@ -641,7 +655,7 @@ function init() {
 /* ---- ANIMATION ---- */
 /* ------------------- */
 
-function collision_animation() {
+function animateCollision() {
     const destination = ref4.userData.next_points[0];
     
     ref2.userData.moving_left = false;
@@ -657,12 +671,12 @@ function collision_animation() {
         return;
     }
 
-    if (ref4.position.y < destination.height - 0.5) {
+    if (ref4.position.y < destination.height - 0.4) {
         ref4.userData.moving_up = true;
         return;
     }
 
-    if (ref4.position.y > destination.height + 0.5) {
+    if (ref4.position.y > destination.height + 0.4) {
         ref4.userData.moving_down = true;
         return;
     }
@@ -674,7 +688,7 @@ function collision_animation() {
     
     const vector = ref3.getWorldPosition(new THREE.Vector3()).setY(0);
 
-    if (vector.angleTo(container.position) > 0.2) {
+    if (vector.angleTo(container.position) > 0.1) {
         let local = ref2.worldToLocal(container.position.clone());
 
         if (local.x > 0) {
@@ -712,7 +726,7 @@ function update() {
 
     // if there is an object being collected, process collision animation
     if (objs.userData.collected) {
-        collision_animation();
+        animateCollision();
     }
 
     // move to the right/left if key is being pressed
