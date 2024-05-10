@@ -356,9 +356,8 @@ function handleCollisions() {
     obj.removeFromParent();
     obj.position.set(0, -(h_hookblock + h_claw/2 + obj.userData.bbradius), 0);
 
-    const dest_pos = container.getWorldPosition(new THREE.Vector3()).setY(0);
-    const dist = new THREE.Vector3().distanceTo(dest_pos);
-    const angle = ref1.position.angleTo(dest_pos);
+    const dist = container.position.length();
+    const angle = ref1.position.angleTo(container);
 
     ref4.add(obj);
     ref4.userData.next_points = [
