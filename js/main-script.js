@@ -710,51 +710,53 @@ function init() {
 
 function collision_animation() {
     const dest = ref4.userData.next_points[0];
+    
+    ref2.userData.moving_left = false;
+    ref2.userData.moving_right = false;
+    ref4.userData.moving_up = false;
+    ref4.userData.moving_down = false;
+    ref3.userData.moving_forward = false;
+    claws.userData.closing = false;
+    claws.userData.opening = false;
 
     if (claws.userData.theta > dest.theta + 0.2) {
         claws.userData.closing = true;
         return;
     }
 
-    claws.userData.closing = false;
-
     if (ref4.position.y < dest.height - 0.5) {
         ref4.userData.moving_up = true;
         return;
     }
-
-    ref4.userData.moving_up = false;
 
     if (ref4.position.y > dest.height + 0.5) {
         ref4.userData.moving_down = true;
         return;
     }
 
-    ref4.userData.moving_down = false;
-
     if (-ref3.position.z < dest.distance) {
         ref3.userData.moving_forward = true;
         return;
     }
     
-    ref3.userData.moving_forward = false;
-
     const vector = ref3.getWorldPosition(new THREE.Vector3()).setY(0);
 
     if (vector.angleTo(container.position) > 0.2) {
+        let local = ref2.worldToLocal(new THREE.Vector3(...container.position));
 
-        ref2.userData.moving_right = true;
+        if (local.x > 0) {
+            ref2.userData.moving_left = true;
+        } else {
+            ref2.userData.moving_right = true;
+        }
+
         return;
     }
-    
-    ref2.userData.moving_right = false;
 
     if (claws.userData.theta < dest.theta - 0.2) {
         claws.userData.opening = true;
         return;
     }
-
-    claws.userData.opening = false;
 
     if (dest.drop) {
         const obj = objs.userData.collision;
