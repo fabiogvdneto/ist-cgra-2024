@@ -742,7 +742,7 @@ function collision_animation() {
     const vector = ref3.getWorldPosition(new THREE.Vector3()).setY(0);
 
     if (vector.angleTo(container.position) > 0.2) {
-        let local = ref2.worldToLocal(new THREE.Vector3(...container.position));
+        let local = ref2.worldToLocal(container.position.clone());
 
         if (local.x > 0) {
             ref2.userData.moving_right = true;
@@ -791,9 +791,7 @@ function update() {
         const step = (ref3.userData.moving_forward ? -10 : 10) * delta;
         const z = step + ref3.position.z;
 
-        if (z > min_ref3_z && z < max_ref3_z) {
-            ref3.position.z = z;
-        }
+        ref3.position.z = THREE.MathUtils.clamp(z, min_ref3_z, max_ref3_z);
     }
 
     if (ref4.userData.moving_up != ref4.userData.moving_down) {
@@ -812,7 +810,7 @@ function update() {
         const theta = claws.userData.theta + rotation_step;
 
         if (theta < max_theta && theta > min_theta) {
-            claws.userData.theta += rotation_step;
+            claws.userData.theta = theta;
             claws.children.forEach(claw => claw.rotateX(rotation_step));
         }
     }
