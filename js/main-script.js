@@ -357,7 +357,7 @@ function handleCollisions() {
     obj.position.set(0, -(h_hookblock + h_claw/2 + obj.userData.bbradius), 0);
 
     const dist = container.position.length();
-    const angle = ref1.position.angleTo(container);
+    const angle = ref1.position.angleTo(container.position);
 
     ref4.add(obj);
     ref4.userData.next_points = [
