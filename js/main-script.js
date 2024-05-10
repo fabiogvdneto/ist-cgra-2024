@@ -745,9 +745,9 @@ function collision_animation() {
         let local = ref2.worldToLocal(new THREE.Vector3(...container.position));
 
         if (local.x > 0) {
-            ref2.userData.moving_left = true;
-        } else {
             ref2.userData.moving_right = true;
+        } else {
+            ref2.userData.moving_left = true;
         }
 
         return;
