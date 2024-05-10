@@ -1,8 +1,5 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { VRButton } from 'three/addons/webxr/VRButton.js';
-import * as Stats from 'three/addons/libs/stats.module.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 let camera, cameras = [];
 
@@ -156,30 +153,28 @@ function updateKeyStatus() {
 
 function onKeyDown(e) {
     'use strict';
+    if (e.key >= '1' && e.key <= '6') {
+        camera = cameras[e.keyCode - 49];
+    }
+    
     switch (e.key) {
         // Switch camera when pressing num keys (1-6)
         case '1':
-            camera = cameras[e.keyCode - 49];
             key_state['Frontal View (1)'] = true;
             break;
         case '2':
-            camera = cameras[e.keyCode - 49];
             key_state['Lateral View (2)'] = true;
             break;
         case '3':
-            camera = cameras[e.keyCode - 49];
             key_state['Top View (3)'] = true;
             break;
         case '4':
-            camera = cameras[e.keyCode - 49];
             key_state['Orthogonal Projection (4)'] = true;
             break;
         case '5':
-            camera = cameras[e.keyCode - 49];
             key_state['Perspective Projection (5)'] = true;
             break;
         case '6':    
-            camera = cameras[e.keyCode - 49];
             key_state['Mobile (6)'] = true;
             break;
         // Toggle wireframe mode
@@ -190,53 +185,47 @@ function onKeyDown(e) {
     }
     
     if (!objs.userData.collision) {
-
+        
         // Movement-Related Keys
 
-        switch (e.key) {
+        const key = e.key.toUpperCase();
+
+        switch (key) {
             // Activate superior rotation to the left
-            case 'a':
             case 'A':
-                ref2.userData.moving_right = true;
+                ref2.userData.moving_left = true;
                 key_state['Left Rotation (A)'] = true; 
                 break;
             // Activate superior rotation to the right
-            case 'q':
             case 'Q':
-                ref2.userData.moving_left = true;
+                ref2.userData.moving_right = true;
                 key_state['Right Rotation (Q)'] = true; 
                 break;
             // Activate handle forward movement
-            case 'w':
             case 'W':
                 ref3.userData.moving_forward = true;
                 key_state['Move Forward (W)'] = true; 
                 break;
             // Activate handle backward movement
-            case 's':
             case 'S':
                 ref3.userData.moving_backwards = true;
                 key_state['Move Backwards (S)'] = true; 
                 break;
             // Activate hook movement upwards
-            case 'e':
             case 'E':
                 ref4.userData.moving_up = true;
                 key_state['Move Up (E)'] = true; 
                 break;
             // Activate hook movement downwards
-            case 'd':
             case 'D':
                 ref4.userData.moving_down = true;
                 key_state['Move Down (D)'] = true; 
                 break;
             // Activate claw movement
-            case 'r':
             case 'R':
                 claws.userData.opening = true;
                 key_state['Open Claws (R)'] = true; 
                 break;
-            case 'f':
             case 'F':
                 claws.userData.closing = true;
                 key_state['Close Claws (F)'] = true; 
@@ -249,7 +238,9 @@ function onKeyDown(e) {
 
 function onKeyUp(e) {
     'use strict';
-    switch (e.key) {
+    const key = e.key.toUpperCase();
+
+    switch (key) {
         case '1':
             key_state['Frontal View (1)'] = false;
             break;
@@ -271,46 +262,38 @@ function onKeyUp(e) {
         case '7':
             key_state['Toggle Wireframe (7)'] = false;
         // Deactivate superior rotation to the left
-        case 'a':
         case 'A':
-            ref2.userData.moving_right = false;
+            ref2.userData.moving_left = false;
             key_state['Left Rotation (A)'] = false; 
             break;
         // Deactivate superior rotation to the right
-        case 'q':
         case 'Q':
-            ref2.userData.moving_left = false;
+            ref2.userData.moving_right = false;
             key_state['Right Rotation (Q)'] = false; 
         // Deactivate handle forward movement
-        case 'w':
         case 'W':
             ref3.userData.moving_forward = false;
             key_state['Move Forward (W)'] = false; 
         // Deactivate handle backward movement
-        case 's':
         case 'S':
             ref3.userData.moving_backwards = false;
             key_state['Move Backwards (S)'] = false; 
             break;
         // Deactivate hook movement upwards
-        case 'e':
         case 'E':
             ref4.userData.moving_up = false;
             key_state['Move Up (E)'] = false; 
             break;
         // Deactivate hook movement downwards
-        case 'd':
         case 'D':
             ref4.userData.moving_down = false;
             key_state['Move Down (D)'] = false; 
             break;
         // Deactivate claw movement
-        case 'r':
         case 'R':
             claws.userData.opening = false;
             key_state['Open Claws (R)'] = false; 
             break;
-        case 'f':
         case 'F':
             claws.userData.closing = false;
             key_state['Close Claws (F)'] = false; 
