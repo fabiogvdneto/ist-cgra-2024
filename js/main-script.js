@@ -17,6 +17,7 @@ const ref3 = new THREE.Group();    // grandchild
 const ref4 = new THREE.Group();    // ggrandchild
 const objs = new THREE.Group();    // objects
 const claws = new THREE.Group();   // claws
+const container = new THREE.Group();
 
 // l = length | w = width | h = height | d = diameter | r = radius | tr = tube radius
 const d_base = 8, h_base = 6;                                 // foundation
@@ -341,26 +342,31 @@ function checkCollisions() {
 
 function handleCollisions() {
     'use strict';
+    ref2.userData.moving_left = false;
+    ref2.userData.moving_right = false;
+    ref3.userData.moving_forward = false;
+    ref3.userData.moving_backwards = false;
+    ref4.userData.moving_up = false;
+    ref4.userData.moving_down = false;
+    claws.userData.opening = false;
+    claws.userData.closing = false;
 
     const obj = objs.userData.collision;
 
     obj.removeFromParent();
     obj.position.set(0, -(h_hookblock + h_claw/2 + obj.userData.bbradius), 0);
+
+    const dest_pos = container.getWorldPosition(new THREE.Vector3()).setY(0);
+    const dist = new THREE.Vector3().distanceTo(dest_pos);
+    const angle = ref1.position.angleTo(dest_pos);
+
     ref4.add(obj);
-
-    if (ref4.position.y < -(h_tower/2)) {
-        ref4.userData.moving_up = true;
-        return;
-    }
-
-    if (ref4.userData.moving_up) {
-        ref4.userData.moving_up = false;
-        return;
-    }
-
-    // animation not finished...
-
-    objs.userData.collision = undefined;
+    ref4.userData.next_points = [
+        { height: -h_tower/2, distance: dist, angle: angle, theta: min_theta },
+        { height: -h_tower+obj.userData.bbradius*2, distance: dist, angle: angle, theta: max_theta, drop: true },
+        { height: -h_tower/2, distance: dist, angle: angle, theta: max_theta },
+        { height: -h_tower/2, distance: dist, angle: angle, theta: min_theta }
+    ];
 }
 
 /* --------------- */
@@ -563,7 +569,7 @@ function addCrane(obj, x, y, z) {
 
 function addObjects(obj) {
     'use strict';
-    addContainer(objs, 20, h_container/2, -30);
+    addContainer(objs, 40, 0, -40);
     addDodecahedron(objs, -15, r_dodecahedron, 30);
     addIcosahedron(objs, -30, r_icosahedron, 0);
     addTorus(objs, -13, r_torus + tr_torus, -33);
@@ -574,22 +580,21 @@ function addObjects(obj) {
 
 function addContainer(obj, x, y, z) {
     'use strict';
-    const container = new THREE.Group();
-
     const side1_geom = new THREE.BoxGeometry(w_container, h_container, 0.2, 3, 3);
     const side2_geom = new THREE.BoxGeometry(l_container, h_container, 0.2, 3, 3);
     const floor_geom = new THREE.PlaneGeometry(w_container, l_container, 3, 3);
 
-    const front_wall = addMesh(container, side1_geom, material_cont, x, y, z - l_container / 2);
-    const back_wall = addMesh(container, side1_geom, material_cont, x, y, z + l_container / 2);
-    const left_wall = addMesh(container, side2_geom, material_cont, x - w_container / 2, y, z);
-    const right_wall = addMesh(container, side2_geom, material_cont, x + w_container / 2, y, z);
-    const base_platform = addMesh(container, floor_geom, material_bcnt, x, y - h_container / 2, z);
+    const front_wall = addMesh(container, side1_geom, material_cont, 0, h_container/2, -l_container/2);
+    const back_wall = addMesh(container, side1_geom, material_cont, 0, h_container/2, l_container/2);
+    const left_wall = addMesh(container, side2_geom, material_cont, -w_container/2, h_container/2, 0);
+    const right_wall = addMesh(container, side2_geom, material_cont, w_container/2, h_container/2, 0);
+    const base_platform = addMesh(container, floor_geom, material_bcnt, 0, 0, 0);
 
     base_platform.rotation.x = -Math.PI / 2;  // Rotate the base platform to lie flat
     right_wall.rotation.y = -Math.PI / 2;     // Rotate to face the correct direction
     left_wall.rotation.y = Math.PI / 2;       // Rotate to face the correct direction
 
+    container.position.set(x, y, z);
     obj.add(container);
 }
 
@@ -721,9 +726,75 @@ function init() {
 /* ---- ANIMATION ---- */
 /* ------------------- */
 
+function portas() {
+    const dest = ref4.userData.next_points[0];
+
+    if (claws.userData.theta > dest.theta + 0.2) {
+        claws.userData.closing = true;
+        return;
+    }
+
+    claws.userData.closing = false;
+
+    if (ref4.position.y < dest.height - 0.5) {
+        ref4.userData.moving_up = true;
+        return;
+    }
+
+    ref4.userData.moving_up = false;
+
+    if (ref4.position.y > dest.height + 0.5) {
+        ref4.userData.moving_down = true;
+        return;
+    }
+
+    ref4.userData.moving_down = false;
+
+    if (-ref3.position.z < dest.distance) {
+        ref3.userData.moving_forward = true;
+        return;
+    }
+    
+    ref3.userData.moving_forward = false;
+
+    const vector = ref3.getWorldPosition(new THREE.Vector3()).setY(0);
+
+    if (vector.angleTo(container.position) > 0.2) {
+        ref2.userData.moving_left = true;
+        return;
+    }
+    
+    ref2.userData.moving_left = false;
+
+    if (claws.userData.theta < dest.theta - 0.2) {
+        claws.userData.opening = true;
+        return;
+    }
+
+    claws.userData.opening = false;
+
+    if (dest.drop) {
+        const obj = objs.userData.collision;
+
+        obj.removeFromParent();
+        obj.position.set(container.position.x, obj.userData.bbradius*2, container.position.z);
+        ref1.add(obj);
+    }
+
+    ref4.userData.next_points.shift();
+
+    if (ref4.userData.next_points.length == 0) {
+        objs.userData.collision = undefined;
+    }
+}
+
 function update() {
     'use strict';
     const delta = clock.getDelta();
+
+    if (objs.userData.collision) {
+        portas();
+    }
 
     if (ref2.userData.moving_left != ref2.userData.moving_right) {
         const step = (ref2.userData.moving_left ? -0.5 : 0.5) * delta;
@@ -752,7 +823,7 @@ function update() {
     }
 
     if (claws.userData.opening != claws.userData.closing) {
-        const rotation_step = 0.5 * delta * (claws.userData.opening ? 1 : -1);
+        const rotation_step = (claws.userData.opening ? 0.5 : -0.5) * delta;
         const theta = claws.userData.theta + rotation_step;
 
         if (theta < max_theta && theta > min_theta) {
@@ -761,17 +832,7 @@ function update() {
         }
     }
 
-    if (objs.userData.collision) {
-        handleCollisions();
-    } else if (checkCollisions()) {
-        ref2.userData.moving_left = false;
-        ref2.userData.moving_right = false;
-        ref3.userData.moving_forward = false;
-        ref3.userData.moving_backwards = false;
-        ref4.userData.moving_up = false;
-        ref4.userData.moving_down = false;
-        claws.userData.opening = false;
-        claws.userData.closing = false;
+    if (!objs.userData.collision && checkCollisions()) {
         handleCollisions();
     }
 
