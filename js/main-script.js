@@ -7,14 +7,16 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
-
+const scene = new THREE.Scene();
+const clock = new THREE.Clock();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
 function createScene(){
     'use strict';
-
+    scene.background = new THREE.Color('aliceblue');
 }
 
 //////////////////////
@@ -26,9 +28,11 @@ function createScene(){
 /* CREATE LIGHT(S) */
 /////////////////////
 
+
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+
 
 //////////////////////
 /* CHECK COLLISIONS */
@@ -59,7 +63,7 @@ function update(){
 /////////////
 function render() {
     'use strict';
-
+    renderer.render(scene, camera);
 }
 
 ////////////////////////////////
@@ -67,7 +71,16 @@ function render() {
 ////////////////////////////////
 function init() {
     'use strict';
-
+    document.body.appendChild(renderer.domElement);
+    
+    createScene(); // create scene: cameras, objects, light
+    onResize();    // update window size
+    
+    new OrbitControls(camera, renderer.domElement);
+    
+    window.addEventListener("resize", onResize);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
 }
 
 /////////////////////
@@ -75,7 +88,9 @@ function init() {
 /////////////////////
 function animate() {
     'use strict';
-
+    update();
+    render();
+    requestAnimationFrame(animate);
 }
 
 ////////////////////////////
@@ -83,7 +98,10 @@ function animate() {
 ////////////////////////////
 function onResize() { 
     'use strict';
+    const WIDTH = window.innerWidth;
+    const HEIGHT = window.innerHeight;
 
+    renderer.setSize(WIDTH, HEIGHT);
 }
 
 ///////////////////////
