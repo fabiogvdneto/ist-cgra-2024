@@ -7,22 +7,41 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
+const mainCamera = new THREE.PerspectiveCamera();
 const scene = new THREE.Scene();
 const clock = new THREE.Clock();
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
+const ref1 = new THREE.Object3D();
+const ref2 = new THREE.Object3D();
+const ref3 = new THREE.Object3D();
+const ref4 = new THREE.Object3D();
+
+const foundation = { radiusTop: 2, radiusBottom: 2, height: 20 };
+
+const materials = {
+    foundation: new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true })
+}
+
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
-function createScene(){
+function createScene() {
     'use strict';
     scene.background = new THREE.Color('aliceblue');
+
+    createCamera();
+    addCarousel(scene, 0, 0, 0);
 }
 
 //////////////////////
 /* CREATE CAMERA(S) */
 //////////////////////
-
+function createCamera() {
+    'use strict'
+    mainCamera.position.set(80, 100, 80);
+    mainCamera.lookAt(scene.position);
+}
 
 /////////////////////
 /* CREATE LIGHT(S) */
@@ -32,6 +51,28 @@ function createScene(){
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+function addMesh(obj, geom, material, x, y, z) {
+    'use strict'
+    const mesh = new THREE.Mesh(geom, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+    return mesh;
+}
+
+function addFoundation(obj, x, y, z) {
+    'use strict'
+    const geom = new THREE.CylinderGeometry(4, 4, 20);
+    addMesh(obj, geom, materials.foundation, x, y, z);
+}
+
+function addCarousel(obj, x, y, z) {
+    'use strict'
+    ref1.position.set(x, y, z);
+
+    addFoundation(ref1, 0, 0, 0);
+
+    obj.add(ref1);
+}
 
 
 //////////////////////
@@ -63,7 +104,7 @@ function update(){
 /////////////
 function render() {
     'use strict';
-    renderer.render(scene, camera);
+    renderer.render(scene, mainCamera);
 }
 
 ////////////////////////////////
@@ -76,7 +117,7 @@ function init() {
     createScene(); // create scene: cameras, objects, light
     onResize();    // update window size
     
-    new OrbitControls(camera, renderer.domElement);
+    new OrbitControls(mainCamera, renderer.domElement);
     
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
@@ -98,10 +139,8 @@ function animate() {
 ////////////////////////////
 function onResize() { 
     'use strict';
-    const WIDTH = window.innerWidth;
-    const HEIGHT = window.innerHeight;
-
-    renderer.setSize(WIDTH, HEIGHT);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    mainCamera.aspect = window.innerWidth / window.innerHeight;
 }
 
 ///////////////////////
