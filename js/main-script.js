@@ -19,10 +19,13 @@ const ref4 = new THREE.Object3D();
 const objs = new THREE.Group();   
 
 
-const foundation = { radiusTop: 2, radiusBottom: 2, height: 20 };
+const foundation = { radius: 4, height: 30 };
+const plane = { width: 150, height: 150 };
+const skydome = { radius: plane.width/2,  widthSegments: 64, heightSegments: 64, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
 
 const materials = {
     foundation: new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true }),
+    skydomeMaterial: new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7}),
     donutMaterial: new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
     enneperMaterial: new THREE.MeshBasicMaterial({ color: 0xff0000 }),
     kleinMaterial : new THREE.MeshBasicMaterial({ color: 0x0000ff }),
@@ -39,9 +42,11 @@ const materials = {
 function createScene() {
     'use strict';
     scene.background = new THREE.Color('aliceblue');
-    addObjects(scene);
+    //addObjects(scene);
 
     createCamera();
+    addPlane(scene, 0, 0, 0);
+    addSkydome(scene, 0, 0, 0);
     addCarousel(scene, 0, 0, 0);
 }
 
@@ -72,7 +77,7 @@ function addMesh(obj, geom, material, x, y, z) {
 
 function addFoundation(obj, x, y, z) {
     'use strict';
-    const geom = new THREE.CylinderGeometry(4, 4, 20);
+    const geom = new THREE.CylinderGeometry(foundation.radius, foundation.radius, foundation.height);
     addMesh(obj, geom, materials.foundation, x, y, z);
 }
 
@@ -80,7 +85,7 @@ function addCarousel(obj, x, y, z) {
     'use strict';
     ref1.position.set(x, y, z);
 
-    addFoundation(ref1, 0, 0, 0);
+    addFoundation(ref1, 0, foundation.height/2, 0);
 
     obj.add(ref1);
 }
@@ -214,6 +219,27 @@ function addBoy(obj, x, y, z) {
     }, 20, 20);
 
     addMesh(obj, geom, materials.boyMaterial, x, y, z);
+}
+
+
+function addPlane(obj, x, y, z){
+    'use strict';
+    const planeMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(150, 150),
+        new THREE.MeshBasicMaterial({ color: 0xEF767A, wireframe: false, side: THREE.DoubleSide })
+    );
+
+    planeMesh.position.set(x, y, z);
+    planeMesh.rotation.x = -Math.PI / 2;
+
+    obj.add(planeMesh);
+}
+
+function addSkydome(obj, x,y,z){
+    'use strict';
+
+    const geom = new THREE.SphereGeometry(skydome.radius, skydome.widthSegments, skydome.heightSegments, skydome.phiStart, skydome.phiLength, skydome.ThetaStart, skydome.ThetaLength);
+    addMesh(obj, geom, materials.skydomeMaterial, x, y, z);
 }
 
 //////////////////////
