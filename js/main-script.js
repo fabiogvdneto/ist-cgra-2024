@@ -26,20 +26,30 @@ const ring1 = { innerR: foundation.radius, outerR: foundation.radius + 5, h: 5 }
 const ring2 = { innerR: ring1.outerR, outerR: ring1.outerR + 5, h: 5 };
 const ring3 = { innerR: ring2.outerR, outerR: ring2.outerR + 5, h: 5 };
 
+
+
 const materials = {
     foundation: new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true }),
-    skydomeMaterial: new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7}),
-    ringMaterial1: new THREE.MeshBasicMaterial({ color: 0x003C43 }),
-    ringMaterial2: new THREE.MeshBasicMaterial({ color: 0x135D66 }),
-    ringMaterial3: new THREE.MeshBasicMaterial({ color: 0x77B0AA }),
-    donutMaterial: new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0xff0000 }),
-    kleinMaterial : new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-    hyperbolicMaterial : new THREE.MeshBasicMaterial({ color: 0xffff00 }),
-    torusKnotMaterial : new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-    hyperbolicParaboloidMaterial : new THREE.MeshBasicMaterial({ color: 0xffa500 }),
-    helicoidMaterial : new THREE.MeshBasicMaterial({ color: 0x00ffff }),
-    boyMaterial : new THREE.MeshBasicMaterial({ color: 0xffffff })
+    skydomeMaterial: new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: true}),
+    ringMaterial1: new THREE.MeshBasicMaterial({ color: 0x003C43, wireframe: true }),
+    ringMaterial2: new THREE.MeshBasicMaterial({ color: 0x135D66, wireframe: true }),
+    ringMaterial3: new THREE.MeshBasicMaterial({ color: 0x77B0AA, wireframe: true }),
+    donutMaterial: new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true }),
+    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true }),
+    kleinMaterial : new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }),
+    hyperbolicMaterial : new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true }),
+    torusKnotMaterial : new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }),
+    hyperbolicParaboloidMaterial : new THREE.MeshBasicMaterial({ color: 0xffa500, wireframe: true }),
+    helicoidMaterial : new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true }),
+    boyMaterial : new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
+}
+
+function toggleWireframe(){
+    'use strict';
+
+    for(let key in materials){
+        materials[key].wireframe = !materials[key].wireframe;
+    }
 }
 
 /////////////////////
@@ -339,6 +349,54 @@ function handleCollisions(){
 function update(){
     'use strict';
 
+    const delta = clock.getDelta();
+    const speed = 10;
+
+    if(ref2.userData.moving){
+        const step = speed * ref2.userData.direction * delta;
+        const y = step + ref2.position.y;
+
+        if(y < -(foundation.height/3 - ring2.h)){
+            ref2.userData.direction = 1;
+            ref2.position.y = 0;
+        } else if(y > foundation.height - foundation.height/3){
+            ref2.userData.direction = -1;
+            ref2.position.y = foundation.height;
+        }
+
+        ref2.position.y = y;
+    }
+
+    if(ref3.userData.moving){
+        const step = speed * ref3.userData.direction * delta;
+        const y = step + ref3.position.y;
+
+        if(y < -(foundation.height * (2/3) - ring3.h)){
+            ref3.userData.direction = 1;
+            ref3.position.y = 0;
+        } else if(y > foundation.height - foundation.height * (2/3)){
+            ref3.userData.direction = -1;
+            ref3.position.y = foundation.height;
+        }  
+
+        ref3.position.y = y;
+    }
+
+    if(ref4.userData.moving){
+        const step = speed * ref4.userData.direction * delta;
+        const y = step + ref4.position.y;
+
+        if(y < -(foundation.height - ring3.h)){
+            ref4.userData.direction = 1;
+            ref4.position.y = 0;
+        } else if(y > 0){
+            ref4.userData.direction = -1;
+            ref4.position.y = foundation.height;
+        }  
+
+        ref4.position.y = y;
+    }
+
 }
 
 /////////////
@@ -355,6 +413,10 @@ function render() {
 function init() {
     'use strict';
     document.body.appendChild(renderer.domElement);
+
+    ref2.userData = { moving: false, direction: 1 };
+    ref3.userData = { moving: false, direction: 1 };
+    ref4.userData = { moving: false, direction: 1 };
     
     createScene(); // create scene: cameras, objects, light
     onResize();    // update window size
@@ -391,6 +453,28 @@ function onResize() {
 function onKeyDown(e) {
     'use strict';
 
+    const key = e.key.toUpperCase();
+
+    switch(key){
+        // Active ring 1 movement
+        case '1':
+            ref2.userData.moving = true;
+            break;
+        // Active ring 2 movement
+        case '2':
+            ref3.userData.moving = true;
+            break;
+        // Active ring 3 movement
+        case '3':
+            ref4.userData.moving = true;
+            break;
+        // Toggle wireframe
+        case '7':
+            toggleWireframe();
+            break;
+    }
+
+
 }
 
 ///////////////////////
@@ -398,6 +482,23 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e){
     'use strict';
+
+    const key = e.key.toUpperCase();
+
+    switch(key){
+        // Deactivate ring 1 movement
+        case '1':
+            ref2.userData.moving = false;
+            break;
+        // Deactivate ring 2 movement
+        case '2':
+            ref3.userData.moving = false;
+            break;
+        // Deactivate ring 3 movement
+        case '3':
+            ref4.userData.moving = false;
+            break;
+    }
 }
 
 init();
