@@ -21,11 +21,17 @@ const objs = new THREE.Group();
 
 const foundation = { radius: 4, height: 30 };
 const plane = { width: 150, height: 150 };
-const skydome = { radius: plane.width/2,  widthSegments: 64, heightSegments: 64, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
+const skydome = { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
+const ring1 = { innerR: foundation.radius, outerR: foundation.radius + 5, h: 5 };
+const ring2 = { innerR: ring1.outerR, outerR: ring1.outerR + 5, h: 5 };
+const ring3 = { innerR: ring2.outerR, outerR: ring2.outerR + 5, h: 5 };
 
 const materials = {
     foundation: new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true }),
     skydomeMaterial: new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7}),
+    ringMaterial1: new THREE.MeshBasicMaterial({ color: 0x003C43 }),
+    ringMaterial2: new THREE.MeshBasicMaterial({ color: 0x135D66 }),
+    ringMaterial3: new THREE.MeshBasicMaterial({ color: 0x77B0AA }),
     donutMaterial: new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
     enneperMaterial: new THREE.MeshBasicMaterial({ color: 0xff0000 }),
     kleinMaterial : new THREE.MeshBasicMaterial({ color: 0x0000ff }),
@@ -75,6 +81,7 @@ function addMesh(obj, geom, material, x, y, z) {
     return mesh;
 }
 
+
 function addFoundation(obj, x, y, z) {
     'use strict';
     const geom = new THREE.CylinderGeometry(foundation.radius, foundation.radius, foundation.height);
@@ -84,10 +91,78 @@ function addFoundation(obj, x, y, z) {
 function addCarousel(obj, x, y, z) {
     'use strict';
     ref1.position.set(x, y, z);
+    ref2.position.set(x, y, z -10);
+    ref3.position.set(x, y, z -20);
+    ref4.position.set(x, y, z -30);
 
     addFoundation(ref1, 0, foundation.height/2, 0);
+    addInnerRing(ref2, 0, foundation.height/3, 0);
+    addMidRing(ref3, 0, foundation.height * (2/3), 0);
+    addOuterRIng(ref4, 0, foundation.height, 0);
+
 
     obj.add(ref1);
+    obj.add(ref2);
+    obj.add(ref3);
+    obj.add(ref4);
+}
+
+function addInnerRing(obj, x, y, z) {
+    'use strict';
+
+    const innerRing = new THREE.Object3D();
+
+    createRing(innerRing, x, y, z, ring1.outerR, ring1.innerR, ring1.h, materials.ringMaterial1);
+    innerRing.rotation.x = Math.PI / 2;
+    obj.add(innerRing);
+
+    innerRing.position.set(x, y, z);
+}
+
+function addMidRing(obj, x, y, z) {
+    'use strict';
+
+    const midRing = new THREE.Object3D();
+
+    createRing(midRing, x, y, z, ring2.outerR, ring2.innerR, ring2.h, materials.ringMaterial2)
+    midRing.rotation.x = Math.PI / 2;
+    obj.add(midRing);
+
+    midRing.position.set(x, y, z);
+}
+
+function addOuterRIng(obj, x, y, z) {
+    'use strict';
+
+    const outerRing = new THREE.Object3D();
+
+    createRing(outerRing, x, y, z, ring3.outerR, ring3.innerR, ring3.h, materials.ringMaterial3)
+    outerRing.rotation.x = Math.PI / 2;
+    obj.add(outerRing);
+
+    outerRing.position.set(x, y, z);
+
+}
+
+function createRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
+    'use strict';
+    let shape = new THREE.Shape();
+    shape.moveTo(outerRadius, 0);
+    shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+
+    let holePath = new THREE.Path();
+    holePath.moveTo(innerRadius, 0);
+    holePath.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
+
+    shape.holes.push(holePath);
+
+    const extrudeSettings = {
+        bevelEnabled: false,
+        depth: height
+    };
+
+    const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    addMesh(obj, geom, material, x, y, z);
 }
 
 function addObjects(obj) {
