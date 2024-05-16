@@ -44,6 +44,9 @@ const materials = {
     boyMaterial : new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
 }
 
+////////////////////////
+/* AUXILIAR FUNCTIONS */
+////////////////////////
 function toggleWireframe(){
     'use strict';
 
