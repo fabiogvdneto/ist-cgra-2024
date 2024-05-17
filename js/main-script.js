@@ -18,31 +18,115 @@ const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
 const objs = new THREE.Group();   
 
+const foundation = { radius: 4, height: 30, color: 0x123235 };
+const plane =      { width: 150, height: 150 };
+const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
+const ring1 =      { innerR: foundation.radius, outerR: foundation.radius + 5, h: 5 , color: 0x003C43 };
+const ring2 =      { innerR: ring1.outerR, outerR: ring1.outerR + 5, h: 5 , color: 0x135D66 };
+const ring3 =      { innerR: ring2.outerR, outerR: ring2.outerR + 5, h: 5 , color: 0x77B0AA };
+const donut =      { color: 0x00ff00 };
+const enneper =    { color: 0xff0000 };
+const klein =      { color: 0x0000ff };
+const hyperbolic = { color: 0xffff00 };
+const torusKnot =  { color: 0x0000ff };
+const hyperbolicParaboloid = { color: 0xffa500 };
+const helicoid =   { color: 0x00ffff };
+const boy =        { color: 0xffffff };
 
-const foundation = { radius: 4, height: 30 };
-const plane = { width: 150, height: 150 };
-const skydome = { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
-const ring1 = { innerR: foundation.radius, outerR: foundation.radius + 5, h: 5 };
-const ring2 = { innerR: ring1.outerR, outerR: ring1.outerR + 5, h: 5 };
-const ring3 = { innerR: ring2.outerR, outerR: ring2.outerR + 5, h: 5 };
-
-
-
-const materials = {
+const BasicMaterials = {
     foundation: new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true }),
     skydomeMaterial: new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: true}),
-    ringMaterial1: new THREE.MeshBasicMaterial({ color: 0x003C43, wireframe: true }),
-    ringMaterial2: new THREE.MeshBasicMaterial({ color: 0x135D66, wireframe: true }),
-    ringMaterial3: new THREE.MeshBasicMaterial({ color: 0x77B0AA, wireframe: true }),
-    donutMaterial: new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true }),
-    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true }),
-    kleinMaterial : new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }),
-    hyperbolicMaterial : new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true }),
-    torusKnotMaterial : new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }),
-    hyperbolicParaboloidMaterial : new THREE.MeshBasicMaterial({ color: 0xffa500, wireframe: true }),
-    helicoidMaterial : new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true }),
-    boyMaterial : new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true })
+    ringMaterial1: new THREE.MeshBasicMaterial({ color: ring1.color, wireframe: true }),
+    ringMaterial2: new THREE.MeshBasicMaterial({ color: ring2.color, wireframe: true }),
+    ringMaterial3: new THREE.MeshBasicMaterial({ color: ring3.color, wireframe: true }),
+    donutMaterial: new THREE.MeshBasicMaterial({ color: donut.color, wireframe: true }),
+    enneperMaterial: new THREE.MeshBasicMaterial({ color: enneper.color, wireframe: true }),
+    kleinMaterial : new THREE.MeshBasicMaterial({ color: klein.color, wireframe: true }),
+    hyperbolicMaterial : new THREE.MeshBasicMaterial({ color: hyperbolic.color, wireframe: true }),
+    torusKnotMaterial : new THREE.MeshBasicMaterial({ color: torusKnot.color, wireframe: true }),
+    hyperbolicParaboloidMaterial : new THREE.MeshBasicMaterial({ color: hyperbolicParaboloid.color, wireframe: true }),
+    helicoidMaterial : new THREE.MeshBasicMaterial({ color: helicoid.color, wireframe: true }),
+    boyMaterial : new THREE.MeshBasicMaterial({ color: boy.color, wireframe: true })
 }
+
+const NormalMaterials = {
+    foundation: new THREE.MeshNormalMaterial({ color: 0x123235, wireframe: false }),
+    skydomeMaterial: new THREE.MeshNormalMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: false}),
+    ringMaterial1: new THREE.MeshNormalMaterial({ color: ring1.color, wireframe: false }),
+    ringMaterial2: new THREE.MeshNormalMaterial({ color: ring2.color, wireframe: false }),
+    ringMaterial3: new THREE.MeshNormalMaterial({ color: ring3.color, wireframe: false }),
+    donutMaterial: new THREE.MeshNormalMaterial({ color: donut.color, wireframe: false }),
+    enneperMaterial: new THREE.MeshNormalMaterial({ color: enneper.color, wireframe: false }),
+    kleinMaterial : new THREE.MeshNormalMaterial({ color: klein.color, wireframe: false }),
+    hyperbolicMaterial : new THREE.MeshNormalMaterial({ color: hyperbolic.color, wireframe: false }),
+    torusKnotMaterial : new THREE.MeshNormalMaterial({ color: torusKnot.color, wireframe: false }),
+    hyperbolicParaboloidMaterial : new THREE.MeshNormalMaterial({ color: hyperbolicParaboloid.color, wireframe: false }),
+    helicoidMaterial : new THREE.MeshNormalMaterial({ color: helicoid.color, wireframe: false }),
+    boyMaterial : new THREE.MeshNormalMaterial({ color: boy.color, wireframe: false })
+}
+
+const LambertMaterials = {
+    foundation: new THREE.MeshLambertMaterial({ color: 0x123235, wireframe: false }),
+    skydomeMaterial: new THREE.MeshLambertMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: false}),
+    ringMaterial1: new THREE.MeshLambertMaterial({ color: ring1.color, wireframe: false }),
+    ringMaterial2: new THREE.MeshLambertMaterial({ color: ring2.color, wireframe: false }),
+    ringMaterial3: new THREE.MeshLambertMaterial({ color: ring3.color, wireframe: false }),
+    donutMaterial: new THREE.MeshLambertMaterial({ color: donut.color, wireframe: false }),
+    enneperMaterial: new THREE.MeshLambertMaterial({ color: enneper.color, wireframe: false }),
+    kleinMaterial : new THREE.MeshLambertMaterial({ color: klein.color, wireframe: false }),
+    hyperbolicMaterial : new THREE.MeshLambertMaterial({ color: hyperbolic.color, wireframe: false }),
+    torusKnotMaterial : new THREE.MeshLambertMaterial({ color: torusKnot.color, wireframe: false }),
+    hyperbolicParaboloidMaterial : new THREE.MeshLambertMaterial({ color: hyperbolicParaboloid.color, wireframe: false }),
+    helicoidMaterial : new THREE.MeshLambertMaterial({ color: helicoid.color, wireframe: false }),
+    boyMaterial : new THREE.MeshLambertMaterial({ color: boy.color, wireframe: false })
+}
+
+const PhongMaterials = {
+    foundation: new THREE.MeshPhongMaterial({ color: 0x123235, wireframe: false }),
+    skydomeMaterial: new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: false}),
+    ringMaterial1: new THREE.MeshPhongMaterial({ color: ring1.color, wireframe: false }),
+    ringMaterial2: new THREE.MeshPhongMaterial({ color: ring2.color, wireframe: false }),
+    ringMaterial3: new THREE.MeshPhongMaterial({ color: ring3.color, wireframe: false }),
+    donutMaterial: new THREE.MeshPhongMaterial({ color: donut.color, wireframe: false }),
+    enneperMaterial: new THREE.MeshPhongMaterial({ color: enneper.color, wireframe: false }),
+    kleinMaterial : new THREE.MeshPhongMaterial({ color: klein.color, wireframe: false }),
+    hyperbolicMaterial : new THREE.MeshPhongMaterial({ color: hyperbolic.color, wireframe: false }),
+    torusKnotMaterial : new THREE.MeshPhongMaterial({ color: torusKnot.color, wireframe: false }),
+    hyperbolicParaboloidMaterial : new THREE.MeshPhongMaterial({ color: hyperbolicParaboloid.color, wireframe: false }),
+    helicoidMaterial : new THREE.MeshPhongMaterial({ color: helicoid.color, wireframe: false }),
+    boyMaterial : new THREE.MeshPhongMaterial({ color: boy.color, wireframe: false })
+}
+
+const CartoonMaterials = {
+    foundation: new THREE.MeshToonMaterial({ color: 0x123235, wireframe: false }),
+    skydomeMaterial: new THREE.MeshToonMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: false}),
+    ringMaterial1: new THREE.MeshToonMaterial({ color: ring1.color, wireframe: false }),
+    ringMaterial2: new THREE.MeshToonMaterial({ color: ring2.color, wireframe: false }),
+    ringMaterial3: new THREE.MeshToonMaterial({ color: ring3.color, wireframe: false }),
+    donutMaterial: new THREE.MeshToonMaterial({ color: donut.color, wireframe: false }),
+    enneperMaterial: new THREE.MeshToonMaterial({ color: enneper.color, wireframe: false }),
+    kleinMaterial : new THREE.MeshToonMaterial({ color: klein.color, wireframe: false }),
+    hyperbolicMaterial : new THREE.MeshToonMaterial({ color: hyperbolic.color, wireframe: false }),
+    torusKnotMaterial : new THREE.MeshToonMaterial({ color: torusKnot.color, wireframe: false }),
+    hyperbolicParaboloidMaterial : new THREE.MeshToonMaterial({ color: hyperbolicParaboloid.color, wireframe: false }),
+    helicoidMaterial : new THREE.MeshToonMaterial({ color: helicoid.color, wireframe: false }),
+    boyMaterial : new THREE.MeshToonMaterial({ color: boy.color, wireframe: false })
+}
+
+let changeLambert = false;
+let changePhong = false;
+let changeCartoon = false;
+let changeNormal = false;
+
+const materials = {
+    NormalMaterials: NormalMaterials,
+    LambertMaterials: LambertMaterials,
+    PhongMaterials: PhongMaterials,
+    CartoonMaterials: CartoonMaterials,
+    BasicMaterials: BasicMaterials
+};
+
+let currentMaterialType = 'BasicMaterials';
 
 ////////////////////////
 /* AUXILIAR FUNCTIONS */
@@ -50,9 +134,44 @@ const materials = {
 function toggleWireframe(){
     'use strict';
 
-    for(let key in materials){
-        materials[key].wireframe = !materials[key].wireframe;
+    let currentMaterial = materials[currentMaterialType];
+
+    console.log(currentMaterial);
+
+    for(let key in currentMaterial){
+        console.log(currentMaterial[key]);
+        currentMaterial[key].wireframe = !currentMaterial[key].wireframe;
     }
+}
+
+function setCurrentMaterial(){
+    'use strict';
+
+    if (changeLambert) {
+        currentMaterialType = 'LambertMaterials';
+    } else if (changePhong) {
+        currentMaterialType = 'PhongMaterials';
+    } else if (changeCartoon) {
+        currentMaterialType = 'CartoonMaterials';
+    } else if (changeNormal) {
+        currentMaterialType = 'NormalMaterials';
+    } else {
+        currentMaterialType = 'BasicMaterials'; 
+    }
+
+    ref1.userData.foundation.material = materials[currentMaterialType].foundation;
+    ref1.userData.skydome.material = materials[currentMaterialType].skydomeMaterial;
+    ref2.userData.ring.material = materials[currentMaterialType].ringMaterial1;
+    ref3.userData.ring.material = materials[currentMaterialType].ringMaterial2;
+    ref4.userData.ring.material = materials[currentMaterialType].ringMaterial3;
+    // objs.userData.donut.material = materials[currentMaterialType].donutMaterial;
+    // objs.userData.enneper.material = materials[currentMaterialType].enneperMaterial;
+    // objs.userData.klein.material = materials[currentMaterialType].kleinMaterial;
+    // objs.userData.hyperbolic.material = materials[currentMaterialType].hyperbolicMaterial;
+    // objs.userData.torusKnot.material = materials[currentMaterialType].torusKnotMaterial;
+    // objs.userData.hyperbolicParaboloid.material = materials[currentMaterialType].hyperbolicParaboloidMaterial;
+    // objs.userData.helicoid.material = materials[currentMaterialType].helicoid
+    // objs.userData.boy.material = materials[currentMaterialType].boyMaterial;
 }
 
 /////////////////////
@@ -98,7 +217,7 @@ function addMesh(obj, geom, material, x, y, z) {
 function addFoundation(obj, x, y, z) {
     'use strict';
     const geom = new THREE.CylinderGeometry(foundation.radius, foundation.radius, foundation.height);
-    addMesh(obj, geom, materials.foundation, x, y, z);
+    obj.userData.foundation = addMesh(obj, geom, BasicMaterials.foundation, x, y, z);
 }
 
 function addCarousel(obj, x, y, z) {
@@ -125,7 +244,7 @@ function addInnerRing(obj, x, y, z) {
 
     const innerRing = new THREE.Object3D();
 
-    createRing(innerRing, x, y, z, ring1.outerR, ring1.innerR, ring1.h, materials.ringMaterial1);
+    ref2.userData.ring = createRing(innerRing, x, y, z, ring1.outerR, ring1.innerR, ring1.h, BasicMaterials.ringMaterial1);
     innerRing.rotation.x = Math.PI / 2;
     obj.add(innerRing);
 
@@ -137,7 +256,7 @@ function addMidRing(obj, x, y, z) {
 
     const midRing = new THREE.Object3D();
 
-    createRing(midRing, x, y, z, ring2.outerR, ring2.innerR, ring2.h, materials.ringMaterial2)
+    ref3.userData.ring = createRing(midRing, x, y, z, ring2.outerR, ring2.innerR, ring2.h, BasicMaterials.ringMaterial2)
     midRing.rotation.x = Math.PI / 2;
     obj.add(midRing);
 
@@ -149,7 +268,7 @@ function addOuterRIng(obj, x, y, z) {
 
     const outerRing = new THREE.Object3D();
 
-    createRing(outerRing, x, y, z, ring3.outerR, ring3.innerR, ring3.h, materials.ringMaterial3)
+    ref4.userData.ring = createRing(outerRing, x, y, z, ring3.outerR, ring3.innerR, ring3.h, BasicMaterials.ringMaterial3)
     outerRing.rotation.x = Math.PI / 2;
     obj.add(outerRing);
 
@@ -175,19 +294,19 @@ function createRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
     };
 
     const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    addMesh(obj, geom, material, x, y, z);
+    return addMesh(obj, geom, material, x, y, z);
 }
 
 function addObjects(obj) {
     'use strict';
-    addDonut(objs, 40, 0, -40);
-    addEnneper(objs, -35, 4, 50);
-    addKlein(objs, -60, 4, 0);
-    addTorusKnot(objs, -13, 8, -33);
-    addHyperbolic(objs, 60, 9, 5);
-    addHyperbolicParaboloid(objs, 10, 20, 20);
-    addHelicoid(objs, -30, 10, 15);
-    addBoy(objs, 45, 20, 10);
+    obj.userData.donut = addDonut(objs, 40, 0, -40);
+    obj.userData.enneper = addEnneper(objs, -35, 4, 50);
+    obj.userData.klein = addKlein(objs, -60, 4, 0);
+    obj.userData.TorusKnot = addTorusKnot(objs, -13, 8, -33);
+    obj.userData.hyperbolic = addHyperbolic(objs, 60, 9, 5);
+    obj.userData.hyperbolicParaboloid = addHyperbolicParaboloid(objs, 10, 20, 20);
+    obj.userData.helicoid = addHelicoid(objs, -30, 10, 15);
+    obj.userData.boy = addBoy(objs, 45, 20, 10);
     obj.add(objs);
 }
 
@@ -205,7 +324,7 @@ function addDonut(obj, x, y, z) {
         );
     }, 20, 10);
 
-    addMesh(obj, geom, materials.donutMaterial, x, y, z);
+    addMesh(obj, geom, BasicMaterials.donutMaterial, x, y, z);
 }
 
 function addEnneper(obj, x, y, z) {
@@ -217,7 +336,7 @@ function addEnneper(obj, x, y, z) {
         target.set(x, y, z);
     }, 20, 20);
 
-    addMesh(obj, geom, materials.enneperMaterial, x, y, z);
+    addMesh(obj, geom, BasicMaterials.enneperMaterial, x, y, z);
 }
 
 function addKlein(obj, x, y, z) {
@@ -240,7 +359,7 @@ function addKlein(obj, x, y, z) {
         target.set(x, y, z);
     }, 10, 10);
 
-    addMesh(obj, geom, materials.kleinMaterial, x, y, z);
+    addMesh(obj, geom, BasicMaterials.kleinMaterial, x, y, z);
 }
 
 function addTorusKnot(obj, x, y, z) {
@@ -257,7 +376,7 @@ function addTorusKnot(obj, x, y, z) {
         target.set(x, y, z);
     }, 20, 20);
 
-    addMesh(obj, geom, materials.torusKnotMaterial, x, y, z);
+    addMesh(obj, geom, BasicMaterials.torusKnotMaterial, x, y, z);
 }
 
 function addHyperbolic(obj, x, y, z) {
@@ -269,7 +388,7 @@ function addHyperbolic(obj, x, y, z) {
         target.set(x, y, z);
     }, 20, 20);
 
-    addMesh(obj, geom, materials.hyperbolicMaterial, x, y, z);
+    addMesh(obj, geom, BasicMaterials.hyperbolicMaterial, x, y, z);
 }
 
 function addHyperbolicParaboloid(obj, x, y, z) {
@@ -281,7 +400,7 @@ function addHyperbolicParaboloid(obj, x, y, z) {
         target.set(x, y, z);
     }, 20, 20);
 
-    addMesh(obj, geom, materials.hyperbolicParaboloidMaterial, x, y, z);
+    addMesh(obj, geom, BasicMaterials.hyperbolicParaboloidMaterial, x, y, z);
 }
 
 function addHelicoid(obj, x, y, z) {
@@ -294,7 +413,7 @@ function addHelicoid(obj, x, y, z) {
         target.set(x, y, z);
     }, 20, 20);
 
-    addMesh(obj, geom, materials.helicoidMaterial, x, y, z);
+    addMesh(obj, geom, BasicMaterials.helicoidMaterial, x, y, z);
 }
 
 function addBoy(obj, x, y, z) {
@@ -306,7 +425,7 @@ function addBoy(obj, x, y, z) {
         target.set(x, y, z);
     }, 20, 20);
 
-    addMesh(obj, geom, materials.boyMaterial, x, y, z);
+    addMesh(obj, geom, BasicMaterials.boyMaterial, x, y, z);
 }
 
 
@@ -327,7 +446,7 @@ function addSkydome(obj, x,y,z){
     'use strict';
 
     const geom = new THREE.SphereGeometry(skydome.radius, skydome.widthSegments, skydome.heightSegments, skydome.phiStart, skydome.phiLength, skydome.ThetaStart, skydome.ThetaLength);
-    addMesh(obj, geom, materials.skydomeMaterial, x, y, z);
+    ref1.userData.skydome = addMesh(obj, geom, BasicMaterials.skydomeMaterial, x, y, z);
 }
 
 //////////////////////
@@ -400,6 +519,7 @@ function update(){
         ref4.position.y = y;
     }
 
+   setCurrentMaterial();
 }
 
 /////////////
@@ -475,6 +595,22 @@ function onKeyDown(e) {
         case '7':
             toggleWireframe();
             break;
+        // Change material - Lambert
+        case 'Q':
+            changeLambert = true;
+            break;
+        // Change material - Phong
+        case 'W':
+            changePhong = true;
+            break;
+        // Change material - Cartoon
+        case 'E':
+            changeCartoon = true;
+            break;
+        // Change material - Normal
+        case 'R':
+            changeNormal = true;
+            break;
     }
 
 
@@ -501,6 +637,22 @@ function onKeyUp(e){
         case '3':
             ref4.userData.moving = false;
             break;
+        // Change material - Lambert
+        case 'Q':
+            changeLambert = false;
+            break;
+        // Change material - Phong
+        case 'W':
+            changePhong = false;
+            break;
+        // Change material - Cartoon
+        case 'E':
+            changeCartoon = false;
+            break;
+        // Change material - Normal
+        case 'R':
+            changeNormal = false;
+            break;  
     }
 }
 
