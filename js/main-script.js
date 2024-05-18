@@ -177,7 +177,7 @@ function createScene() {
     addPlane(scene, 0, 0, 0);
     addSkydome(scene, 0, 0, 0);
     addCarousel(scene, 0, 0, 0);
-    addMobiusStrip(ref1, 3, 15, 30, 0, 48, 0); 
+    addMobiusStrip(ref1, 15, 15, 30, 0, foundation.height*2, 0); 
 }
 
 //////////////////////
@@ -318,6 +318,7 @@ function addMobiusStrip(obj, r, w, segments, x, y, z) {
     geometry.computeVertexNormals();
 
     ref1.userData.mobiusStrip = addMesh(obj, geometry, BasicMaterials.mobiusStripMaterial, x, y, z);
+    ref1.userData.mobiusStrip.rotation.x = Math.PI / 2;
 }
 
 function createRotatingSurface(geometry, material, rotationAxis, rotationSpeed) {
