@@ -18,6 +18,7 @@ const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
 const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
+const objs = new THREE.Object3D();
 
 const innerRing = new THREE.Object3D();
 const midRing = new THREE.Object3D();
@@ -31,88 +32,88 @@ const ring2_info =      { innerR: ring1_info.outerR, outerR: ring1_info.outerR +
 const ring3_info =      { innerR: ring2_info.outerR, outerR: ring2_info.outerR + 5, h: 5 , color: 0x77B0AA };
 
 const BasicMaterials = {
-    foundation: new THREE.MeshBasicMaterial({ color: 0x123235, wireframe: true }),
-    skydomeMaterial: new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.35, wireframe: true}),
-    ringMaterial1: new THREE.MeshBasicMaterial({ color: ring1_info.color, wireframe: true }),
-    ringMaterial2: new THREE.MeshBasicMaterial({ color: ring2_info.color, wireframe: true }),
-    ringMaterial3: new THREE.MeshBasicMaterial({ color: ring3_info.color, wireframe: true }),
-
-    donutMaterial: new THREE.MeshBasicMaterial({ color: 0xdddd00, wireframe: true }),
-    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0x990000, wireframe: true }),
-    kleinBottleMaterial : new THREE.MeshBasicMaterial({ color: 0x11111, wireframe: true }),   
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xaaa00, wireframe: true }),
-    cylinderMaterial: new THREE.MeshBasicMaterial({ color: 0x00ffa0, wireframe: true }),
-    boxMaterial: new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }),
-    ellipsoidMaterial: new THREE.MeshBasicMaterial({ color: 0xfffaaa, wireframe: true }), 
-    hyperboloidMaterial: new THREE.MeshBasicMaterial({ color: 0xaa20af, wireframe: true }) 
+    foundation: new THREE.MeshBasicMaterial({ color: 0x123235 }),
+    skydomeMaterial: new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.35}),
+    ringMaterial1: new THREE.MeshBasicMaterial({ color: ring1_info.color }),
+    ringMaterial2: new THREE.MeshBasicMaterial({ color: ring2_info.color }),
+    ringMaterial3: new THREE.MeshBasicMaterial({ color: ring3_info.color }),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    donutMaterial: new THREE.MeshBasicMaterial({ color: 0xdddd00 }),
+    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0x990000 }),
+    kleinBottleMaterial : new THREE.MeshBasicMaterial({ color: 0x11111 }),   
+    scherkSurfaceMaterial: new THREE.MeshBasicMaterial({ color: 0xaaa00 }),
+    cylinderMaterial: new THREE.MeshBasicMaterial({ color: 0x00ffa0 }),
+    boxMaterial: new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+    ellipsoidMaterial: new THREE.MeshBasicMaterial({ color: 0xfffaaa }), 
+    hyperboloidMaterial: new THREE.MeshBasicMaterial({ color: 0xaa20af }) 
 }
 
 const NormalMaterials = {
-    foundation: new THREE.MeshNormalMaterial({ color: 0x123235, wireframe: false }),
-    skydomeMaterial: new THREE.MeshNormalMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: false}),
-    ringMaterial1: new THREE.MeshNormalMaterial({ color: ring1_info.color, wireframe: false }),
-    ringMaterial2: new THREE.MeshNormalMaterial({ color: ring2_info.color, wireframe: false }),
-    ringMaterial3: new THREE.MeshNormalMaterial({ color: ring3_info.color, wireframe: false }),
-
-    donutMaterial: new THREE.MeshBasicMaterial({ color: 0xdddd00, wireframe: false }),
-    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0x990000, wireframe: false }),
-    kleinBottleMaterial : new THREE.MeshStandardMaterial({ color: 0x11111, wireframe: false }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xaaa00, wireframe: false }),
-    cylinderMaterial: new THREE.MeshBasicMaterial({ color: 0x00ffa0, wireframe: false }),
-    boxMaterial: new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false }),
-    ellipsoidMaterial: new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false }), 
-    hyperboloidMaterial: new THREE.MeshBasicMaterial({ color: 0xaa20af, wireframe: true }) 
+    foundation: new THREE.MeshNormalMaterial({ color: 0x123235 }),
+    skydomeMaterial: new THREE.MeshNormalMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7}),
+    ringMaterial1: new THREE.MeshNormalMaterial({ color: ring1_info.color }),
+    ringMaterial2: new THREE.MeshNormalMaterial({ color: ring2_info.color }),
+    ringMaterial3: new THREE.MeshNormalMaterial({ color: ring3_info.color }),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    donutMaterial: new THREE.MeshNormalMaterial({ color: 0xdddd00 }),
+    enneperMaterial: new THREE.MeshNormalMaterial({ color: 0x990000 }),
+    kleinBottleMaterial : new THREE.MeshNormalMaterial({ color: 0x11111 }),
+    scherkSurfaceMaterial: new THREE.MeshNormalMaterial({ color: 0xaaa00 }),
+    cylinderMaterial: new THREE.MeshNormalMaterial({ color: 0x00ffa0 }),
+    boxMaterial: new THREE.MeshNormalMaterial({ color: 0x0000ff }),
+    ellipsoidMaterial: new THREE.MeshNormalMaterial({ color: 0xff00ff }), 
+    hyperboloidMaterial: new THREE.MeshNormalMaterial({ color: 0xaa20af }) 
 }
 
 const LambertMaterials = {
-    foundation: new THREE.MeshLambertMaterial({ color: 0x123235, wireframe: false }),
-    skydomeMaterial: new THREE.MeshLambertMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: false}),
-    ringMaterial1: new THREE.MeshLambertMaterial({ color: ring1_info.color, wireframe: false }),
-    ringMaterial2: new THREE.MeshLambertMaterial({ color: ring2_info.color, wireframe: false }),
-    ringMaterial3: new THREE.MeshLambertMaterial({ color: ring3_info.color, wireframe: false }),
-    
-    donutMaterial: new THREE.MeshBasicMaterial({ color: 0xdddd00, wireframe: false }),
-    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false }),
-    kleinBottleMaterial : new THREE.MeshStandardMaterial({ color: 0xff0000, wireframe: true }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xaaa00, wireframe: true }),
-    cylinderMaterial: new THREE.MeshBasicMaterial({ color: 0x00ffa0, wireframe: true }),
-    boxMaterial: new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true }),
-    ellipsoidMaterial: new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true }), 
-    hyperboloidMaterial: new THREE.MeshBasicMaterial({ color: 0xaa20af, wireframe: true }) 
+    foundation: new THREE.MeshLambertMaterial({ color: 0x123235 }),
+    skydomeMaterial: new THREE.MeshLambertMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7}),
+    ringMaterial1: new THREE.MeshLambertMaterial({ color: ring1_info.color }),
+    ringMaterial2: new THREE.MeshLambertMaterial({ color: ring2_info.color }),
+    ringMaterial3: new THREE.MeshLambertMaterial({ color: ring3_info.color }),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    donutMaterial: new THREE.MeshLambertMaterial({ color: 0xdddd00 }),
+    enneperMaterial: new THREE.MeshLambertMaterial({ color: 0xff0000 }),
+    kleinBottleMaterial : new THREE.MeshLambertMaterial({ color: 0xff0000 }),
+    scherkSurfaceMaterial: new THREE.MeshLambertMaterial({ color: 0xaaa00 }),
+    cylinderMaterial: new THREE.MeshLambertMaterial({ color: 0x00ffa0 }),
+    boxMaterial: new THREE.MeshLambertMaterial({ color: 0x0000ff }),
+    ellipsoidMaterial: new THREE.MeshLambertMaterial({ color: 0xff00ff }), 
+    hyperboloidMaterial: new THREE.MeshLambertMaterial({ color: 0xaa20af }) 
 }
 
 const PhongMaterials = {
-    foundation: new THREE.MeshPhongMaterial({ color: 0x123235, wireframe: false }),
-    skydomeMaterial: new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7, wireframe: false }),
-    ringMaterial1: new THREE.MeshPhongMaterial({ color: ring1_info.color, wireframe: false }),
-    ringMaterial2: new THREE.MeshPhongMaterial({ color: ring2_info.color, wireframe: false }),
-    ringMaterial3: new THREE.MeshPhongMaterial({ color: ring3_info.color, wireframe: false }),
-
-    donutMaterial: new THREE.MeshBasicMaterial({ color: 0xdddd00, wireframe: false }),
-    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false }),
-    kleinBottleMaterial: new THREE.MeshStandardMaterial({ color: 0xff0000, wireframe: false }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xaaa00, wireframe: false }),
-    cylinderMaterial: new THREE.MeshBasicMaterial({ color: 0x00ffa0, wireframe: false }),
-    boxMaterial: new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false }),
-    ellipsoidMaterial: new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false }), 
-    hyperboloidMaterial: new THREE.MeshBasicMaterial({ color: 0xaa20af, wireframe: false })
+    foundation: new THREE.MeshPhongMaterial({ color: 0x123235 }),
+    skydomeMaterial: new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7 }),
+    ringMaterial1: new THREE.MeshPhongMaterial({ color: ring1_info.color }),
+    ringMaterial2: new THREE.MeshPhongMaterial({ color: ring2_info.color }),
+    ringMaterial3: new THREE.MeshPhongMaterial({ color: ring3_info.color }),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    donutMaterial: new THREE.MeshPhongMaterial({ color: 0xdddd00 }),
+    enneperMaterial: new THREE.MeshPhongMaterial({ color: 0xff0000 }),
+    kleinBottleMaterial: new THREE.MeshPhongMaterial({ color: 0xff0000 }),
+    scherkSurfaceMaterial: new THREE.MeshPhongMaterial({ color: 0xaaa00 }),
+    cylinderMaterial: new THREE.MeshPhongMaterial({ color: 0x00ffa0 }),
+    boxMaterial: new THREE.MeshPhongMaterial({ color: 0x0000ff }),
+    ellipsoidMaterial: new THREE.MeshPhongMaterial({ color: 0xff00ff }), 
+    hyperboloidMaterial: new THREE.MeshPhongMaterial({ color: 0xaa20af })
 }
 
 const CartoonMaterials = {
-    foundation: new THREE.MeshToonMaterial({ color: 0x123235, wireframe: false }),
-    skydomeMaterial: new THREE.MeshToonMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.35, wireframe: false }),
-    ringMaterial1: new THREE.MeshToonMaterial({ color: ring1_info.color, wireframe: false }),
-    ringMaterial2: new THREE.MeshToonMaterial({ color: ring2_info.color, wireframe: false }),
-    ringMaterial3: new THREE.MeshToonMaterial({ color: ring3_info.color, wireframe: false }),
-
-    donutMaterial: new THREE.MeshBasicMaterial({ color: 0xdddd00, wireframe: false }),
-    enneperMaterial: new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false }),
-    kleinBottleMaterial: new THREE.MeshStandardMaterial({ color: 0xff0000, wireframe: false }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xaaa00, wireframe: false }),
-    cylinderMaterial: new THREE.MeshBasicMaterial({ color: 0x00ffa0, wireframe: false }),
-    boxMaterial: new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false }),
-    ellipsoidMaterial: new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: false }), 
-    hyperboloidMaterial: new THREE.MeshBasicMaterial({ color: 0xaa20af, wireframe: false })
+    foundation: new THREE.MeshToonMaterial({ color: 0x123235 }),
+    skydomeMaterial: new THREE.MeshToonMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.35 }),
+    ringMaterial1: new THREE.MeshToonMaterial({ color: ring1_info.color }),
+    ringMaterial2: new THREE.MeshToonMaterial({ color: ring2_info.color }),
+    ringMaterial3: new THREE.MeshToonMaterial({ color: ring3_info.color }),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    donutMaterial: new THREE.MeshToonMaterial({ color: 0xdddd00 }),
+    enneperMaterial: new THREE.MeshToonMaterial({ color: 0xff0000 }),
+    kleinBottleMaterial: new THREE.MeshToonMaterial({ color: 0xff0000 }),
+    scherkSurfaceMaterial: new THREE.MeshToonMaterial({ color: 0xaaa00 }),
+    cylinderMaterial: new THREE.MeshToonMaterial({ color: 0x00ffa0 }),
+    boxMaterial: new THREE.MeshToonMaterial({ color: 0x0000ff }),
+    ellipsoidMaterial: new THREE.MeshToonMaterial({ color: 0xff00ff }), 
+    hyperboloidMaterial: new THREE.MeshToonMaterial({ color: 0xaa20af })
 }
 
 let changeLambert = false;
@@ -133,18 +134,6 @@ let currentMaterialType = 'BasicMaterials';
 ////////////////////////
 /* AUXILIAR FUNCTIONS */
 ////////////////////////
-function toggleWireframe(){
-    'use strict';
-
-    let currentMaterial = materials[currentMaterialType];
-
-    console.log(currentMaterial);
-
-    for(let key in currentMaterial){
-        console.log(currentMaterial[key]);
-        currentMaterial[key].wireframe = !currentMaterial[key].wireframe;
-    }
-}
 
 function setCurrentMaterial(){
     'use strict';
@@ -163,9 +152,18 @@ function setCurrentMaterial(){
 
     ref1.userData.foundation.material = materials[currentMaterialType].foundation;
     ref1.userData.skydome.material = materials[currentMaterialType].skydomeMaterial;
+    ref1.userData.mobiusStrip.material = materials[currentMaterialType].mobiusStripMaterial;
     ref2.userData.ring.material = materials[currentMaterialType].ringMaterial1;
     ref3.userData.ring.material = materials[currentMaterialType].ringMaterial2;
     ref4.userData.ring.material = materials[currentMaterialType].ringMaterial3;
+    objs.userData.donut.material = materials[currentMaterialType].donutMaterial;
+    objs.userData.enneper.material = materials[currentMaterialType].enneperMaterial;
+    objs.userData.klein.material = materials[currentMaterialType].kleinBottleMaterial;
+    objs.userData.scherkSurface.material = materials[currentMaterialType].scherkSurfaceMaterial;
+    objs.userData.cylinder.material = materials[currentMaterialType].cylinderMaterial;
+    objs.userData.box.material = materials[currentMaterialType].boxMaterial;
+    objs.userData.ellipsoid.material = materials[currentMaterialType].ellipsoidMaterial;
+    objs.userData.hyperboloid.material = materials[currentMaterialType].hyperboloidMaterial;
 }
 
 /////////////////////
@@ -179,6 +177,7 @@ function createScene() {
     addPlane(scene, 0, 0, 0);
     addSkydome(scene, 0, 0, 0);
     addCarousel(scene, 0, 0, 0);
+    addMobiusStrip(ref1, 3, 15, 30, 0, 48, 0); 
 }
 
 //////////////////////
@@ -224,9 +223,9 @@ function addCarousel(obj, x, y, z) {
     addMidRing(ref3, 0, foundation.height * (2/3), 0);
     addOuterRIng(ref4, 0, foundation.height, 0);
 
-    addObjectsToRing(ref2, innerRing, ring1_info, 10); // inner ring 
-    addObjectsToRing(ref3, midRing, ring2_info, 20); // mid ring
-    addObjectsToRing(ref4, outerRing, ring3_info, 30); // outter ring
+    addObjectsToRing(ref2, innerRing, ring1_info, 10);  
+    addObjectsToRing(ref3, midRing, ring2_info, 20); 
+    addObjectsToRing(ref4, outerRing, ring3_info, 30); 
 
     obj.add(ref1);
     obj.add(ref2);
@@ -283,6 +282,44 @@ function createRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
     return addMesh(obj, geom, material, x, y, z);
 }
 
+function addMobiusStrip(obj, r, w, segments, x, y, z) {
+    const geometry = new THREE.BufferGeometry();
+    
+    const vertices = [];
+    const indices = [];
+
+    for (let i = 0; i <= segments; i++) {
+        const u = i / segments * Math.PI * 2;
+        
+        for (let j = 0; j <= segments; j++) {
+            const v = (j - segments / 2) / segments * w;
+
+            //  Equation of a Möbius Strip
+            const xCoord = (r + v * Math.cos(u / 2) / 2) * Math.cos(u);
+            const yCoord = (r + v * Math.cos(u / 2) / 2) * Math.sin(u);
+            const zCoord = v * Math.sin(u / 2) / 2;
+
+            vertices.push(xCoord, yCoord, zCoord);
+        }
+    }
+
+    for (let i = 0; i < segments; i++) {
+        for (let j = 0; j < segments; j++) {
+            const a = (i * (segments + 1)) + j;
+            const b = a + segments + 1;
+
+            indices.push(a, b, a + 1);
+            indices.push(b, b + 1, a + 1);
+        }
+    }
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+
+    ref1.userData.mobiusStrip = addMesh(obj, geometry, BasicMaterials.mobiusStripMaterial, x, y, z);
+}
+
 function createRotatingSurface(geometry, material, rotationAxis, rotationSpeed) {
     const surface = new THREE.Mesh(geometry, material);
     surface.userData.rotationAxis = rotationAxis;
@@ -295,6 +332,8 @@ function addRotatingSurface(ref, geom, material, rotationSpeed, x, y, z) {
     const surface = createRotatingSurface(geom, material, rotationAxis, rotationSpeed);
     surface.position.set(x, y, z);
     ref.add(surface);
+
+    return surface;
 }
 
 function addObjectsToRing(ref, ring, ring_info, z_deviation) {
@@ -315,28 +354,28 @@ function addObjectsToRing(ref, ring, ring_info, z_deviation) {
 
         switch(num) {
             case 0:
-                addDonut(ref, x, y, z);
+                objs.userData.donut = addDonut(ref, x, y, z);
                 break;
             case 1:
-                addEnneper(ref, x, y, z);
+                objs.userData.enneper = addEnneper(ref, x, y, z);
                 break;
             case 2:
-                addKleinBottle(ref, x, y, z);
+                objs.userData.klein = addKleinBottle(ref, x, y, z);
                 break;
             case 3:
-                addMobiusStrip(ref, x, y, z);
+                objs.userData.scherkSurface = addScherkSurface(ref, x, y, z);
                 break;
             case 4:
-                addCylinder(ref, x, y, z);
+                objs.userData.cylinder = addCylinder(ref, x, y, z);
                 break;
             case 5:
-                addBox(ref, x, y, z);
+                objs.userData.box = addBox(ref, x, y, z);
                 break;
             case 6:
-                addEllipsoid(ref, x, y, z);
+                objs.userData.ellipsoid = addEllipsoid(ref, x, y, z);
                 break;
             case 7:
-                addHyperboloid(ref, x, y, z);
+                objs.userData.hyperboloid = addHyperboloid(ref, x, y, z);
                 break;
             default:
                 break;
@@ -358,7 +397,7 @@ function addDonut(obj, x, y, z) {
     }, 50, 50);
 
     const rotationSpeed = 0.75;
-    addRotatingSurface(obj, geom, materials.BasicMaterials.donutMaterial, rotationSpeed, x, y, z);
+    return addRotatingSurface(obj, geom, BasicMaterials.donutMaterial, rotationSpeed, x, y, z);
 }
 
 function addEnneper(obj, x, y, z) {
@@ -375,7 +414,7 @@ function addEnneper(obj, x, y, z) {
     }, 25, 25);
 
     const rotationSpeed = 0.85;
-    addRotatingSurface(obj, geom, materials.BasicMaterials.enneperMaterial, rotationSpeed, x, y, z);
+    return addRotatingSurface(obj, geom, BasicMaterials.enneperMaterial, rotationSpeed, x, y, z);
 }
 
 function addKleinBottle(obj, x, y, z) {
@@ -388,23 +427,23 @@ function addKleinBottle(obj, x, y, z) {
     }, 25, 25);
 
     const rotationSpeed = 0.5;
-    addRotatingSurface(obj, geom, materials.BasicMaterials.kleinBottleMaterial, rotationSpeed, x, y, z);
+    return addRotatingSurface(obj, geom, BasicMaterials.kleinBottleMaterial, rotationSpeed, x, y, z);
 }
 
-function addMobiusStrip(obj, x, y, z) {
+function addScherkSurface(obj, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
-        const width = 2;
-        const height = 1;
-        const posX = (width + height * v * Math.cos(u / 2)) * Math.cos(u);
-        const posY = (width + height * v * Math.cos(u / 2)) * Math.sin(u);
-        const posZ = height * v * Math.sin(u / 2);
+        const scale = 2.5; 
+        const posX = scale * u;
+        const posY = scale * v;
+        const posZ = scale * Math.log(Math.cos(v) / Math.cos(u));
         target.set(posX, posY, posZ);
     }, 64, 64);
 
     const rotationSpeed = 0.6;
-    addRotatingSurface(obj, geom, materials.BasicMaterials.mobiusStripMaterial, rotationSpeed, x, y, z);
+    return addRotatingSurface(obj, geom, BasicMaterials.scherkSurfaceMaterial, rotationSpeed, x, y, z);
 }
+
 
 function addCylinder(obj, x, y, z) {
     'use strict';
@@ -419,7 +458,7 @@ function addCylinder(obj, x, y, z) {
     }, 32, 32);
 
     const rotationSpeed = 0.75;
-    addRotatingSurface(obj, geom, materials.BasicMaterials.cylinderMaterial, rotationSpeed, x, y, z);
+    return addRotatingSurface(obj, geom, BasicMaterials.cylinderMaterial, rotationSpeed, x, y, z);
 }
 
 function addBox(obj, x, y, z) {
@@ -435,7 +474,7 @@ function addBox(obj, x, y, z) {
     }, 32, 32);
 
     const rotationSpeed = 0.75;
-    addRotatingSurface(obj, geom, materials.BasicMaterials.boxMaterial, rotationSpeed, x, y, z);
+    return addRotatingSurface(obj, geom, materials.BasicMaterials.boxMaterial, rotationSpeed, x, y, z);
 }
 
 function addEllipsoid(obj, x, y, z) {
@@ -451,7 +490,7 @@ function addEllipsoid(obj, x, y, z) {
     }, 64, 64);
 
     const rotationSpeed = 0.7;
-    addRotatingSurface(obj, geom, materials.BasicMaterials.ellipsoidMaterial, rotationSpeed, x, y, z);
+    return addRotatingSurface(obj, geom, BasicMaterials.ellipsoidMaterial, rotationSpeed, x, y, z);
 }
 
 function addHyperboloid(obj, x, y, z) {
@@ -469,7 +508,7 @@ function addHyperboloid(obj, x, y, z) {
     }, 50, 50);
 
     const rotationSpeed = 0.75;
-    addRotatingSurface(obj, geom, materials.BasicMaterials.hyperboloidMaterial, rotationSpeed, x, y, z);
+    return addRotatingSurface(obj, geom, BasicMaterials.hyperboloidMaterial, rotationSpeed, x, y, z);
 }
 
 function addPlane(obj, x, y, z){
@@ -642,10 +681,6 @@ function onKeyDown(e) {
         // Active ring 3 movement
         case '3':
             ref4.userData.moving = true;
-            break;
-        // Toggle wireframe
-        case '7':
-            toggleWireframe();
             break;
         // Change material - Lambert
         case 'Q':
