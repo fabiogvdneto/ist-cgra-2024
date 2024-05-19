@@ -6,13 +6,14 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js'
 
 
-//////////////////////
-/* GLOBAL VARIABLES */
-//////////////////////
+////////////////////////////////
+/* GLOBAL VARIABLES/CONSTANTS */
+////////////////////////////////
 const mainCamera = new THREE.PerspectiveCamera();
 const scene = new THREE.Scene();
 const clock = new THREE.Clock();
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+const renderer = new THREE.WebGLRenderer();
 
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
@@ -23,6 +24,8 @@ const objs = new THREE.Object3D();
 const innerRing = new THREE.Object3D();
 const midRing = new THREE.Object3D();
 const outerRing = new THREE.Object3D();
+
+let lightsOn = false;
 
 const foundation = { radius: 4, height: 30, color: 0x123235 };
 const plane =      { width: 150, height: 150 };
@@ -37,7 +40,7 @@ const BasicMaterials = {
     ringMaterial1: new THREE.MeshBasicMaterial({ color: ring1_info.color }),
     ringMaterial2: new THREE.MeshBasicMaterial({ color: ring2_info.color }),
     ringMaterial3: new THREE.MeshBasicMaterial({ color: ring3_info.color }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0x135D66}),
     donutMaterial: new THREE.MeshBasicMaterial({ color: 0xdddd00 }),
     enneperMaterial: new THREE.MeshBasicMaterial({ color: 0x990000 }),
     kleinBottleMaterial : new THREE.MeshBasicMaterial({ color: 0x11111 }),   
@@ -54,7 +57,7 @@ const NormalMaterials = {
     ringMaterial1: new THREE.MeshNormalMaterial({ color: ring1_info.color }),
     ringMaterial2: new THREE.MeshNormalMaterial({ color: ring2_info.color }),
     ringMaterial3: new THREE.MeshNormalMaterial({ color: ring3_info.color }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0x135D66}),
     donutMaterial: new THREE.MeshNormalMaterial({ color: 0xdddd00 }),
     enneperMaterial: new THREE.MeshNormalMaterial({ color: 0x990000 }),
     kleinBottleMaterial : new THREE.MeshNormalMaterial({ color: 0x11111 }),
@@ -71,7 +74,7 @@ const LambertMaterials = {
     ringMaterial1: new THREE.MeshLambertMaterial({ color: ring1_info.color }),
     ringMaterial2: new THREE.MeshLambertMaterial({ color: ring2_info.color }),
     ringMaterial3: new THREE.MeshLambertMaterial({ color: ring3_info.color }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0x135D66}),
     donutMaterial: new THREE.MeshLambertMaterial({ color: 0xdddd00 }),
     enneperMaterial: new THREE.MeshLambertMaterial({ color: 0xff0000 }),
     kleinBottleMaterial : new THREE.MeshLambertMaterial({ color: 0xff0000 }),
@@ -88,7 +91,7 @@ const PhongMaterials = {
     ringMaterial1: new THREE.MeshPhongMaterial({ color: ring1_info.color }),
     ringMaterial2: new THREE.MeshPhongMaterial({ color: ring2_info.color }),
     ringMaterial3: new THREE.MeshPhongMaterial({ color: ring3_info.color }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0x135D66}),
     donutMaterial: new THREE.MeshPhongMaterial({ color: 0xdddd00 }),
     enneperMaterial: new THREE.MeshPhongMaterial({ color: 0xff0000 }),
     kleinBottleMaterial: new THREE.MeshPhongMaterial({ color: 0xff0000 }),
@@ -105,7 +108,7 @@ const CartoonMaterials = {
     ringMaterial1: new THREE.MeshToonMaterial({ color: ring1_info.color }),
     ringMaterial2: new THREE.MeshToonMaterial({ color: ring2_info.color }),
     ringMaterial3: new THREE.MeshToonMaterial({ color: ring3_info.color }),
-    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0xFA8072}),
+    mobiusStripMaterial: new THREE.MeshBasicMaterial({ color: 0x135D66}),
     donutMaterial: new THREE.MeshToonMaterial({ color: 0xdddd00 }),
     enneperMaterial: new THREE.MeshToonMaterial({ color: 0xff0000 }),
     kleinBottleMaterial: new THREE.MeshToonMaterial({ color: 0xff0000 }),
@@ -279,7 +282,8 @@ function createRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
     };
 
     const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    return addMesh(obj, geom, material, x, y, z);
+    const mesh = addMesh(obj, geom, material, x, y, z);
+    return mesh;
 }
 
 function addMobiusStrip(obj, r, w, segments, x, y, z) {
@@ -329,7 +333,7 @@ function createRotatingSurface(geometry, material, rotationAxis, rotationSpeed) 
 }
 
 function addRotatingSurface(ref, geom, material, rotationSpeed, x, y, z) {
-    const rotationAxis = new THREE.Vector3(0, 1, 0); // Eixo Y
+    const rotationAxis = new THREE.Vector3(0, 1, 0); // Y-axis
     const surface = createRotatingSurface(geom, material, rotationAxis, rotationSpeed);
     surface.position.set(x, y, z);
     ref.add(surface);
@@ -384,7 +388,22 @@ function addObjectsToRing(ref, ring, ring_info, z_deviation) {
     }
 }
 
-function addDonut(obj, x, y, z) {
+function addSpotLight(ref, target, x, y, z) {
+    'use strict';
+    const light = new THREE.SpotLight(0xffffff);
+
+    light.position.set(x, y + 2, z);
+    light.target = target;
+    light.intensity = 10;
+    light.distance = 15;
+    light.penumbra = 0;
+    light.decay = 2;
+
+    ref.add(light);
+    target.userData.light = light;
+}
+
+function addDonut(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const radius = 1; 
@@ -398,10 +417,14 @@ function addDonut(obj, x, y, z) {
     }, 50, 50);
 
     const rotationSpeed = 0.75;
-    return addRotatingSurface(obj, geom, BasicMaterials.donutMaterial, rotationSpeed, x, y, z);
+    const donut = addRotatingSurface(ref, geom, BasicMaterials.donutMaterial, rotationSpeed, x, y, z);
+
+    addSpotLight(ref, donut, x, y, z);
+
+    return donut;
 }
 
-function addEnneper(obj, x, y, z) {
+function addEnneper(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const uVal = 0.5 * Math.PI * (u - 0.5); 
@@ -415,10 +438,14 @@ function addEnneper(obj, x, y, z) {
     }, 25, 25);
 
     const rotationSpeed = 0.85;
-    return addRotatingSurface(obj, geom, BasicMaterials.enneperMaterial, rotationSpeed, x, y, z);
+    const enneper = addRotatingSurface(ref, geom, BasicMaterials.enneperMaterial, rotationSpeed, x, y, z);
+
+    addSpotLight(ref, enneper, x, y, z);
+
+    return enneper;
 }
 
-function addKleinBottle(obj, x, y, z) {
+function addKleinBottle(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const posX = 1.2 * (2 + Math.cos(u) * Math.sin(v) - Math.sin(u) * Math.sin(2 * v)) * Math.cos(u);
@@ -428,10 +455,14 @@ function addKleinBottle(obj, x, y, z) {
     }, 25, 25);
 
     const rotationSpeed = 0.5;
-    return addRotatingSurface(obj, geom, BasicMaterials.kleinBottleMaterial, rotationSpeed, x, y, z);
+    const kleinBottle = addRotatingSurface(ref, geom, BasicMaterials.kleinBottleMaterial, rotationSpeed, x, y, z);
+
+    addSpotLight(ref, kleinBottle, x, y, z); 
+
+    return kleinBottle;
 }
 
-function addScherkSurface(obj, x, y, z) {
+function addScherkSurface(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const scale = 2.5; 
@@ -442,11 +473,14 @@ function addScherkSurface(obj, x, y, z) {
     }, 64, 64);
 
     const rotationSpeed = 0.6;
-    return addRotatingSurface(obj, geom, BasicMaterials.scherkSurfaceMaterial, rotationSpeed, x, y, z);
+    const scherkSurface = addRotatingSurface(ref, geom, BasicMaterials.scherkSurfaceMaterial, rotationSpeed, x, y, z);
+
+    addSpotLight(ref, scherkSurface, x, y, z); 
+
+    return scherkSurface;
 }
 
-
-function addCylinder(obj, x, y, z) {
+function addCylinder(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const theta = 2 * Math.PI * u;
@@ -459,10 +493,14 @@ function addCylinder(obj, x, y, z) {
     }, 32, 32);
 
     const rotationSpeed = 0.75;
-    return addRotatingSurface(obj, geom, BasicMaterials.cylinderMaterial, rotationSpeed, x, y, z);
+    const cylinder = addRotatingSurface(ref, geom, BasicMaterials.cylinderMaterial, rotationSpeed, x, y, z);
+
+    addSpotLight(ref, cylinder, x, y, z); 
+
+    return cylinder;
 }
 
-function addBox(obj, x, y, z) {
+function addBox(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const width = 1.5; 
@@ -475,10 +513,14 @@ function addBox(obj, x, y, z) {
     }, 32, 32);
 
     const rotationSpeed = 0.75;
-    return addRotatingSurface(obj, geom, materials.BasicMaterials.boxMaterial, rotationSpeed, x, y, z);
+    const box = addRotatingSurface(ref, geom, materials.BasicMaterials.boxMaterial, rotationSpeed, x, y, z);
+
+    addSpotLight(ref, box, x, y, z); 
+
+    return box;
 }
 
-function addEllipsoid(obj, x, y, z) {
+function addEllipsoid(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const a = 1.5; // X-axis radius
@@ -491,10 +533,14 @@ function addEllipsoid(obj, x, y, z) {
     }, 64, 64);
 
     const rotationSpeed = 0.7;
-    return addRotatingSurface(obj, geom, BasicMaterials.ellipsoidMaterial, rotationSpeed, x, y, z);
+    const ellipsoid = addRotatingSurface(ref, geom, BasicMaterials.ellipsoidMaterial, rotationSpeed, x, y, z);
+
+    addSpotLight(ref, ellipsoid, x, y, z); 
+
+    return ellipsoid;
 }
 
-function addHyperboloid(obj, x, y, z) {
+function addHyperboloid(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const a = 1.5; 
@@ -509,8 +555,13 @@ function addHyperboloid(obj, x, y, z) {
     }, 50, 50);
 
     const rotationSpeed = 0.75;
-    return addRotatingSurface(obj, geom, BasicMaterials.hyperboloidMaterial, rotationSpeed, x, y, z);
+    const hyperboloid = addRotatingSurface(ref, geom, BasicMaterials.hyperboloidMaterial, rotationSpeed, x, y, z);
+
+    addSpotLight(ref, hyperboloid, x, y, z); 
+
+    return hyperboloid;
 }
+
 
 function addPlane(obj, x, y, z){
     'use strict';
@@ -611,6 +662,15 @@ function update(){
         });
     });
 
+    // spotlight of parametric surfaces
+    [ref2, ref3, ref4].forEach(ref => {
+        ref.children.forEach(mesh => {
+            if (mesh.userData.light) {
+                mesh.userData.light.visible = lightsOn;
+            }
+        });
+    });
+
    setCurrentMaterial();
 }
 
@@ -667,7 +727,6 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-
     const key = e.key.toUpperCase();
 
     switch(key){
@@ -699,9 +758,15 @@ function onKeyDown(e) {
         case 'R':
             changeNormal = true;
             break;
+        // Activate the lights of the parametric surfaces
+        case 'P':
+            lightsOn = true;
+            break;
+        // Deactivate the lights of the parametric surfaces
+        case 'S':
+            lightsOn = false;
+            break;
     }
-
-
 }
 
 ///////////////////////
@@ -709,7 +774,6 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e){
     'use strict';
-
     const key = e.key.toUpperCase();
 
     switch(key){
