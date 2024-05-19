@@ -9,11 +9,10 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 ////////////////////////////////
 /* GLOBAL VARIABLES/CONSTANTS */
 ////////////////////////////////
-const mainCamera = new THREE.PerspectiveCamera();
+const renderer = new THREE.WebGLRenderer();
 const scene = new THREE.Scene();
 const clock = new THREE.Clock();
-
-const renderer = new THREE.WebGLRenderer();
+const mainCamera = new THREE.PerspectiveCamera();
 
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
@@ -24,9 +23,9 @@ const objs = new THREE.Group();
 const foundation = { radius: 4, height: 30, color: 0x123235 };
 const plane =      { width: 150, height: 150 };
 const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
-const ring1_info = { innerR: foundation.radius, outerR: foundation.radius + 5, h: 5 , color: 0x003C43 };
-const ring2_info = { innerR: ring1_info.outerR, outerR: ring1_info.outerR + 5, h: 5 , color: 0x135D66 };
-const ring3_info = { innerR: ring2_info.outerR, outerR: ring2_info.outerR + 5, h: 5 , color: 0x77B0AA };
+const ring1_info = { innerR: 4,  outerR: 10, h: 3, color: 0x003C43 };
+const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0x135D66 };
+const ring3_info = { innerR: 16, outerR: 22, h: 3, color: 0x77B0AA };
 
 const basicMaterials = {
     foundation:    new THREE.MeshBasicMaterial({ color: 0x123235 }),
@@ -125,17 +124,14 @@ function setCurrentMaterial() {
     ref1.userData.foundation.material = materials.foundation;
     ref1.userData.skydome.material = materials.skydome;
     ref1.userData.mobiusStrip.material = materials.mobiusStrip;
-    ref2.userData.ring.material = materials.ring1;
-    ref3.userData.ring.material = materials.ring2;
-    ref4.userData.ring.material = materials.ring3;
-    objs.userData.donut.material = materials.donut;
-    objs.userData.enneper.material = materials.enneper;
-    objs.userData.klein.material = materials.kleinBottle;
-    objs.userData.scherkSurface.material = materials.scherkSurface;
-    objs.userData.cylinder.material = materials.cylinder;
-    objs.userData.box.material = materials.box;
-    objs.userData.ellipsoid.material = materials.ellipsoid;
-    objs.userData.hyperboloid.material = materials.hyperboloid;
+
+    [ref2, ref3, ref4].forEach(ref => {
+        ref.children.forEach(mesh => {
+            if (mesh.material) {
+                mesh.material = materials[mesh.name];
+            }
+        });
+    });
 }
 
 /////////////////////
@@ -195,26 +191,29 @@ function addCarousel(obj, x, y, z) {
     addMidRing(   ref3, 0, 0, 0);
     addOuterRing( ref4, 0, 0, 0);
 
-    addObjectsToRing(ref2, ref2.userData.ring, ring1_info);
-    addObjectsToRing(ref3, ref3.userData.ring, ring2_info);
-    addObjectsToRing(ref4, ref4.userData.ring, ring3_info);
+    addObjectsToRing(ref2, ring1_info);
+    addObjectsToRing(ref3, ring2_info);
+    addObjectsToRing(ref4, ring3_info);
     
     obj.add(ref1, ref2, ref3, ref4);
 }
 
 function addInnerRing(obj, x, y, z) {
     'use strict';
-    obj.userData.ring = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, basicMaterials.ring1);
+    const mesh = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, basicMaterials.ring1);
+    mesh.name = "ring1";
 }
 
 function addMidRing(obj, x, y, z) {
     'use strict';
-    obj.userData.ring = addRing(obj, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, basicMaterials.ring2);
+    const mesh = addRing(obj, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, basicMaterials.ring2);
+    mesh.name = "ring2";
 }
 
 function addOuterRing(obj, x, y, z) {
     'use strict';
-    obj.userData.ring = addRing(obj, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, basicMaterials.ring3);
+    const mesh = addRing(obj, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, basicMaterials.ring3);
+    mesh.name = "ring3";
 }
 
 function addRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
@@ -279,7 +278,7 @@ function addRotatingSurface(ref, geom, material, rotationSpeed, x, y, z) {
     return surface;
 }
 
-function addObjectsToRing(ref, ring, ring_info) {
+function addObjectsToRing(obj, ring_info) {
     'use strict';
     const angleIncrement = Math.PI / 4; // 45 degrees
     const numObjects = 8;
@@ -290,34 +289,42 @@ function addObjectsToRing(ref, ring, ring_info) {
 
     for (let i = 0; i < numObjects; i++) {
         const angle = i * angleIncrement;
-        const x = ring_info.outerR * Math.cos(angle);
-        const y = ring.position.y;
-        const z = ring_info.outerR * Math.sin(angle);
+        const y = ring_info.h;
+        const x = (ring_info.outerR - (ring_info.outerR - ring_info.innerR)/2) * Math.cos(angle);
+        const z = (ring_info.outerR - (ring_info.outerR - ring_info.innerR)/2) * Math.sin(angle);
 
         switch (objectIndices[i]) {
             case 0:
-                objs.userData.donut = addDonut(ref, x, y, z);
+                obj.userData.donut = addDonut(obj, x, y, z);
+                obj.userData.donut.name = "donut";
                 break;
             case 1:
-                objs.userData.enneper = addEnneper(ref, x, y, z);
+                obj.userData.enneper = addEnneper(obj, x, y, z);
+                obj.userData.enneper.name = "enneper";
                 break;
             case 2:
-                objs.userData.klein = addKleinBottle(ref, x, y, z);
+                obj.userData.klein = addKleinBottle(obj, x, y, z);
+                obj.userData.klein.name = "kleinBottle";
                 break;
             case 3:
-                objs.userData.scherkSurface = addScherkSurface(ref, x, y, z);
+                obj.userData.scherkSurface = addScherkSurface(obj, x, y, z);
+                obj.userData.scherkSurface.name = "scherkSurface";
                 break;
             case 4:
-                objs.userData.cylinder = addCylinder(ref, x, y, z);
+                obj.userData.cylinder = addCylinder(obj, x, y, z);
+                obj.userData.cylinder.name = "cylinder";
                 break;
             case 5:
-                objs.userData.box = addBox(ref, x, y, z);
+                obj.userData.box = addBox(obj, x, y, z);
+                obj.userData.box.name = "box";
                 break;
             case 6:
-                objs.userData.ellipsoid = addEllipsoid(ref, x, y, z);
+                obj.userData.ellipsoid = addEllipsoid(obj, x, y, z);
+                obj.userData.ellipsoid.name = "ellipsoid";
                 break;
             case 7:
-                objs.userData.hyperboloid = addHyperboloid(ref, x, y, z);
+                obj.userData.hyperboloid = addHyperboloid(obj, x, y, z);
+                obj.userData.hyperboloid.name = "hyperboloid";
                 break;
         }
     }
@@ -352,7 +359,7 @@ function addDonut(ref, x, y, z) {
     }, 50, 50);
 
     const rotationSpeed = 0.75;
-    const donut = addRotatingSurface(ref, geom, basicMaterials.donut, rotationSpeed, x, y, z);
+    const donut = addRotatingSurface(ref, geom, materials.donut, rotationSpeed, x, y, z);
 
     addSpotLight(ref, donut, x, y, z);
 
@@ -727,7 +734,7 @@ function onKeyUp(e) {
         case 'r':
             materials = basicMaterials;
             break;
-            
+
         */
     }
 }
