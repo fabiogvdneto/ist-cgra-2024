@@ -115,8 +115,10 @@ const cartoonMaterials = {
 }
 
 let materials = basicMaterials;
-let lightsOn = false;
+let lightsOn = true;
+let ParametriclightsOn = false;
 let DirectionalLightOn = true;
+
 
 ////////////////////////
 /* AUXILIAR FUNCTIONS */
@@ -140,7 +142,11 @@ function setCurrentMaterial() {
 function toggleDirectionalLight() {
     'use strict';
     DirectionalLightOn = !DirectionalLightOn;
-    directionalLight.visible = DirectionalLightOn;
+}
+
+function toggleLigths() {
+    'use strict';
+    lightsOn = !lightsOn;
 }
 
 
@@ -620,16 +626,30 @@ function update() {
         });
     });
 
-    // spotlight of parametric surfaces
-    [ref2, ref3, ref4].forEach(ref => {
-        ref.children.forEach(mesh => {
-            if (mesh.userData.light) {
-                mesh.userData.light.visible = lightsOn;
-            }
+    if (lightsOn) { 
+        ambientLight.visible = lightsOn;
+        directionalLight.visible = DirectionalLightOn;
+        [ref2, ref3, ref4].forEach(ref => {
+            ref.children.forEach(mesh => {
+                if (mesh.userData.light) {
+                    mesh.userData.light.visible = ParametriclightsOn;
+                }
+            });
         });
-    });
+    } else {
+        ambientLight.visible = lightsOn;
+        directionalLight.visible = lightsOn;
+        [ref2, ref3, ref4].forEach(ref => {
+            ref.children.forEach(mesh => {
+                if (mesh.userData.light) {
+                    mesh.userData.light.visible = lightsOn;
+                }
+            });
+        });
+    }
 
     ref1.userData.foundation.rotateY(0.50 * delta);
+
 
    setCurrentMaterial();
 }
@@ -718,14 +738,17 @@ function onKeyDown(e) {
             break;
         // Activate the lights of the parametric surfaces
         case 'p':
-            lightsOn = true;
+            ParametriclightsOn = true;
             break;
         // Deactivate the lights of the parametric surfaces
         case 's':
-            lightsOn = false;
+            ParametriclightsOn = false;
             break;
         case 'd':
             toggleDirectionalLight();
+            break;
+        case 't':
+            toggleLigths();
             break;
     }
 }
