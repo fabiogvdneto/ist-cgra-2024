@@ -19,16 +19,16 @@ const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
 const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
-const objs = new THREE.Object3D();
+const objs = new THREE.Group();
 
 let lightsOn = false;
 
 const foundation = { radius: 4, height: 30, color: 0x123235 };
 const plane =      { width: 150, height: 150 };
 const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
-const ring1_info =      { innerR: foundation.radius, outerR: foundation.radius + 5, h: 5 , color: 0x003C43 };
-const ring2_info =      { innerR: ring1_info.outerR, outerR: ring1_info.outerR + 5, h: 5 , color: 0x135D66 };
-const ring3_info =      { innerR: ring2_info.outerR, outerR: ring2_info.outerR + 5, h: 5 , color: 0x77B0AA };
+const ring1_info = { innerR: foundation.radius, outerR: foundation.radius + 5, h: 5 , color: 0x003C43 };
+const ring2_info = { innerR: ring1_info.outerR, outerR: ring1_info.outerR + 5, h: 5 , color: 0x135D66 };
+const ring3_info = { innerR: ring2_info.outerR, outerR: ring2_info.outerR + 5, h: 5 , color: 0x77B0AA };
 
 const basicMaterials = {
     foundation: new THREE.MeshBasicMaterial({ color: 0x123235 }),
@@ -39,12 +39,12 @@ const basicMaterials = {
     mobiusStrip: new THREE.MeshBasicMaterial({ color: 0x135D66}),
     donut: new THREE.MeshBasicMaterial({ color: 0xdddd00 }),
     enneper: new THREE.MeshBasicMaterial({ color: 0x990000 }),
-    kleinBottle : new THREE.MeshBasicMaterial({ color: 0x11111 }),   
+    kleinBottle : new THREE.MeshBasicMaterial({ color: 0x11111 }),
     scherkSurface: new THREE.MeshBasicMaterial({ color: 0xaaa00 }),
     cylinder: new THREE.MeshBasicMaterial({ color: 0x00ffa0 }),
     box: new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-    ellipsoid: new THREE.MeshBasicMaterial({ color: 0xfffaaa }), 
-    hyperboloid: new THREE.MeshBasicMaterial({ color: 0xaa20af }) 
+    ellipsoid: new THREE.MeshBasicMaterial({ color: 0xfffaaa }),
+    hyperboloid: new THREE.MeshBasicMaterial({ color: 0xaa20af })
 }
 
 const normalMaterials = {
@@ -60,8 +60,8 @@ const normalMaterials = {
     scherkSurface: new THREE.MeshNormalMaterial({ color: 0xaaa00 }),
     cylinder: new THREE.MeshNormalMaterial({ color: 0x00ffa0 }),
     box: new THREE.MeshNormalMaterial({ color: 0x0000ff }),
-    ellipsoid: new THREE.MeshNormalMaterial({ color: 0xff00ff }), 
-    hyperboloid: new THREE.MeshNormalMaterial({ color: 0xaa20af }) 
+    ellipsoid: new THREE.MeshNormalMaterial({ color: 0xff00ff }),
+    hyperboloid: new THREE.MeshNormalMaterial({ color: 0xaa20af })
 }
 
 const lambertMaterials = {
@@ -77,8 +77,8 @@ const lambertMaterials = {
     scherkSurface: new THREE.MeshLambertMaterial({ color: 0xaaa00 }),
     cylinder: new THREE.MeshLambertMaterial({ color: 0x00ffa0 }),
     box: new THREE.MeshLambertMaterial({ color: 0x0000ff }),
-    ellipsoid: new THREE.MeshLambertMaterial({ color: 0xff00ff }), 
-    hyperboloid: new THREE.MeshLambertMaterial({ color: 0xaa20af }) 
+    ellipsoid: new THREE.MeshLambertMaterial({ color: 0xff00ff }),
+    hyperboloid: new THREE.MeshLambertMaterial({ color: 0xaa20af })
 }
 
 const phongMaterials = {
@@ -94,7 +94,7 @@ const phongMaterials = {
     scherkSurface: new THREE.MeshPhongMaterial({ color: 0xaaa00 }),
     cylinder: new THREE.MeshPhongMaterial({ color: 0x00ffa0 }),
     box: new THREE.MeshPhongMaterial({ color: 0x0000ff }),
-    ellipsoid: new THREE.MeshPhongMaterial({ color: 0xff00ff }), 
+    ellipsoid: new THREE.MeshPhongMaterial({ color: 0xff00ff }),
     hyperboloid: new THREE.MeshPhongMaterial({ color: 0xaa20af })
 }
 
@@ -146,7 +146,7 @@ function setCurrentMaterial() {
     } else if (changeNormal) {
         currentMaterialType = 'NormalMaterials';
     } else {
-        currentMaterialType = 'BasicMaterials'; 
+        currentMaterialType = 'BasicMaterials';
     }
 
     ref1.userData.foundation.material = materials[currentMaterialType].foundation;
@@ -222,9 +222,9 @@ function addCarousel(obj, x, y, z) {
     addMidRing(   ref3, 0, 0, 0);
     addOuterRing( ref4, 0, 0, 0);
 
-    addObjectsToRing(ref2, ref2.userData.ring, ring1_info);  
-    addObjectsToRing(ref3, ref3.userData.ring, ring2_info); 
-    addObjectsToRing(ref4, ref4.userData.ring, ring3_info); 
+    addObjectsToRing(ref2, ref2.userData.ring, ring1_info);
+    addObjectsToRing(ref3, ref3.userData.ring, ring2_info);
+    addObjectsToRing(ref4, ref4.userData.ring, ring3_info);
     
     obj.add(ref1, ref2, ref3, ref4);
 }
@@ -325,10 +325,10 @@ function addObjectsToRing(ref, ring, ring_info) {
     objectIndices.sort(() => Math.random() - 0.5);
 
     for (let i = 0; i < numObjects; i++) {
-        const angle = i * angleIncrement; 
-        const x = (ring_info.outerR) * Math.cos(angle); 
-        const y = ring.position.y; 
-        const z = (ring_info.outerR) * Math.sin(angle); 
+        const angle = i * angleIncrement;
+        const x = (ring_info.outerR) * Math.cos(angle);
+        const y = ring.position.y;
+        const z = (ring_info.outerR) * Math.sin(angle);
 
         switch (objectIndices[i]) {
             case 0:
@@ -377,8 +377,8 @@ function addSpotLight(ref, target, x, y, z) {
 function addDonut(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
-        const radius = 1; 
-        const tubeRadius = 0.3; 
+        const radius = 1;
+        const tubeRadius = 0.3;
         const phi = 2 * Math.PI * u;
         const theta = 2 * Math.PI * v;
         const posX = (radius + tubeRadius * Math.cos(theta)) * Math.cos(phi);
@@ -398,8 +398,8 @@ function addDonut(ref, x, y, z) {
 function addEnneper(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
-        const uVal = 0.5 * Math.PI * (u - 0.5); 
-        const vVal = 0.5 * Math.PI * (v - 0.5); 
+        const uVal = 0.5 * Math.PI * (u - 0.5);
+        const vVal = 0.5 * Math.PI * (v - 0.5);
         const u2 = uVal * uVal;
         const v2 = vVal * vVal;
         const posX = 1.3 * uVal * (1 - v2 / 3 + u2 / 30);
@@ -428,7 +428,7 @@ function addKleinBottle(ref, x, y, z) {
     const rotationSpeed = 0.5;
     const kleinBottle = addRotatingSurface(ref, geom, basicMaterials.kleinBottle, rotationSpeed, x, y, z);
 
-    addSpotLight(ref, kleinBottle, x, y, z); 
+    addSpotLight(ref, kleinBottle, x, y, z);
 
     return kleinBottle;
 }
@@ -436,7 +436,7 @@ function addKleinBottle(ref, x, y, z) {
 function addScherkSurface(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
-        const scale = 2.5; 
+        const scale = 2.5;
         const posX = scale * u;
         const posY = scale * v;
         const posZ = scale * Math.log(Math.cos(v) / Math.cos(u));
@@ -455,8 +455,8 @@ function addCylinder(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const theta = 2 * Math.PI * u;
-        const height = 3 * (v - 0.5); 
-        const radius = 1; 
+        const height = 3 * (v - 0.5);
+        const radius = 1;
         const posX = radius * Math.cos(theta);
         const posY = radius * Math.sin(theta);
         const posZ = height;
@@ -466,7 +466,7 @@ function addCylinder(ref, x, y, z) {
     const rotationSpeed = 0.75;
     const cylinder = addRotatingSurface(ref, geom, basicMaterials.cylinder, rotationSpeed, x, y, z);
 
-    addSpotLight(ref, cylinder, x, y, z); 
+    addSpotLight(ref, cylinder, x, y, z);
 
     return cylinder;
 }
@@ -474,9 +474,9 @@ function addCylinder(ref, x, y, z) {
 function addBox(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
-        const width = 1.5; 
-        const height = 1.5; 
-        const depth = 1.5; 
+        const width = 1.5;
+        const height = 1.5;
+        const depth = 1.5;
         const posX = (u - 0.5) * width;
         const posY = (v - 0.5) * height;
         const posZ = (Math.random() - 0.5) * depth;
@@ -683,7 +683,7 @@ function animate() {
 ////////////////////////////
 /* RESIZE WINDOW CALLBACK */
 ////////////////////////////
-function onResize() { 
+function onResize() {
     'use strict';
     renderer.setSize(window.innerWidth, window.innerHeight);
     mainCamera.aspect = window.innerWidth / window.innerHeight;
@@ -767,7 +767,7 @@ function onKeyUp(e) {
         // Change material - Normal
         case 'r':
             changeNormal = false;
-            break;  
+            break;
     }
 }
 
