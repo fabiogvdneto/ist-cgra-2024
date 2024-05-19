@@ -13,6 +13,8 @@ const renderer = new THREE.WebGLRenderer();
 const scene = new THREE.Scene();
 const clock = new THREE.Clock();
 const mainCamera = new THREE.PerspectiveCamera();
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0xffa500, 0.3);
 
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
@@ -21,7 +23,7 @@ const ref4 = new THREE.Object3D();
 const objs = new THREE.Group();
 
 const foundation = { radius: 4, height: 30, color: 0x123235 };
-const plane =      { width: 150, height: 150 };
+const plane =      { width: 350};
 const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
 const ring1_info = { innerR: 4,  outerR: 10, h: 3, color: 0x003C43 };
 const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0x135D66 };
@@ -50,12 +52,12 @@ const normalMaterials = {
     ring1:         new THREE.MeshNormalMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshNormalMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshNormalMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x135D66}),
+    mobiusStrip:   new THREE.MeshNormalMaterial({ color: 0x135D66}),
     donut:         new THREE.MeshNormalMaterial({ color: 0xdddd00 }),
     enneper:       new THREE.MeshNormalMaterial({ color: 0x990000 }),
     kleinBottle :  new THREE.MeshNormalMaterial({ color: 0x11111 }),
     scherkSurface: new THREE.MeshNormalMaterial({ color: 0xaaa00 }),
-    paraboloid:      new THREE.MeshNormalMaterial({ color: 0x00ffa0 }),
+    paraboloid:    new THREE.MeshNormalMaterial({ color: 0x00ffa0 }),
     box:           new THREE.MeshNormalMaterial({ color: 0x0000ff }),
     ellipsoid:     new THREE.MeshNormalMaterial({ color: 0xff00ff }),
     hyperboloid:   new THREE.MeshNormalMaterial({ color: 0xaa20af })
@@ -67,12 +69,12 @@ const lambertMaterials = {
     ring1:         new THREE.MeshLambertMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshLambertMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshLambertMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x135D66}),
+    mobiusStrip:   new THREE.MeshLambertMaterial({ color: 0x135D66}),
     donut:         new THREE.MeshLambertMaterial({ color: 0xdddd00 }),
     enneper:       new THREE.MeshLambertMaterial({ color: 0xff0000 }),
     kleinBottle :  new THREE.MeshLambertMaterial({ color: 0xff0000 }),
     scherkSurface: new THREE.MeshLambertMaterial({ color: 0xaaa00 }),
-    paraboloid:      new THREE.MeshLambertMaterial({ color: 0x00ffa0 }),
+    paraboloid:    new THREE.MeshLambertMaterial({ color: 0x00ffa0 }),
     box:           new THREE.MeshLambertMaterial({ color: 0x0000ff }),
     ellipsoid:     new THREE.MeshLambertMaterial({ color: 0xff00ff }),
     hyperboloid:   new THREE.MeshLambertMaterial({ color: 0xaa20af })
@@ -84,12 +86,12 @@ const phongMaterials = {
     ring1:         new THREE.MeshPhongMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshPhongMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshPhongMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x135D66}),
+    mobiusStrip:   new THREE.MeshPhongMaterial({ color: 0x135D66}),
     donut:         new THREE.MeshPhongMaterial({ color: 0xdddd00 }),
     enneper:       new THREE.MeshPhongMaterial({ color: 0xff0000 }),
     kleinBottle:   new THREE.MeshPhongMaterial({ color: 0xff0000 }),
     scherkSurface: new THREE.MeshPhongMaterial({ color: 0xaaa00 }),
-    paraboloid:      new THREE.MeshPhongMaterial({ color: 0x00ffa0 }),
+    paraboloid:    new THREE.MeshPhongMaterial({ color: 0x00ffa0 }),
     box:           new THREE.MeshPhongMaterial({ color: 0x0000ff }),
     ellipsoid:     new THREE.MeshPhongMaterial({ color: 0xff00ff }),
     hyperboloid:   new THREE.MeshPhongMaterial({ color: 0xaa20af })
@@ -101,12 +103,12 @@ const cartoonMaterials = {
     ring1:         new THREE.MeshToonMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshToonMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshToonMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x135D66}),
+    mobiusStrip:   new THREE.MeshToonMaterial({ color: 0x135D66}),
     donut:         new THREE.MeshToonMaterial({ color: 0xdddd00 }),
     enneper:       new THREE.MeshToonMaterial({ color: 0xff0000 }),
     kleinBottle:   new THREE.MeshToonMaterial({ color: 0xff0000 }),
     scherkSurface: new THREE.MeshToonMaterial({ color: 0xaaa00 }),
-    paraboloid:      new THREE.MeshToonMaterial({ color: 0x00ffa0 }),
+    paraboloid:    new THREE.MeshToonMaterial({ color: 0x00ffa0 }),
     box:           new THREE.MeshToonMaterial({ color: 0x0000ff }),
     ellipsoid:     new THREE.MeshToonMaterial({ color: 0xff00ff }), 
     hyperboloid:   new THREE.MeshToonMaterial({ color: 0xaa20af })
@@ -114,6 +116,7 @@ const cartoonMaterials = {
 
 let materials = basicMaterials;
 let lightsOn = false;
+let DirectionalLightOn = true;
 
 ////////////////////////
 /* AUXILIAR FUNCTIONS */
@@ -134,6 +137,13 @@ function setCurrentMaterial() {
     });
 }
 
+function toggleDirectionalLight() {
+    'use strict';
+    DirectionalLightOn = !DirectionalLightOn;
+    directionalLight.visible = DirectionalLightOn;
+}
+
+
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
@@ -142,6 +152,7 @@ function createScene() {
     scene.background = new THREE.Color('aliceblue');
 
     createCamera();
+    createLigths();
     addPlane(scene, 0, 0, 0);
     addSkydome(scene, 0, 0, 0);
     addCarousel(scene, 0, 0, 0);
@@ -153,7 +164,7 @@ function createScene() {
 //////////////////////
 function createCamera() {
     'use strict';
-    mainCamera.position.set(80, 100, 80);
+    mainCamera.position.set(0.5*(plane.width/2), 0.6*(plane.width/2), 0.512*(plane.width/2));
     mainCamera.lookAt(scene.position);
 }
 
@@ -161,6 +172,14 @@ function createCamera() {
 /* CREATE LIGHT(S) */
 /////////////////////
 
+function createLigths() {   
+    'use strict';
+
+    directionalLight.position.set(1, 60, 1); // angle
+    
+    scene.add(directionalLight);
+    scene.add(ambientLight);
+}
 
 ////////////////////////
 /* CREATE OBJECT3D(S) */
@@ -508,7 +527,7 @@ function addHyperboloid(ref, x, y, z) {
 function addPlane(obj, x, y, z) {
     'use strict';
     const planeMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(150, 150),
+        new THREE.PlaneGeometry(plane.width, plane.width),
         new THREE.MeshBasicMaterial({ color: 0xEF767A, wireframe: false, side: THREE.DoubleSide })
     );
     
@@ -704,6 +723,9 @@ function onKeyDown(e) {
         // Deactivate the lights of the parametric surfaces
         case 's':
             lightsOn = false;
+            break;
+        case 'd':
+            toggleDirectionalLight();
             break;
     }
 }
