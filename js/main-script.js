@@ -668,6 +668,8 @@ function render() {
 function init() {
     'use strict';
     document.body.appendChild(renderer.domElement);
+    document.body.appendChild(VRButton.createButton(renderer));
+    renderer.xr.enabled = true;
 
     ref2.userData = { moving: false, direction: 1 };
     ref3.userData = { moving: false, direction: 1 };
@@ -689,7 +691,7 @@ function init() {
 function animate() {
     'use strict';
     update();
-    render();
+    renderer.setAnimationLoop(render);
     requestAnimationFrame(animate);
 }
 
