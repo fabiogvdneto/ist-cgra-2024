@@ -21,7 +21,7 @@ const ref4 = new THREE.Object3D();
 const objs = new THREE.Group();
 
 const foundation = { radius: 4, height: 30, color: 0x123235 };
-const plane =      { width: 150, height: 150 };
+const plane =      { width: 400, height: 400 };
 const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
 const ring1_info = { innerR: 4,  outerR: 10, h: 3, color: 0x003C43 };
 const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0x135D66 };
@@ -507,7 +507,7 @@ function addHyperboloid(ref, x, y, z) {
 function addPlane(obj, x, y, z) {
     'use strict';
     const planeMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(150, 150),
+        new THREE.PlaneGeometry(plane.width, plane.height),
         new THREE.MeshBasicMaterial({ color: 0xEF767A, wireframe: false, side: THREE.DoubleSide })
     );
     
