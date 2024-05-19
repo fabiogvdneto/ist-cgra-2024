@@ -213,38 +213,35 @@ function addFoundation(obj, x, y, z) {
 function addCarousel(obj, x, y, z) {
     'use strict';
     ref1.position.set(x, y, z);
-    ref2.position.set(x, y, z);
-    ref3.position.set(x, y, z);
-    ref4.position.set(x, y, z);
+    ref2.position.set(x, y + foundation.height/3,   z);
+    ref3.position.set(x, y + foundation.height*2/3, z);
+    ref4.position.set(x, y + foundation.height,     z);
 
     addFoundation(ref1, 0, foundation.height/2, 0);
-    addInnerRing(ref2, 0, foundation.height/3, 0);
-    addMidRing(ref3, 0, foundation.height * (2/3), 0);
-    addOuterRing(ref4, 0, foundation.height, 0);
+    addInnerRing( ref2, 0, 0, 0);
+    addMidRing(   ref3, 0, 0, 0);
+    addOuterRing( ref4, 0, 0, 0);
 
     addObjectsToRing(ref2, ref2.userData.ring, ring1_info);  
     addObjectsToRing(ref3, ref3.userData.ring, ring2_info); 
     addObjectsToRing(ref4, ref4.userData.ring, ring3_info); 
-
-    obj.add(ref1);
-    obj.add(ref2);
-    obj.add(ref3);
-    obj.add(ref4);
+    
+    obj.add(ref1, ref2, ref3, ref4);
 }
 
 function addInnerRing(obj, x, y, z) {
     'use strict';
-    ref2.userData.ring = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, basicMaterials.ring1);
+    obj.userData.ring = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, basicMaterials.ring1);
 }
 
 function addMidRing(obj, x, y, z) {
     'use strict';
-    ref3.userData.ring = addRing(obj, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, basicMaterials.ring2);
+    obj.userData.ring = addRing(obj, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, basicMaterials.ring2);
 }
 
 function addOuterRing(obj, x, y, z) {
     'use strict';
-    ref4.userData.ring = addRing(obj, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, basicMaterials.ring3);
+    obj.userData.ring = addRing(obj, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, basicMaterials.ring3);
 }
 
 function addRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
@@ -252,8 +249,8 @@ function addRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
     const shape = new THREE.Shape();
     const holePath = new THREE.Path();
 
-    shape.moveTo(outerRadius, 0).absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
-    holePath.moveTo(innerRadius, 0).absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
+    shape.moveTo(outerRadius, 0).absarc(0, 0, outerRadius, 0, 2*Math.PI, false);
+    holePath.moveTo(innerRadius, 0).absarc(0, 0, innerRadius, 0, 2*Math.PI, true);
 
     shape.holes.push(holePath);
 
@@ -328,13 +325,12 @@ function addObjectsToRing(ref, ring, ring_info) {
     objectIndices.sort(() => Math.random() - 0.5);
 
     for (let i = 0; i < numObjects; i++) {
-        const num = objectIndices[i]; 
         const angle = i * angleIncrement; 
         const x = (ring_info.outerR) * Math.cos(angle); 
         const y = ring.position.y; 
         const z = (ring_info.outerR) * Math.sin(angle); 
 
-        switch (num) {
+        switch (objectIndices[i]) {
             case 0:
                 objs.userData.donut = addDonut(ref, x, y, z);
                 break;
@@ -358,8 +354,6 @@ function addObjectsToRing(ref, ring, ring_info) {
                 break;
             case 7:
                 objs.userData.hyperboloid = addHyperboloid(ref, x, y, z);
-                break;
-            default:
                 break;
         }
     }
@@ -545,9 +539,8 @@ function addPlane(obj, x, y, z) {
         new THREE.PlaneGeometry(150, 150),
         new THREE.MeshBasicMaterial({ color: 0xEF767A, wireframe: false, side: THREE.DoubleSide })
     );
-
-    planeMesh.position.set(x, y, z);
-    planeMesh.rotation.x = -Math.PI / 2;
+    
+    planeMesh.rotateX(Math.PI / 2).position.set(x, y, z);
 
     obj.add(planeMesh);
 }
@@ -584,47 +577,47 @@ function update() {
 
     if (ref2.userData.moving) {
         const step = speed * ref2.userData.direction * delta;
-        const y = step + ref2.position.y;
+        const newY = step + ref2.position.y;
 
-        if (y < ring2_info.h) {
+        if (newY < ring1_info.h) {
             ref2.userData.direction = 1;
-            ref2.position.y = 0;
-        } else if (y > foundation.height - foundation.height/3) {
+            ref2.position.y = ring1_info.h;
+        } else if (newY > foundation.height) {
             ref2.userData.direction = -1;
             ref2.position.y = foundation.height;
+        } else {
+            ref2.position.y = newY;
         }
-
-        ref2.position.y = y;
     }
 
     if (ref3.userData.moving) {
         const step = speed * ref3.userData.direction * delta;
-        const y = step + ref3.position.y;
+        const newY = step + ref3.position.y;
 
-        if (y < -(foundation.height * (2/3) - ring3_info.h)) {
+        if (newY < ring2_info.h) {
             ref3.userData.direction = 1;
-            ref3.position.y = 0;
-        } else if (y > foundation.height - foundation.height * (2/3)) {
+            ref3.position.y = ring2_info.h;
+        } else if (newY > foundation.height) {
             ref3.userData.direction = -1;
             ref3.position.y = foundation.height;
-        }  
-
-        ref3.position.y = y;
+        } else {
+            ref3.position.y = newY;
+        }
     }
 
     if (ref4.userData.moving) {
         const step = speed * ref4.userData.direction * delta;
-        const y = step + ref4.position.y;
+        const newY = step + ref4.position.y;
 
-        if (y < -(foundation.height - ring3_info.h)) {
+        if (newY < ring3_info.h) {
             ref4.userData.direction = 1;
-            ref4.position.y = 0;
-        } else if (y > 0) {
+            ref4.position.y = ring3_info.h;
+        } else if (newY > foundation.height) {
             ref4.userData.direction = -1;
             ref4.position.y = foundation.height;
-        }  
-
-        ref4.position.y = y;
+        } else {
+            ref4.position.y = newY;
+        }
     }
 
     // rotation of parametric surfaces
