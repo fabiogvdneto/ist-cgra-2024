@@ -21,10 +21,6 @@ const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
 const objs = new THREE.Object3D();
 
-const innerRing = new THREE.Object3D();
-const midRing = new THREE.Object3D();
-const outerRing = new THREE.Object3D();
-
 let lightsOn = false;
 
 const foundation = { radius: 4, height: 30, color: 0x123235 };
@@ -217,18 +213,18 @@ function addFoundation(obj, x, y, z) {
 function addCarousel(obj, x, y, z) {
     'use strict';
     ref1.position.set(x, y, z);
-    ref2.position.set(x, y, z -10);
-    ref3.position.set(x, y, z -20);
-    ref4.position.set(x, y, z -30);
+    ref2.position.set(x, y, z);
+    ref3.position.set(x, y, z);
+    ref4.position.set(x, y, z);
 
     addFoundation(ref1, 0, foundation.height/2, 0);
     addInnerRing(ref2, 0, foundation.height/3, 0);
     addMidRing(ref3, 0, foundation.height * (2/3), 0);
-    addOuterRIng(ref4, 0, foundation.height, 0);
+    addOuterRing(ref4, 0, foundation.height, 0);
 
-    addObjectsToRing(ref2, innerRing, ring1_info, 10);  
-    addObjectsToRing(ref3, midRing, ring2_info, 20); 
-    addObjectsToRing(ref4, outerRing, ring3_info, 30); 
+    addObjectsToRing(ref2, ref2.userData.ring, ring1_info);  
+    addObjectsToRing(ref3, ref3.userData.ring, ring2_info); 
+    addObjectsToRing(ref4, ref4.userData.ring, ring3_info); 
 
     obj.add(ref1);
     obj.add(ref2);
@@ -238,52 +234,33 @@ function addCarousel(obj, x, y, z) {
 
 function addInnerRing(obj, x, y, z) {
     'use strict';
-    ref2.userData.ring = createRing(innerRing, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, basicMaterials.ring1);
-    innerRing.rotation.x = Math.PI / 2;
-    obj.add(innerRing);
-
-    innerRing.position.set(x, y, z);
+    ref2.userData.ring = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, basicMaterials.ring1);
 }
 
 function addMidRing(obj, x, y, z) {
     'use strict';
-    ref3.userData.ring = createRing(midRing, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, basicMaterials.ring2)
-    midRing.rotation.x = Math.PI / 2;
-    obj.add(midRing);
-
-    midRing.position.set(x, y, z);
+    ref3.userData.ring = addRing(obj, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, basicMaterials.ring2);
 }
 
-function addOuterRIng(obj, x, y, z) {
+function addOuterRing(obj, x, y, z) {
     'use strict';
-    ref4.userData.ring = createRing(outerRing, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, basicMaterials.ring3)
-    outerRing.rotation.x = Math.PI / 2;
-    obj.add(outerRing);
-
-    outerRing.position.set(x, y, z);
-
+    ref4.userData.ring = addRing(obj, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, basicMaterials.ring3);
 }
 
-function createRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
+function addRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
     'use strict';
-    let shape = new THREE.Shape();
-    shape.moveTo(outerRadius, 0);
-    shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+    const shape = new THREE.Shape();
+    const holePath = new THREE.Path();
 
-    let holePath = new THREE.Path();
-    holePath.moveTo(innerRadius, 0);
-    holePath.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
+    shape.moveTo(outerRadius, 0).absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+    holePath.moveTo(innerRadius, 0).absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
 
     shape.holes.push(holePath);
 
-    const extrudeSettings = {
-        bevelEnabled: false,
-        depth: height
-    };
-
+    const extrudeSettings = { bevelEnabled: false, depth: height };
     const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    const mesh = addMesh(obj, geom, material, x, y, z);
-    return mesh;
+    
+    return addMesh(obj, geom, material, x, y, z).rotateX(Math.PI / 2);
 }
 
 function addMobiusStrip(obj, r, w, segments, x, y, z) {
@@ -341,7 +318,7 @@ function addRotatingSurface(ref, geom, material, rotationSpeed, x, y, z) {
     return surface;
 }
 
-function addObjectsToRing(ref, ring, ring_info, z_deviation) {
+function addObjectsToRing(ref, ring, ring_info) {
     'use strict';
     const angleIncrement = Math.PI / 4; // 45 degrees
     const numObjects = 8;
@@ -353,11 +330,11 @@ function addObjectsToRing(ref, ring, ring_info, z_deviation) {
     for (let i = 0; i < numObjects; i++) {
         const num = objectIndices[i]; 
         const angle = i * angleIncrement; 
-        const x = (ring_info.outerR - 2.5) * Math.cos(angle); 
-        const y = ring.position.y + 2.5; 
-        const z = (ring_info.outerR - 2.5) * Math.sin(angle) + z_deviation; 
+        const x = (ring_info.outerR) * Math.cos(angle); 
+        const y = ring.position.y; 
+        const z = (ring_info.outerR) * Math.sin(angle); 
 
-        switch(num) {
+        switch (num) {
             case 0:
                 objs.userData.donut = addDonut(ref, x, y, z);
                 break;
@@ -609,7 +586,7 @@ function update() {
         const step = speed * ref2.userData.direction * delta;
         const y = step + ref2.position.y;
 
-        if (y < -(foundation.height/3 - ring2_info.h)) {
+        if (y < ring2_info.h) {
             ref2.userData.direction = 1;
             ref2.position.y = 0;
         } else if (y > foundation.height - foundation.height/3) {
@@ -724,9 +701,7 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-    const key = e.key.toUpperCase();
-
-    switch (key) {
+    switch (e.key) {
         // Active ring 1 movement
         case '1':
             ref2.userData.moving = true;
@@ -740,27 +715,27 @@ function onKeyDown(e) {
             ref4.userData.moving = true;
             break;
         // Change material - Lambert
-        case 'Q':
+        case 'q':
             changeLambert = true;
             break;
         // Change material - Phong
-        case 'W':
+        case 'w':
             changePhong = true;
             break;
         // Change material - Cartoon
-        case 'E':
+        case 'e':
             changeCartoon = true;
             break;
         // Change material - Normal
-        case 'R':
+        case 'r':
             changeNormal = true;
             break;
         // Activate the lights of the parametric surfaces
-        case 'P':
+        case 'p':
             lightsOn = true;
             break;
         // Deactivate the lights of the parametric surfaces
-        case 'S':
+        case 's':
             lightsOn = false;
             break;
     }
@@ -771,9 +746,7 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e) {
     'use strict';
-    const key = e.key.toUpperCase();
-
-    switch (key) {
+    switch (e.key) {
         // Deactivate ring 1 movement
         case '1':
             ref2.userData.moving = false;
@@ -787,19 +760,19 @@ function onKeyUp(e) {
             ref4.userData.moving = false;
             break;
         // Change material - Lambert
-        case 'Q':
+        case 'q':
             changeLambert = false;
             break;
         // Change material - Phong
-        case 'W':
+        case 'w':
             changePhong = false;
             break;
         // Change material - Cartoon
-        case 'E':
+        case 'e':
             changeCartoon = false;
             break;
         // Change material - Normal
-        case 'R':
+        case 'r':
             changeNormal = false;
             break;  
     }
