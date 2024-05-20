@@ -22,7 +22,7 @@ const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
 
 const foundation = { radius: 4, height: 30, color: 0x123235 };
-const plane =      { width: 350};
+const plane =      { width: 350, depth: 2 };
 const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, thetaStart: 0, thetaLength: Math.PI/2 };
 const ring1_info = { innerR: 4,  outerR: 10, h: 3, color: 0x003C43 };
 const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0x135D66 };
@@ -152,7 +152,7 @@ function createScene() {
 
     createCamera();
     createLigths();
-    addPlane(scene, 0, 0, 0);
+    addPlane(scene, 0, -plane.depth/2, 0);
     addSkydome(scene, 0, 0, 0);
     addCarousel(scene, 0, 0, 0);
     addMobiusStrip(ref1, 15, 15, 30, 0, foundation.height*2, 0); 
@@ -525,7 +525,7 @@ function addHyperboloid(ref, x, y, z) {
 function addPlane(obj, x, y, z) {
     'use strict';
     const planeMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(plane.width, plane.width),
+        new THREE.BoxGeometry(plane.width, plane.width, plane.depth),
         new THREE.MeshBasicMaterial({ color: 0xEF767A, wireframe: false, side: THREE.DoubleSide })
     );
     
