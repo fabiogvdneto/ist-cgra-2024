@@ -13,6 +13,7 @@ const renderer = new THREE.WebGLRenderer();
 const scene = new THREE.Scene();
 const clock = new THREE.Clock();
 const mainCamera = new THREE.PerspectiveCamera();
+const controls = new OrbitControls(mainCamera, renderer.domElement);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 const ambientLight = new THREE.AmbientLight(0xffa500, 0.3);
 
@@ -677,8 +678,8 @@ function init() {
     
     createScene(); // create scene: cameras, objects, light
     onResize();    // update window size
-    
-    new OrbitControls(mainCamera, renderer.domElement);
+
+    controls.enableDamping = true;
     
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
@@ -691,6 +692,7 @@ function init() {
 function animate() {
     'use strict';
     update();
+    controls.update();
     renderer.setAnimationLoop(render);
     requestAnimationFrame(animate);
 }
@@ -709,7 +711,7 @@ function onResize() {
 ///////////////////////
 function onKeyDown(e) {
     'use strict';
-    switch (e.key) {
+    switch (e.key.toUpperCase()) {
         // Toggle movement of inner ring
         case '1':
             ref2.userData.moving = !ref2.userData.moving;
@@ -723,35 +725,35 @@ function onKeyDown(e) {
             ref4.userData.moving = !ref4.userData.moving;
             break;
         // Select Lambert materials
-        case 'q':
+        case 'Q':
             materials = lambertMaterials;
             break;
         // Select Phong materials
-        case 'w':
+        case 'W':
             materials = phongMaterials;
             break;
         // Select Cartoon materials
-        case 'e':
+        case 'E':
             materials = cartoonMaterials;
             break;
         // Select Normal materials
-        case 'r':
+        case 'R':
             materials = normalMaterials;
             break;
         // Activate the lights of the parametric surfaces
-        case 'p':
+        case 'P':
             ParametriclightsOn = true;
             break;
         // Deactivate the lights of the parametric surfaces
-        case 's':
+        case 'S':
             ParametriclightsOn = false;
             break;
         // Toggle directional lights
-        case 'd':
+        case 'D':
             toggleDirectionalLight();
             break;
         // Toggle lights
-        case 't':
+        case 'T':
             toggleLigths();
             break;
     }
@@ -762,7 +764,7 @@ function onKeyDown(e) {
 ///////////////////////
 function onKeyUp(e) {
     'use strict';
-    switch (e.key) {
+    switch (e.key.toUpperCase()) {
         /* SHOULD WE CHANGE MATERIALS BACK TO BASIC?
 
         case 'q':
