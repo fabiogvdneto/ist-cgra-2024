@@ -663,9 +663,13 @@ function render() {
 ////////////////////////////////
 function init() {
     'use strict';
+    renderer.xr.enabled = true;
+    renderer.setAnimationLoop(animate);
+
     document.body.appendChild(renderer.domElement);
     document.body.appendChild(VRButton.createButton(renderer));
-    renderer.xr.enabled = true;
+    
+    controls.enableDamping = true;
 
     ref2.userData = { moving: true, direction: 1 };
     ref3.userData = { moving: true, direction: 1 };
@@ -673,8 +677,6 @@ function init() {
     
     createScene(); // create scene: cameras, objects, light
     onResize();    // update window size
-
-    controls.enableDamping = true;
     
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
@@ -689,7 +691,6 @@ function animate() {
     update();
     render();
     controls.update();
-    renderer.setAnimationLoop(animate);
 }
 
 ////////////////////////////
@@ -699,6 +700,7 @@ function onResize() {
     'use strict';
     renderer.setSize(window.innerWidth, window.innerHeight);
     mainCamera.aspect = window.innerWidth / window.innerHeight;
+    mainCamera.updateProjectionMatrix();
 }
 
 ///////////////////////
@@ -774,4 +776,3 @@ function onKeyUp(e) {
 }
 
 init();
-animate();
