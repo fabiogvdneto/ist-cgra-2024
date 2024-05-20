@@ -20,18 +20,16 @@ const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
 const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
-const objs = new THREE.Group();
 
 const foundation = { radius: 4, height: 30, color: 0x123235 };
 const plane =      { width: 350};
-const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, ThetaStart: 0, ThetaLength: Math.PI/2 };
+const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, thetaStart: 0, thetaLength: Math.PI/2 };
 const ring1_info = { innerR: 4,  outerR: 10, h: 3, color: 0x003C43 };
 const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0x135D66 };
 const ring3_info = { innerR: 16, outerR: 22, h: 3, color: 0x77B0AA };
 
 const basicMaterials = {
     foundation:    new THREE.MeshBasicMaterial({ color: 0x123235 }),
-    skydome:       new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.35}),
     ring1:         new THREE.MeshBasicMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshBasicMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshBasicMaterial({ color: ring3_info.color }),
@@ -48,7 +46,6 @@ const basicMaterials = {
 
 const normalMaterials = {
     foundation:    new THREE.MeshNormalMaterial({ color: 0x123235 }),
-    skydome:       new THREE.MeshNormalMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7}),
     ring1:         new THREE.MeshNormalMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshNormalMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshNormalMaterial({ color: ring3_info.color }),
@@ -65,7 +62,6 @@ const normalMaterials = {
 
 const lambertMaterials = {
     foundation:    new THREE.MeshLambertMaterial({ color: 0x123235 }),
-    skydome:       new THREE.MeshLambertMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7}),
     ring1:         new THREE.MeshLambertMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshLambertMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshLambertMaterial({ color: ring3_info.color }),
@@ -82,7 +78,6 @@ const lambertMaterials = {
 
 const phongMaterials = {
     foundation:    new THREE.MeshPhongMaterial({ color: 0x123235 }),
-    skydome:       new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.7 }),
     ring1:         new THREE.MeshPhongMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshPhongMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshPhongMaterial({ color: ring3_info.color }),
@@ -99,7 +94,6 @@ const phongMaterials = {
 
 const cartoonMaterials = {
     foundation:    new THREE.MeshToonMaterial({ color: 0x123235 }),
-    skydome:       new THREE.MeshToonMaterial({ map: new THREE.TextureLoader().load("textures/skydome.jpg"), side: THREE.DoubleSide, transparent: true, opacity: 0.35 }),
     ring1:         new THREE.MeshToonMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshToonMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshToonMaterial({ color: ring3_info.color }),
@@ -127,7 +121,6 @@ let DirectionalLightOn = true;
 function setCurrentMaterial() {
     'use strict';
     ref1.userData.foundation.material = materials.foundation;
-    ref1.userData.skydome.material = materials.skydome;
     ref1.userData.mobiusStrip.material = materials.mobiusStrip;
 
     [ref2, ref3, ref4].forEach(ref => {
@@ -180,7 +173,6 @@ function createCamera() {
 
 function createLigths() {   
     'use strict';
-
     directionalLight.position.set(1, 60, 1); // angle
     
     scene.add(directionalLight);
@@ -542,10 +534,18 @@ function addPlane(obj, x, y, z) {
     obj.add(planeMesh);
 }
 
-function addSkydome(obj, x,y,z) {
+function addSkydome(obj, x, y, z) {
     'use strict';
-    const geom = new THREE.SphereGeometry(skydome.radius, skydome.widthSegments, skydome.heightSegments, skydome.phiStart, skydome.phiLength, skydome.ThetaStart, skydome.ThetaLength);
-    ref1.userData.skydome = addMesh(obj, geom, basicMaterials.skydome, x, y, z);
+    const material = new THREE.MeshPhongMaterial({
+        map: new THREE.TextureLoader().load("textures/skydome.jpg"),
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.7
+    });
+
+    const geom = new THREE.SphereGeometry(skydome.radius, skydome.widthSegments, skydome.heightSegments, skydome.phiStart, skydome.phiLength, skydome.thetaStart, skydome.thetaLength);
+    
+    addMesh(obj, geom, material, x, y, z);
 }
 
 //////////////////////
