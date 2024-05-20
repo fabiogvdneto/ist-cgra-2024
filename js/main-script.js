@@ -14,8 +14,8 @@ const scene = new THREE.Scene();
 const clock = new THREE.Clock();
 const mainCamera = new THREE.PerspectiveCamera();
 const controls = new OrbitControls(mainCamera, renderer.domElement);
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-const ambientLight = new THREE.AmbientLight(0xffa500, 0.3);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+const ambientLight = new THREE.AmbientLight(0xffa500, 0.2);
 
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
@@ -131,11 +131,6 @@ function setCurrentMaterial() {
             }
         });
     });
-}
-
-function toggleDirectionalLight() {
-    'use strict';
-    DirectionalLightOn = !DirectionalLightOn;
 }
 
 function toggleLigths() {
@@ -692,9 +687,9 @@ function init() {
 function animate() {
     'use strict';
     update();
+    render();
     controls.update();
-    renderer.setAnimationLoop(render);
-    requestAnimationFrame(animate);
+    renderer.setAnimationLoop(animate);
 }
 
 ////////////////////////////
@@ -750,7 +745,7 @@ function onKeyDown(e) {
             break;
         // Toggle directional lights
         case 'D':
-            toggleDirectionalLight();
+            directionalLight.visible = !directionalLight.visible;
             break;
         // Toggle lights
         case 'T':
