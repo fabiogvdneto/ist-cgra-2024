@@ -119,17 +119,12 @@ let DirectionalLightOn = true;
 /* AUXILIAR FUNCTIONS */
 ////////////////////////
 
-function setCurrentMaterial() {
+function updateMaterials() {
     'use strict';
-    ref1.userData.foundation.material = materials.foundation;
-    ref1.userData.mobiusStrip.material = materials.mobiusStrip;
-
-    [ref2, ref3, ref4].forEach(ref => {
-        ref.children.forEach(mesh => {
-            if (mesh.material) {
-                mesh.material = materials[mesh.name];
-            }
-        });
+    scene.traverse(obj => {
+        if (obj.material && obj.name) {
+            obj.material = materials[obj.name];
+        }
     });
 }
 
@@ -188,8 +183,11 @@ function addMesh(obj, geom, material, x, y, z) {
 
 function addFoundation(obj, x, y, z) {
     'use strict';
+    const rotationSpeed = 0.5;
     const geom = new THREE.CylinderGeometry(foundation.radius, foundation.radius, foundation.height);
-    obj.userData.foundation = addMesh(obj, geom, basicMaterials.foundation, x, y, z);
+    const mesh = addRotatingSurface(obj, geom, materials.foundation, rotationSpeed, x, y, z);
+
+    mesh.name = 'foundation';
 }
 
 function addCarousel(obj, x, y, z) {
@@ -213,7 +211,7 @@ function addCarousel(obj, x, y, z) {
 
 function addInnerRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, basicMaterials.ring1);
+    const mesh = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, materials.ring1);
     mesh.name = "ring1";
 }
 
@@ -280,8 +278,10 @@ function addMobiusStrip(obj, r, w, segments, x, y, z) {
     geometry.setIndex(indices);
     geometry.computeVertexNormals();
 
-    ref1.userData.mobiusStrip = addMesh(obj, geometry, basicMaterials.mobiusStrip, x, y, z);
-    ref1.userData.mobiusStrip.rotation.x = Math.PI / 2;
+    const mesh = addMesh(obj, geometry, basicMaterials.mobiusStrip, x, y, z);
+    
+    mesh.rotateX(Math.PI/2);
+    mesh.name = "mobiusStrip";
 }
 
 function addRotatingSurface(ref, geom, material, rotationSpeed, x, y, z) {
@@ -614,12 +614,10 @@ function update() {
     }
 
     // rotation of parametric surfaces
-    [ref2, ref3, ref4].forEach(ref => {
-        ref.children.forEach(mesh => {
-            if (mesh.userData.rotationAxis && mesh.userData.rotationSpeed) {
-                mesh.rotateOnAxis(mesh.userData.rotationAxis, mesh.userData.rotationSpeed * delta);
-            }
-        });
+    scene.traverse(obj => {
+        if (obj.userData.rotationAxis && obj.userData.rotationSpeed) {
+            obj.rotateOnAxis(obj.userData.rotationAxis, obj.userData.rotationSpeed * delta);
+        }
     });
 
     if (lightsOn) { 
@@ -643,11 +641,6 @@ function update() {
             });
         });
     }
-
-    ref1.userData.foundation.rotateY(0.50 * delta);
-
-
-   setCurrentMaterial();
 }
 
 /////////////
@@ -724,18 +717,22 @@ function onKeyDown(e) {
         // Select Lambert materials
         case 'Q':
             materials = lambertMaterials;
+            updateMaterials();
             break;
         // Select Phong materials
         case 'W':
             materials = phongMaterials;
+            updateMaterials();
             break;
         // Select Cartoon materials
         case 'E':
             materials = cartoonMaterials;
+            updateMaterials();
             break;
         // Select Normal materials
         case 'R':
             materials = normalMaterials;
+            updateMaterials();
             break;
         // Activate the lights of the parametric surfaces
         case 'P':
