@@ -671,9 +671,9 @@ function init() {
     document.body.appendChild(VRButton.createButton(renderer));
     renderer.xr.enabled = true;
 
-    ref2.userData = { moving: false, direction: 1 };
-    ref3.userData = { moving: false, direction: 1 };
-    ref4.userData = { moving: false, direction: 1 };
+    ref2.userData = { moving: true, direction: 1 };
+    ref3.userData = { moving: true, direction: 1 };
+    ref4.userData = { moving: true, direction: 1 };
     
     createScene(); // create scene: cameras, objects, light
     onResize();    // update window size
@@ -710,31 +710,31 @@ function onResize() {
 function onKeyDown(e) {
     'use strict';
     switch (e.key) {
-        // Active ring 1 movement
+        // Toggle movement of inner ring
         case '1':
-            ref2.userData.moving = true;
+            ref2.userData.moving = !ref2.userData.moving;
             break;
-        // Active ring 2 movement
+        // Toggle movement of mid ring
         case '2':
-            ref3.userData.moving = true;
+            ref3.userData.moving = !ref3.userData.moving;
             break;
-        // Active ring 3 movement
+        // Toggle movement of outer ring
         case '3':
-            ref4.userData.moving = true;
+            ref4.userData.moving = !ref4.userData.moving;
             break;
-        // Change material - Lambert
+        // Select Lambert materials
         case 'q':
             materials = lambertMaterials;
             break;
-        // Change material - Phong
+        // Select Phong materials
         case 'w':
             materials = phongMaterials;
             break;
-        // Change material - Cartoon
+        // Select Cartoon materials
         case 'e':
             materials = cartoonMaterials;
             break;
-        // Change material - Normal
+        // Select Normal materials
         case 'r':
             materials = normalMaterials;
             break;
@@ -746,9 +746,11 @@ function onKeyDown(e) {
         case 's':
             ParametriclightsOn = false;
             break;
+        // Toggle directional lights
         case 'd':
             toggleDirectionalLight();
             break;
+        // Toggle lights
         case 't':
             toggleLigths();
             break;
@@ -761,19 +763,6 @@ function onKeyDown(e) {
 function onKeyUp(e) {
     'use strict';
     switch (e.key) {
-        // Deactivate ring 1 movement
-        case '1':
-            ref2.userData.moving = false;
-            break;
-        // Deactivate ring 2 movement
-        case '2':
-            ref3.userData.moving = false;
-            break;
-        // Deactivate ring 3 movement
-        case '3':
-            ref4.userData.moving = false;
-            break;
-        
         /* SHOULD WE CHANGE MATERIALS BACK TO BASIC?
 
         case 'q':
