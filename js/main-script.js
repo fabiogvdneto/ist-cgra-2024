@@ -15,7 +15,7 @@ const clock = new THREE.Clock();
 const mainCamera = new THREE.PerspectiveCamera();
 const controls = new OrbitControls(mainCamera, renderer.domElement);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-const ambientLight = new THREE.AmbientLight(0xffa500, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffa500, 0.4);
 
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
@@ -34,7 +34,7 @@ const basicMaterials = {
     ring1:         new THREE.MeshBasicMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshBasicMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshBasicMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x135D66}),
+    mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x135D66 }),
     donut:         new THREE.MeshBasicMaterial({ color: 0xdddd00 }),
     enneper:       new THREE.MeshBasicMaterial({ color: 0x990000 }),
     kleinBottle :  new THREE.MeshBasicMaterial({ color: 0x11111 }),
@@ -50,7 +50,7 @@ const normalMaterials = {
     ring1:         new THREE.MeshNormalMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshNormalMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshNormalMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshNormalMaterial({ color: 0x135D66}),
+    mobiusStrip:   new THREE.MeshNormalMaterial({ color: 0x135D66 }),
     donut:         new THREE.MeshNormalMaterial({ color: 0xdddd00 }),
     enneper:       new THREE.MeshNormalMaterial({ color: 0x990000 }),
     kleinBottle :  new THREE.MeshNormalMaterial({ color: 0x11111 }),
@@ -658,7 +658,6 @@ function render() {
 function init() {
     'use strict';
     renderer.xr.enabled = true;
-    renderer.setAnimationLoop(animate);
 
     document.body.appendChild(renderer.domElement);
     document.body.appendChild(VRButton.createButton(renderer));
@@ -685,6 +684,7 @@ function animate() {
     update();
     render();
     controls.update();
+    renderer.setAnimationLoop(animate);
 }
 
 ////////////////////////////
@@ -775,3 +775,4 @@ function onKeyUp(e) {
 }
 
 init();
+animate();
