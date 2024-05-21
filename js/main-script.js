@@ -15,7 +15,7 @@ const clock = new THREE.Clock();
 const mainCamera = new THREE.PerspectiveCamera();
 const controls = new OrbitControls(mainCamera, renderer.domElement);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-const ambientLight = new THREE.AmbientLight(0xffa500, 0.2);
+const ambientLight = new THREE.AmbientLight(0xffa500, 0.5);
 
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
@@ -30,7 +30,7 @@ const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0x135D66 };
 const ring3_info = { innerR: 16, outerR: 22, h: 3, color: 0x77B0AA };
 
 const basicMaterials = {
-    foundation:    new THREE.MeshBasicMaterial({ color: 0x123235 }),
+    foundation:    new THREE.MeshBasicMaterial({ color: 0x123235, side: THREE.DoubleSide }),
     ring1:         new THREE.MeshBasicMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshBasicMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshBasicMaterial({ color: ring3_info.color }),
@@ -111,7 +111,8 @@ const cartoonMaterials = {
 
 let materials = basicMaterials;
 let lightsOn = true;
-let ParametriclightsOn = false;
+let SpotLightsOn = false;
+let PointLightsOn = false;
 let DirectionalLightOn = true;
 
 
@@ -347,7 +348,7 @@ function addSpotLight(ref, target, x, y, z) {
     'use strict';
     const light = new THREE.SpotLight(0xffffff);
 
-    light.position.set(x, y + 2, z);
+    light.position.set(x - 1.5, y - 1.5, z);
     light.target = target;
     light.intensity = 10;
     light.distance = 15;
@@ -626,7 +627,7 @@ function update() {
         [ref2, ref3, ref4].forEach(ref => {
             ref.children.forEach(mesh => {
                 if (mesh.userData.light) {
-                    mesh.userData.light.visible = ParametriclightsOn;
+                    mesh.userData.light.visible = SpotLightsOn;
                 }
             });
         });
@@ -734,13 +735,13 @@ function onKeyDown(e) {
             materials = normalMaterials;
             updateMaterials();
             break;
-        // Activate the lights of the parametric surfaces
+        // Lights of the parametric surfaces
         case 'P':
-            ParametriclightsOn = true;
+            SpotLightsOn = !SpotLightsOn;
             break;
-        // Deactivate the lights of the parametric surfaces
+        // Lights of the mobius strip
         case 'S':
-            ParametriclightsOn = false;
+            PointLightsOn = !SpotLightsOn;
             break;
         // Toggle directional lights
         case 'D':
@@ -769,6 +770,7 @@ function onKeyUp(e) {
             break;
 
         */
+        // Deactivate the lights of the parametric surfaces
     }
 }
 
