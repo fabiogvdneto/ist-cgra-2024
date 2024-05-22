@@ -392,15 +392,10 @@ function addSpotLight(ref, target, x, y, z) {
     'use strict';
     const light = new THREE.SpotLight(0xffffff);
 
-    let targetObject = new THREE.Object3D();
-    targetObject.position.set(x-1.5, y + 1, z-1.5);
-
-    light.position.set(x -1.5, y -1.5, z -1.5);
-    light.target = targetObject;
-    light.intensity = 10;
+    light.position.set(x, y - 2, z);
+    light.target = target;
+    light.intensity = 5;
     light.distance = 15;
-    light.penumbra = 0;
-    light.decay = 2;
 
     ref.add(light);
     target.userData.light = light;
