@@ -23,18 +23,18 @@ const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
 
 const foundation = { radius: 4, height: 30, color: 0x4793AF };
-const plane =      { width: 350, depth: 2, color: 0xF2C18D };
-const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, thetaStart: 0, thetaLength: Math.PI/2 };
-const ring1_info = { innerR: 4,  outerR: 10, h: 3, color: 0x5BBCFF };
-const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0xA0DEFF };
-const ring3_info = { innerR: 16, outerR: 22, h: 3, color: 0x5AB2FF };
-const mobiusStrip = {color: 0x6AD4DD };
+const plane =       { width: 350, depth: 2, color: 0xF2C18D };
+const skydome =     { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, thetaStart: 0, thetaLength: Math.PI/2 };
+const ring1 =       { innerR: 4,  outerR: 10, height: 3, color: 0x5BBCFF, objScalingFactor: 0.6 };
+const ring2 =       { innerR: 10, outerR: 16, height: 3, color: 0xA0DEFF, objScalingFactor: 0.9 };
+const ring3 =       { innerR: 16, outerR: 22, height: 3, color: 0x5AB2FF, objScalingFactor: 1.2 };
+const mobiusStrip = { color: 0x6AD4DD };
 
 const basicMaterials = {
     foundation:    new THREE.MeshBasicMaterial({ color: 0x123235, side: THREE.DoubleSide }),
-    ring1:         new THREE.MeshBasicMaterial({ color: ring1_info.color }),
-    ring2:         new THREE.MeshBasicMaterial({ color: ring2_info.color }),
-    ring3:         new THREE.MeshBasicMaterial({ color: ring3_info.color }),
+    ring1:         new THREE.MeshBasicMaterial({ color: ring1.color }),
+    ring2:         new THREE.MeshBasicMaterial({ color: ring2.color }),
+    ring3:         new THREE.MeshBasicMaterial({ color: ring3.color }),
     mobiusStrip:   new THREE.MeshBasicMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide }),
     donut:         new THREE.MeshBasicMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshBasicMaterial({ color: 0x990000, side: THREE.DoubleSide }),
@@ -48,9 +48,9 @@ const basicMaterials = {
 
 const normalMaterials = {
     foundation:    new THREE.MeshNormalMaterial({ color: 0x123235 }),
-    ring1:         new THREE.MeshNormalMaterial({ color: ring1_info.color }),
-    ring2:         new THREE.MeshNormalMaterial({ color: ring2_info.color }),
-    ring3:         new THREE.MeshNormalMaterial({ color: ring3_info.color }),
+    ring1:         new THREE.MeshNormalMaterial({ color: ring1.color }),
+    ring2:         new THREE.MeshNormalMaterial({ color: ring2.color }),
+    ring3:         new THREE.MeshNormalMaterial({ color: ring3.color }),
     mobiusStrip:   new THREE.MeshNormalMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide}),
     donut:         new THREE.MeshNormalMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshNormalMaterial({ color: 0x990000, side: THREE.DoubleSide }),
@@ -64,9 +64,9 @@ const normalMaterials = {
 
 const lambertMaterials = {
     foundation:    new THREE.MeshLambertMaterial({ color: 0x123235 }),
-    ring1:         new THREE.MeshLambertMaterial({ color: ring1_info.color }),
-    ring2:         new THREE.MeshLambertMaterial({ color: ring2_info.color }),
-    ring3:         new THREE.MeshLambertMaterial({ color: ring3_info.color }),
+    ring1:         new THREE.MeshLambertMaterial({ color: ring1.color }),
+    ring2:         new THREE.MeshLambertMaterial({ color: ring2.color }),
+    ring3:         new THREE.MeshLambertMaterial({ color: ring3.color }),
     mobiusStrip:   new THREE.MeshLambertMaterial({ color: mobiusStrip.color,side: THREE.DoubleSide}),
     donut:         new THREE.MeshLambertMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
@@ -80,9 +80,9 @@ const lambertMaterials = {
 
 const phongMaterials = {
     foundation:    new THREE.MeshPhongMaterial({ color: 0x123235 }),
-    ring1:         new THREE.MeshPhongMaterial({ color: ring1_info.color }),
-    ring2:         new THREE.MeshPhongMaterial({ color: ring2_info.color }),
-    ring3:         new THREE.MeshPhongMaterial({ color: ring3_info.color }),
+    ring1:         new THREE.MeshPhongMaterial({ color: ring1.color }),
+    ring2:         new THREE.MeshPhongMaterial({ color: ring2.color }),
+    ring3:         new THREE.MeshPhongMaterial({ color: ring3.color }),
     mobiusStrip:   new THREE.MeshPhongMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide}),
     donut:         new THREE.MeshPhongMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
@@ -96,9 +96,9 @@ const phongMaterials = {
 
 const cartoonMaterials = {
     foundation:    new THREE.MeshToonMaterial({ color: 0x123235 }),
-    ring1:         new THREE.MeshToonMaterial({ color: ring1_info.color }),
-    ring2:         new THREE.MeshToonMaterial({ color: ring2_info.color }),
-    ring3:         new THREE.MeshToonMaterial({ color: ring3_info.color }),
+    ring1:         new THREE.MeshToonMaterial({ color: ring1.color }),
+    ring2:         new THREE.MeshToonMaterial({ color: ring2.color }),
+    ring3:         new THREE.MeshToonMaterial({ color: ring3.color }),
     mobiusStrip:   new THREE.MeshToonMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide}),
     donut:         new THREE.MeshToonMaterial({ color: 0xdddd00, side: THREE.DoubleSide}),
     enneper:       new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
@@ -217,6 +217,12 @@ function createLigths() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+function setRotationData(obj, speed, axis = THREE.Object3D.DEFAULT_UP) {
+    obj.userData.shouldRotate = true;
+    obj.userData.rotationAxis = axis;
+    obj.userData.rotationSpeed = speed;
+}
+
 function addMesh(obj, geom, material, x, y, z) {
     'use strict';
     const mesh = new THREE.Mesh(geom, material);
@@ -247,9 +253,9 @@ function addCarousel(obj, x, y, z) {
     addMidRing(   ref3, 0, 0, 0);
     addOuterRing( ref4, 0, 0, 0);
 
-    addObjectsToRing(ref2, ring1_info);
-    addObjectsToRing(ref3, ring2_info);
-    addObjectsToRing(ref4, ring3_info);
+    addObjectsToRing(ref2, ring1);
+    addObjectsToRing(ref3, ring2);
+    addObjectsToRing(ref4, ring3);
     
     obj.add(ref1, ref2, ref3, ref4);
     
@@ -262,19 +268,25 @@ function addCarousel(obj, x, y, z) {
 
 function addInnerRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, materials.ring1).rotateX(Math.PI / 2);
+    const mesh = addRing(obj, x, y, z, ring1.outerR, ring1.innerR, ring1.h, materials.ring1);
+
+    mesh.rotation.x = Math.PI / 2;
     mesh.name = "ring1";
 }
 
 function addMidRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, materials.ring2).rotateX(Math.PI / 2);
+    const mesh = addRing(obj, x, y, z, ring2.outerR, ring2.innerR, ring2.h, materials.ring2);
+
+    mesh.rotation.x = Math.PI / 2;
     mesh.name = "ring2";
 }
 
 function addOuterRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, materials.ring3).rotateX(Math.PI / 2);
+    const mesh = addRing(obj, x, y, z, ring3.outerR, ring3.innerR, ring3.h, materials.ring3);
+
+    mesh.rotation.x = Math.PI / 2;
     mesh.name = "ring3";
 }
 
@@ -329,18 +341,13 @@ function addMobiusStrip(obj, r, w, segments, x, y, z) {
     geometry.setIndex(indices);
     geometry.computeVertexNormals();
 
-    const mesh = addMesh(obj, geometry, basicMaterials.mobiusStrip, x, y, z);
+    const mesh = addMesh(obj, geometry, materials.mobiusStrip, x, y, z);
     
-    mesh.rotateX(Math.PI/2);
+    mesh.rotation.x = Math.PI/2;
     mesh.name = "mobiusStrip";
 }
 
-function setRotationData(obj, speed, axis = THREE.Object3D.DEFAULT_UP) {
-    obj.userData.rotationAxis = axis;
-    obj.userData.rotationSpeed = speed;
-}
-
-function addObjectsToRing(obj, ring_info) {
+function addObjectsToRing(parent, ring) {
     'use strict';
     const angleIncrement = Math.PI / 4; // 45 degrees
     const numObjects = 8;
@@ -351,44 +358,40 @@ function addObjectsToRing(obj, ring_info) {
 
     for (let i = 0; i < numObjects; i++) {
         const angle = i * angleIncrement;
-        const y = ring_info.h;
-        const x = (ring_info.outerR - (ring_info.outerR - ring_info.innerR)/2) * Math.cos(angle);
-        const z = (ring_info.outerR - (ring_info.outerR - ring_info.innerR)/2) * Math.sin(angle);
+        const x = (ring.outerR + ring.innerR) / 2 * Math.cos(angle);
+        const y = ring.height;
+        const z = (ring.outerR + ring.innerR) / 2 * Math.sin(angle);
+
+        let obj;
 
         switch (objectIndices[i]) {
             case 0:
-                obj.userData.donut = addDonut(obj, x, y, z);
-                obj.userData.donut.name = "donut";
+                obj = addDonut(parent, x, y, z);
                 break;
             case 1:
-                obj.userData.enneper = addEnneper(obj, x, y, z);
-                obj.userData.enneper.name = "enneper";
+                obj = addEnneper(parent, x, y, z);
                 break;
             case 2:
-                obj.userData.klein = addKleinBottle(obj, x, y, z);
-                obj.userData.klein.name = "kleinBottle";
+                obj = addKleinBottle(parent, x, y, z);
                 break;
             case 3:
-                obj.userData.scherkSurface = addScherkSurface(obj, x, y, z);
-                obj.userData.scherkSurface.name = "scherkSurface";
+                obj = addScherkSurface(parent, x, y, z);
                 break;
             case 4:
-                obj.userData.paraboloid = addParaboloid(obj, x, y, z);
-                obj.userData.paraboloid.name = "paraboloid";
+                obj = addParaboloid(parent, x, y, z);
                 break;
             case 5:
-                obj.userData.box = addBox(obj, x, y, z);
-                obj.userData.box.name = "box";
+                obj = addBox(parent, x, y, z);
                 break;
             case 6:
-                obj.userData.ellipsoid = addEllipsoid(obj, x, y, z);
-                obj.userData.ellipsoid.name = "ellipsoid";
+                obj = addEllipsoid(parent, x, y, z);
                 break;
             case 7:
-                obj.userData.hyperboloid = addHyperboloid(obj, x, y, z);
-                obj.userData.hyperboloid.name = "hyperboloid";
+                obj = addHyperboloid(parent, x, y, z);
                 break;
         }
+
+        obj.scale.multiplyScalar(ring.objScalingFactor);
     }
 }
 
@@ -426,9 +429,10 @@ function addDonut(ref, x, y, z) {
     const rotationSpeed = 0.75;
     const donut = addMesh(ref, geom, materials.donut, x, y, z);
 
-    setRotationData(donut, rotationSpeed);
+    setRotationData(donut, rotationSpeed, new THREE.Vector3(0.5, 1, 0));
     addSpotLight(ref, donut, x, y, z);
 
+    donut.name = "donut";
     return donut;
 }
 
@@ -448,9 +452,10 @@ function addEnneper(ref, x, y, z) {
     const rotationSpeed = 0.85;
     const enneper = addMesh(ref, geom, materials.enneper, x, y, z);
 
-    setRotationData(enneper, rotationSpeed);
+    setRotationData(enneper, rotationSpeed, new THREE.Vector3(0.3, 1, 0.1));
     addSpotLight(ref, enneper, x, y, z);
 
+    enneper.name = "enneper";
     return enneper;
 }
 
@@ -469,6 +474,7 @@ function addKleinBottle(ref, x, y, z) {
     setRotationData(kleinBottle, rotationSpeed);
     addSpotLight(ref, kleinBottle, x, y, z);
 
+    kleinBottle.name = "kleinBottle"
     return kleinBottle;
 }
 
@@ -485,15 +491,15 @@ function addScherkSurface(ref, x, y, z) {
     const rotationSpeed = 0.6;
     const scherkSurface = addMesh(ref, geom, materials.scherkSurface, x, y, z);
 
-    setRotationData(scherkSurface, rotationSpeed);
+    setRotationData(scherkSurface, rotationSpeed, new THREE.Vector3(0.2, 0.9, 0.2));
     addSpotLight(ref, scherkSurface, x, y, z); 
 
+    scherkSurface.name = "scherkSurface";
     return scherkSurface;
 }
 
 function addParaboloid(ref, x, y, z) {
     'use strict';
-
     const geom = new ParametricGeometry(function(u, v, target) {
         const theta = 1 * Math.PI * u;
         const height = 2* v;
@@ -507,9 +513,10 @@ function addParaboloid(ref, x, y, z) {
     const rotationSpeed = 0.75;
     const paraboloid = addMesh(ref, geom, materials.paraboloid, x, y, z);
 
-    setRotationData(paraboloid, rotationSpeed);
+    setRotationData(paraboloid, rotationSpeed, new THREE.Vector3(0.6, 0.7, 0));
     addSpotLight(ref, paraboloid, x, y, z);
 
+    paraboloid.name = "paraboloid";
     return paraboloid;
 }
 
@@ -528,9 +535,10 @@ function addBox(ref, x, y, z) {
     const rotationSpeed = 0.75;
     const box = addMesh(ref, geom, materials.box, x, y, z);
 
-    setRotationData(box, rotationSpeed);
+    setRotationData(box, rotationSpeed, new THREE.Vector3(0.2, 0.8, 0.4));
     addSpotLight(ref, box, x, y, z); 
 
+    box.name = "box";
     return box;
 }
 
@@ -549,9 +557,10 @@ function addEllipsoid(ref, x, y, z) {
     const rotationSpeed = 0.7;
     const ellipsoid = addMesh(ref, geom, materials.ellipsoid, x, y, z);
 
-    setRotationData(ellipsoid, rotationSpeed);
+    setRotationData(ellipsoid, rotationSpeed, new THREE.Vector3(0.1, 0.9, 0.7));
     addSpotLight(ref, ellipsoid, x, y, z); 
 
+    ellipsoid.name = "ellipsoid";
     return ellipsoid;
 }
 
@@ -570,11 +579,12 @@ function addHyperboloid(ref, x, y, z) {
     }, 50, 50);
 
     const rotationSpeed = 0.75;
-    const hyperboloid = addMesh(ref, geom, materials.hyperboloid, rotationSpeed, x, y, z);
+    const hyperboloid = addMesh(ref, geom, materials.hyperboloid, x, y, z);
 
-    setRotationData(hyperboloid, rotationSpeed);
+    setRotationData(hyperboloid, rotationSpeed, new THREE.Vector3(0, 0.6, 0.6));
     addSpotLight(ref, hyperboloid, x, y, z); 
 
+    hyperboloid.name = "hyperboloid";
     return hyperboloid;
 }
 
@@ -585,7 +595,8 @@ function addPlane(obj, x, y, z) {
         new THREE.MeshBasicMaterial({ color: plane.color, wireframe: false, side: THREE.DoubleSide })
     );
     
-    planeMesh.rotateX(Math.PI / 2).position.set(x, y, z);
+    planeMesh.rotation.x = Math.PI / 2;
+    planeMesh.position.set(x, y, z);
 
     obj.add(planeMesh);
 }
@@ -632,9 +643,9 @@ function update() {
         const step = speed * ref2.userData.direction * delta;
         const newY = step + ref2.position.y;
 
-        if (newY < ring1_info.h) {
+        if (newY < ring1.height) {
             ref2.userData.direction = 1;
-            ref2.position.y = ring1_info.h;
+            ref2.position.y = ring1.height;
         } else if (newY > foundation.height) {
             ref2.userData.direction = -1;
             ref2.position.y = foundation.height;
@@ -647,9 +658,9 @@ function update() {
         const step = speed * ref3.userData.direction * delta;
         const newY = step + ref3.position.y;
 
-        if (newY < ring2_info.h) {
+        if (newY < ring2.height) {
             ref3.userData.direction = 1;
-            ref3.position.y = ring2_info.h;
+            ref3.position.y = ring2.height;
         } else if (newY > foundation.height) {
             ref3.userData.direction = -1;
             ref3.position.y = foundation.height;
@@ -662,9 +673,9 @@ function update() {
         const step = speed * ref4.userData.direction * delta;
         const newY = step + ref4.position.y;
 
-        if (newY < ring3_info.h) {
+        if (newY < ring3.height) {
             ref4.userData.direction = 1;
-            ref4.position.y = ring3_info.h;
+            ref4.position.y = ring3.height;
         } else if (newY > foundation.height) {
             ref4.userData.direction = -1;
             ref4.position.y = foundation.height;
@@ -675,7 +686,7 @@ function update() {
 
     // rotation of parametric surfaces
     scene.traverse(obj => {
-        if (obj.userData.rotationAxis && obj.userData.rotationSpeed) {
+        if (obj.userData.shouldRotate) {
             obj.rotateOnAxis(obj.userData.rotationAxis, obj.userData.rotationSpeed * delta);
         }
     });
@@ -710,7 +721,6 @@ function init() {
     
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup", onKeyUp);
 }
 
 /////////////////////
@@ -788,26 +798,6 @@ function onKeyDown(e) {
         case 'T':
             toggleLigths();
             break;
-    }
-}
-
-///////////////////////
-/* KEY UP CALLBACK */
-///////////////////////
-function onKeyUp(e) {
-    'use strict';
-    switch (e.key.toUpperCase()) {
-        /* SHOULD WE CHANGE MATERIALS BACK TO BASIC?
-
-        case 'q':
-        case 'w':
-        case 'e':
-        case 'r':
-            materials = basicMaterials;
-            break;
-
-        */
-        // Deactivate the lights of the parametric surfaces
     }
 }
 
