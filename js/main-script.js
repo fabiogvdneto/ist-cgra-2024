@@ -117,6 +117,9 @@ let lightsOn = true;
 ////////////////////////
 /* AUXILIAR FUNCTIONS */
 ////////////////////////
+function randomVector() {
+    return new THREE.Vector3(Math.random(), Math.random(), Math.random());
+}
 
 function updateMaterials(newMaterials) {
     'use strict';
@@ -416,10 +419,11 @@ function addDonut(ref, x, y, z) {
         target.set(posX, posY, posZ);
     }, 50, 50);
 
-    const rotationSpeed = 0.75;
+    const rotationSpeed = Math.random();
+    const rotationAxis = randomVector();
     const donut = addMesh(ref, geom, materials.donut, x, y, z);
 
-    setRotationData(donut, rotationSpeed, new THREE.Vector3(0.5, 1, 0));
+    setRotationData(donut, rotationSpeed, rotationAxis);
     addSpotLight(ref, donut, x, y, z);
 
     donut.name = "donut";
@@ -439,10 +443,11 @@ function addEnneper(ref, x, y, z) {
         target.set(posX, posY, posZ);
     }, 25, 25);
 
-    const rotationSpeed = 0.85;
+    const rotationSpeed = Math.random();
+    const rotationAxis = randomVector();
     const enneper = addMesh(ref, geom, materials.enneper, x, y, z);
 
-    setRotationData(enneper, rotationSpeed, new THREE.Vector3(0.3, 1, 0.1));
+    setRotationData(enneper, rotationSpeed, rotationAxis);
     addSpotLight(ref, enneper, x, y, z);
 
     enneper.name = "enneper";
@@ -458,10 +463,11 @@ function addKleinBottle(ref, x, y, z) {
         target.set(posX, posY, posZ);
     }, 25, 25);
 
-    const rotationSpeed = 0.5;
+    const rotationSpeed = Math.random();
+    const rotationAxis = randomVector();
     const kleinBottle = addMesh(ref, geom, materials.kleinBottle, x, y, z);
 
-    setRotationData(kleinBottle, rotationSpeed);
+    setRotationData(kleinBottle, rotationSpeed, rotationAxis);
     addSpotLight(ref, kleinBottle, x, y, z);
 
     kleinBottle.name = "kleinBottle"
@@ -478,10 +484,11 @@ function addScherkSurface(ref, x, y, z) {
         target.set(posX, posY, posZ);
     }, 64, 64);
 
-    const rotationSpeed = 0.6;
+    const rotationSpeed = Math.random();
+    const rotationAxis = randomVector();
     const scherkSurface = addMesh(ref, geom, materials.scherkSurface, x, y, z);
 
-    setRotationData(scherkSurface, rotationSpeed, new THREE.Vector3(0.2, 0.9, 0.2));
+    setRotationData(scherkSurface, rotationSpeed, rotationAxis);
     addSpotLight(ref, scherkSurface, x, y, z); 
 
     scherkSurface.name = "scherkSurface";
@@ -500,10 +507,11 @@ function addParaboloid(ref, x, y, z) {
         target.set(posX, posY, posZ);
     }, 64, 64); 
 
-    const rotationSpeed = 0.75;
+    const rotationSpeed = Math.random();
+    const rotationAxis = randomVector();
     const paraboloid = addMesh(ref, geom, materials.paraboloid, x, y, z);
 
-    setRotationData(paraboloid, rotationSpeed, new THREE.Vector3(0.6, 0.7, 0));
+    setRotationData(paraboloid, rotationSpeed, rotationAxis);
     addSpotLight(ref, paraboloid, x, y, z);
 
     paraboloid.name = "paraboloid";
@@ -522,10 +530,11 @@ function addBox(ref, x, y, z) {
         target.set(posX, posY, posZ);
     }, 32, 32);
 
-    const rotationSpeed = 0.75;
+    const rotationSpeed = Math.random();
+    const rotationAxis = randomVector();
     const box = addMesh(ref, geom, materials.box, x, y, z);
 
-    setRotationData(box, rotationSpeed, new THREE.Vector3(0.2, 0.8, 0.4));
+    setRotationData(box, rotationSpeed, rotationAxis);
     addSpotLight(ref, box, x, y, z); 
 
     box.name = "box";
@@ -544,10 +553,11 @@ function addEllipsoid(ref, x, y, z) {
         target.set(posX, posY, posZ);
     }, 64, 64);
 
-    const rotationSpeed = 0.7;
+    const rotationSpeed = Math.random();
+    const rotationAxis = randomVector();
     const ellipsoid = addMesh(ref, geom, materials.ellipsoid, x, y, z);
 
-    setRotationData(ellipsoid, rotationSpeed, new THREE.Vector3(0.1, 0.9, 0.7));
+    setRotationData(ellipsoid, rotationSpeed, rotationAxis);
     addSpotLight(ref, ellipsoid, x, y, z); 
 
     ellipsoid.name = "ellipsoid";
@@ -568,10 +578,11 @@ function addHyperboloid(ref, x, y, z) {
         target.set(posX, posY, posZ);
     }, 50, 50);
 
-    const rotationSpeed = 0.75;
+    const rotationSpeed = Math.random();
+    const rotationAxis = randomVector();
     const hyperboloid = addMesh(ref, geom, materials.hyperboloid, x, y, z);
 
-    setRotationData(hyperboloid, rotationSpeed, new THREE.Vector3(0, 0.6, 0.6));
+    setRotationData(hyperboloid, rotationSpeed, rotationAxis);
     addSpotLight(ref, hyperboloid, x, y, z); 
 
     hyperboloid.name = "hyperboloid";
