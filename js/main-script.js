@@ -22,27 +22,28 @@ const ref2 = new THREE.Object3D();
 const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
 
-const foundation = { radius: 4, height: 30, color: 0x123235 };
-const plane =      { width: 350, depth: 2 };
+const foundation = { radius: 4, height: 30, color: 0x4793AF };
+const plane =      { width: 350, depth: 2, color: 0xF2C18D };
 const skydome =    { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, thetaStart: 0, thetaLength: Math.PI/2 };
-const ring1_info = { innerR: 4,  outerR: 10, h: 3, color: 0x003C43 };
-const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0x135D66 };
-const ring3_info = { innerR: 16, outerR: 22, h: 3, color: 0x77B0AA };
+const ring1_info = { innerR: 4,  outerR: 10, h: 3, color: 0x5BBCFF };
+const ring2_info = { innerR: 10, outerR: 16, h: 3, color: 0xA0DEFF };
+const ring3_info = { innerR: 16, outerR: 22, h: 3, color: 0x5AB2FF };
+const mobiusStrip = {color: 0x6AD4DD };
 
 const basicMaterials = {
     foundation:    new THREE.MeshBasicMaterial({ color: 0x123235, side: THREE.DoubleSide }),
     ring1:         new THREE.MeshBasicMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshBasicMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshBasicMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x135D66 }),
-    donut:         new THREE.MeshBasicMaterial({ color: 0xdddd00 }),
-    enneper:       new THREE.MeshBasicMaterial({ color: 0x990000 }),
-    kleinBottle :  new THREE.MeshBasicMaterial({ color: 0x11111 }),
-    scherkSurface: new THREE.MeshBasicMaterial({ color: 0xaaa00 }),
-    paraboloid:    new THREE.MeshBasicMaterial({ color: 0x00ffa0 }),
-    box:           new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-    ellipsoid:     new THREE.MeshBasicMaterial({ color: 0xfffaaa }),
-    hyperboloid:   new THREE.MeshBasicMaterial({ color: 0xaa20af })
+    mobiusStrip:   new THREE.MeshBasicMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide }),
+    donut:         new THREE.MeshBasicMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
+    enneper:       new THREE.MeshBasicMaterial({ color: 0x990000, side: THREE.DoubleSide }),
+    kleinBottle :  new THREE.MeshBasicMaterial({ color: 0x11111, side: THREE.DoubleSide }),
+    scherkSurface: new THREE.MeshBasicMaterial({ color: 0xaaa00, side: THREE.DoubleSide }),
+    paraboloid:    new THREE.MeshBasicMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
+    box:           new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    ellipsoid:     new THREE.MeshBasicMaterial({ color: 0xfffaaa, side: THREE.DoubleSide }),
+    hyperboloid:   new THREE.MeshBasicMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
 
 const normalMaterials = {
@@ -50,15 +51,15 @@ const normalMaterials = {
     ring1:         new THREE.MeshNormalMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshNormalMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshNormalMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshNormalMaterial({ color: 0x135D66 }),
-    donut:         new THREE.MeshNormalMaterial({ color: 0xdddd00 }),
-    enneper:       new THREE.MeshNormalMaterial({ color: 0x990000 }),
-    kleinBottle :  new THREE.MeshNormalMaterial({ color: 0x11111 }),
-    scherkSurface: new THREE.MeshNormalMaterial({ color: 0xaaa00 }),
-    paraboloid:    new THREE.MeshNormalMaterial({ color: 0x00ffa0 }),
-    box:           new THREE.MeshNormalMaterial({ color: 0x0000ff }),
-    ellipsoid:     new THREE.MeshNormalMaterial({ color: 0xff00ff }),
-    hyperboloid:   new THREE.MeshNormalMaterial({ color: 0xaa20af })
+    mobiusStrip:   new THREE.MeshNormalMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide}),
+    donut:         new THREE.MeshNormalMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
+    enneper:       new THREE.MeshNormalMaterial({ color: 0x990000, side: THREE.DoubleSide }),
+    kleinBottle :  new THREE.MeshNormalMaterial({ color: 0x11111, side: THREE.DoubleSide }),
+    scherkSurface: new THREE.MeshNormalMaterial({ color: 0xaaa00, side: THREE.DoubleSide }),
+    paraboloid:    new THREE.MeshNormalMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
+    box:           new THREE.MeshNormalMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    ellipsoid:     new THREE.MeshNormalMaterial({ color: 0xff00ff, side: THREE.DoubleSide }),
+    hyperboloid:   new THREE.MeshNormalMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
 
 const lambertMaterials = {
@@ -66,15 +67,15 @@ const lambertMaterials = {
     ring1:         new THREE.MeshLambertMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshLambertMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshLambertMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshLambertMaterial({ color: 0x135D66}),
-    donut:         new THREE.MeshLambertMaterial({ color: 0xdddd00 }),
-    enneper:       new THREE.MeshLambertMaterial({ color: 0xff0000 }),
-    kleinBottle :  new THREE.MeshLambertMaterial({ color: 0xff0000 }),
-    scherkSurface: new THREE.MeshLambertMaterial({ color: 0xaaa00 }),
-    paraboloid:    new THREE.MeshLambertMaterial({ color: 0x00ffa0 }),
-    box:           new THREE.MeshLambertMaterial({ color: 0x0000ff }),
-    ellipsoid:     new THREE.MeshLambertMaterial({ color: 0xff00ff }),
-    hyperboloid:   new THREE.MeshLambertMaterial({ color: 0xaa20af })
+    mobiusStrip:   new THREE.MeshLambertMaterial({ color: mobiusStrip.color,side: THREE.DoubleSide}),
+    donut:         new THREE.MeshLambertMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
+    enneper:       new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+    kleinBottle :  new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+    scherkSurface: new THREE.MeshLambertMaterial({ color: 0xaaa00, side: THREE.DoubleSide }),
+    paraboloid:    new THREE.MeshLambertMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
+    box:           new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    ellipsoid:     new THREE.MeshLambertMaterial({ color: 0xff00ff, side: THREE.DoubleSide }),
+    hyperboloid:   new THREE.MeshLambertMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
 
 const phongMaterials = {
@@ -82,15 +83,15 @@ const phongMaterials = {
     ring1:         new THREE.MeshPhongMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshPhongMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshPhongMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshPhongMaterial({ color: 0x135D66}),
-    donut:         new THREE.MeshPhongMaterial({ color: 0xdddd00 }),
-    enneper:       new THREE.MeshPhongMaterial({ color: 0xff0000 }),
-    kleinBottle:   new THREE.MeshPhongMaterial({ color: 0xff0000 }),
-    scherkSurface: new THREE.MeshPhongMaterial({ color: 0xaaa00 }),
-    paraboloid:    new THREE.MeshPhongMaterial({ color: 0x00ffa0 }),
-    box:           new THREE.MeshPhongMaterial({ color: 0x0000ff }),
-    ellipsoid:     new THREE.MeshPhongMaterial({ color: 0xff00ff }),
-    hyperboloid:   new THREE.MeshPhongMaterial({ color: 0xaa20af })
+    mobiusStrip:   new THREE.MeshPhongMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide}),
+    donut:         new THREE.MeshPhongMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
+    enneper:       new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+    kleinBottle:   new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+    scherkSurface: new THREE.MeshPhongMaterial({ color: 0xaaa00, side: THREE.DoubleSide }),
+    paraboloid:    new THREE.MeshPhongMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
+    box:           new THREE.MeshPhongMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    ellipsoid:     new THREE.MeshPhongMaterial({ color: 0xff00ff, side: THREE.DoubleSide }),
+    hyperboloid:   new THREE.MeshPhongMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
 
 const cartoonMaterials = {
@@ -98,15 +99,15 @@ const cartoonMaterials = {
     ring1:         new THREE.MeshToonMaterial({ color: ring1_info.color }),
     ring2:         new THREE.MeshToonMaterial({ color: ring2_info.color }),
     ring3:         new THREE.MeshToonMaterial({ color: ring3_info.color }),
-    mobiusStrip:   new THREE.MeshToonMaterial({ color: 0x135D66}),
-    donut:         new THREE.MeshToonMaterial({ color: 0xdddd00 }),
-    enneper:       new THREE.MeshToonMaterial({ color: 0xff0000 }),
-    kleinBottle:   new THREE.MeshToonMaterial({ color: 0xff0000 }),
-    scherkSurface: new THREE.MeshToonMaterial({ color: 0xaaa00 }),
-    paraboloid:    new THREE.MeshToonMaterial({ color: 0x00ffa0 }),
-    box:           new THREE.MeshToonMaterial({ color: 0x0000ff }),
-    ellipsoid:     new THREE.MeshToonMaterial({ color: 0xff00ff }), 
-    hyperboloid:   new THREE.MeshToonMaterial({ color: 0xaa20af })
+    mobiusStrip:   new THREE.MeshToonMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide}),
+    donut:         new THREE.MeshToonMaterial({ color: 0xdddd00, side: THREE.DoubleSide}),
+    enneper:       new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+    kleinBottle:   new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+    scherkSurface: new THREE.MeshToonMaterial({ color: 0xaaa00, side: THREE.DoubleSide }),
+    paraboloid:    new THREE.MeshToonMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
+    box:           new THREE.MeshToonMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    ellipsoid:     new THREE.MeshToonMaterial({ color: 0xff00ff, side: THREE.DoubleSide }), 
+    hyperboloid:   new THREE.MeshToonMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
 
 let materials = basicMaterials;
@@ -129,9 +130,51 @@ function updateMaterials() {
     });
 }
 
+function toggleSpotLigths(change) {
+    'use strict';
+
+    if(lightsOn){ 
+
+        if(change)
+            SpotLightsOn = !SpotLightsOn;
+        
+        [ref2, ref3, ref4].forEach(ref => {
+            ref.children.forEach(mesh => {
+                if (mesh.userData.light) {
+                    mesh.userData.light.visible = SpotLightsOn;
+                }
+            });
+        });
+    }
+}
+
+function toggleDirectionalLight() {
+    'use strict';
+
+    if(lightsOn){
+        DirectionalLightOn = !DirectionalLightOn;
+        directionalLight.visible = DirectionalLightOn;
+    }
+}
+
 function toggleLigths() {
     'use strict';
     lightsOn = !lightsOn;
+    if(lightsOn){
+        ambientLight.visible = lightsOn;
+        directionalLight.visible = DirectionalLightOn;
+        toggleSpotLigths(false);
+    } else {
+        ambientLight.visible = lightsOn;
+        directionalLight.visible = lightsOn;
+        [ref2, ref3, ref4].forEach(ref => {
+            ref.children.forEach(mesh => {
+                if (mesh.userData.light) {
+                    mesh.userData.light.visible = lightsOn;
+                }
+            });
+        });
+    }
 }
 
 
@@ -165,7 +208,7 @@ function createCamera() {
 
 function createLigths() {   
     'use strict';
-    directionalLight.position.set(1, 60, 1); // angle
+    directionalLight.position.set(10, 100, -10); // angle
     
     scene.add(directionalLight);
     scene.add(ambientLight);
@@ -212,19 +255,19 @@ function addCarousel(obj, x, y, z) {
 
 function addInnerRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, materials.ring1);
+    const mesh = addRing(obj, x, y, z, ring1_info.outerR, ring1_info.innerR, ring1_info.h, materials.ring1).rotateX(Math.PI / 2);
     mesh.name = "ring1";
 }
 
 function addMidRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, basicMaterials.ring2);
+    const mesh = addRing(obj, x, y, z, ring2_info.outerR, ring2_info.innerR, ring2_info.h, materials.ring2).rotateX(Math.PI / 2);
     mesh.name = "ring2";
 }
 
 function addOuterRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, basicMaterials.ring3);
+    const mesh = addRing(obj, x, y, z, ring3_info.outerR, ring3_info.innerR, ring3_info.h, materials.ring3).rotateX(Math.PI / 2);
     mesh.name = "ring3";
 }
 
@@ -241,7 +284,9 @@ function addRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
     const extrudeSettings = { bevelEnabled: false, depth: height };
     const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
     
-    return addMesh(obj, geom, material, x, y, z).rotateX(Math.PI / 2);
+
+    const rotationSpeed = 0.5;
+    return addMesh(obj, geom, material, rotationSpeed, x, y, z);
 }
 
 function addMobiusStrip(obj, r, w, segments, x, y, z) {
@@ -285,9 +330,9 @@ function addMobiusStrip(obj, r, w, segments, x, y, z) {
     mesh.name = "mobiusStrip";
 }
 
-function addRotatingSurface(ref, geom, material, rotationSpeed, x, y, z) {
+function addRotatingSurface(ref, geom, material, rotationSpeed, x, y, z, rotationAxis = THREE.Object3D.DEFAULT_UP) {
     const surface = addMesh(ref, geom, material, x, y, z);
-    surface.userData.rotationAxis = THREE.Object3D.DEFAULT_UP; // Y-axis (0, 1, 0)
+    surface.userData.rotationAxis = rotationAxis; // Y-axis (0, 1, 0)
     surface.userData.rotationSpeed = rotationSpeed;
     return surface;
 }
@@ -348,8 +393,11 @@ function addSpotLight(ref, target, x, y, z) {
     'use strict';
     const light = new THREE.SpotLight(0xffffff);
 
-    light.position.set(x - 1.5, y - 1.5, z);
-    light.target = target;
+    let targetObject = new THREE.Object3D();
+    targetObject.position.set(x-1.5, y + 1, z-1.5);
+
+    light.position.set(x -1.5, y -1.5, z -1.5);
+    light.target = targetObject;
     light.intensity = 10;
     light.distance = 15;
     light.penumbra = 0;
@@ -523,7 +571,7 @@ function addPlane(obj, x, y, z) {
     'use strict';
     const planeMesh = new THREE.Mesh(
         new THREE.BoxGeometry(plane.width, plane.width, plane.depth),
-        new THREE.MeshBasicMaterial({ color: 0xEF767A, wireframe: false, side: THREE.DoubleSide })
+        new THREE.MeshBasicMaterial({ color: plane.color, wireframe: false, side: THREE.DoubleSide })
     );
     
     planeMesh.rotateX(Math.PI / 2).position.set(x, y, z);
@@ -621,27 +669,6 @@ function update() {
         }
     });
 
-    if (lightsOn) { 
-        ambientLight.visible = lightsOn;
-        directionalLight.visible = DirectionalLightOn;
-        [ref2, ref3, ref4].forEach(ref => {
-            ref.children.forEach(mesh => {
-                if (mesh.userData.light) {
-                    mesh.userData.light.visible = SpotLightsOn;
-                }
-            });
-        });
-    } else {
-        ambientLight.visible = lightsOn;
-        directionalLight.visible = lightsOn;
-        [ref2, ref3, ref4].forEach(ref => {
-            ref.children.forEach(mesh => {
-                if (mesh.userData.light) {
-                    mesh.userData.light.visible = lightsOn;
-                }
-            });
-        });
-    }
 }
 
 /////////////
@@ -737,15 +764,15 @@ function onKeyDown(e) {
             break;
         // Lights of the parametric surfaces
         case 'P':
-            SpotLightsOn = !SpotLightsOn;
+            PointLightsOn = !PointLightsOn;
             break;
         // Lights of the mobius strip
         case 'S':
-            PointLightsOn = !SpotLightsOn;
+            toggleSpotLigths(true);
             break;
         // Toggle directional lights
         case 'D':
-            directionalLight.visible = !directionalLight.visible;
+            toggleDirectionalLight();
             break;
         // Toggle lights
         case 'T':
