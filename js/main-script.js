@@ -110,19 +110,18 @@ const cartoonMaterials = {
     hyperboloid:   new THREE.MeshToonMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
 
-let materials = basicMaterials;
+let materials = basicMaterials; // materials currently in use
 let lightsOn = true;
-let SpotLightsOn = false;
-let PointLightsOn = false;
-let DirectionalLightOn = true;
 
 
 ////////////////////////
 /* AUXILIAR FUNCTIONS */
 ////////////////////////
 
-function updateMaterials() {
+function updateMaterials(newMaterials) {
     'use strict';
+    materials = newMaterials;
+
     scene.traverse(obj => {
         if (obj.material && obj.name) {
             obj.material = materials[obj.name];
@@ -130,51 +129,42 @@ function updateMaterials() {
     });
 }
 
-function toggleSpotLigths(change) {
+function togglePointLights() {
+    'use strict'
+    if (lightsOn) {
+        scene.traverse(obj => {
+            // toggle point lights
+        });
+    }
+}
+
+function toggleSpotLigths() {
     'use strict';
-
-    if(lightsOn){ 
-
-        if(change)
-            SpotLightsOn = !SpotLightsOn;
-        
-        [ref2, ref3, ref4].forEach(ref => {
-            ref.children.forEach(mesh => {
-                if (mesh.userData.light) {
-                    mesh.userData.light.visible = SpotLightsOn;
-                }
-            });
+    if (lightsOn) {
+        scene.traverse(obj => {
+            if (obj.isSpotLight) {
+                obj.visible = !obj.visible;
+            }
         });
     }
 }
 
 function toggleDirectionalLight() {
     'use strict';
-
-    if(lightsOn){
-        DirectionalLightOn = !DirectionalLightOn;
-        directionalLight.visible = DirectionalLightOn;
+    if (lightsOn) {
+        directionalLight.visible = !directionalLight.visible;
     }
 }
 
 function toggleLigths() {
     'use strict';
     lightsOn = !lightsOn;
-    if(lightsOn){
-        ambientLight.visible = lightsOn;
-        directionalLight.visible = DirectionalLightOn;
-        toggleSpotLigths(false);
-    } else {
-        ambientLight.visible = lightsOn;
-        directionalLight.visible = lightsOn;
-        [ref2, ref3, ref4].forEach(ref => {
-            ref.children.forEach(mesh => {
-                if (mesh.userData.light) {
-                    mesh.userData.light.visible = lightsOn;
-                }
-            });
-        });
-    }
+
+    scene.traverse(obj => {
+        if (obj.isLight) {
+            obj.visible = lightsOn;
+        }
+    });
 }
 
 
@@ -764,31 +754,27 @@ function onKeyDown(e) {
             break;
         // Select Lambert materials
         case 'Q':
-            materials = lambertMaterials;
-            updateMaterials();
+            updateMaterials(lambertMaterials);
             break;
         // Select Phong materials
         case 'W':
-            materials = phongMaterials;
-            updateMaterials();
+            updateMaterials(phongMaterials);
             break;
         // Select Cartoon materials
         case 'E':
-            materials = cartoonMaterials;
-            updateMaterials();
+            updateMaterials(cartoonMaterials);
             break;
         // Select Normal materials
         case 'R':
-            materials = normalMaterials;
-            updateMaterials();
+            updateMaterials(normalMaterials);
             break;
         // Lights of the parametric surfaces
         case 'P':
-            PointLightsOn = !PointLightsOn;
+            togglePointLights();
             break;
         // Lights of the mobius strip
         case 'S':
-            toggleSpotLigths(true);
+            toggleSpotLigths();
             break;
         // Toggle directional lights
         case 'D':
