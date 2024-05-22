@@ -229,8 +229,9 @@ function addFoundation(obj, x, y, z) {
     'use strict';
     const rotationSpeed = 0.5;
     const geom = new THREE.CylinderGeometry(foundation.radius, foundation.radius, foundation.height);
-    const mesh = addRotatingSurface(obj, geom, materials.foundation, rotationSpeed, x, y, z);
+    const mesh = addMesh(obj, geom, materials.foundation, x, y, z);
 
+    setRotationData(mesh, rotationSpeed);
     mesh.name = 'foundation';
 }
 
@@ -251,6 +252,12 @@ function addCarousel(obj, x, y, z) {
     addObjectsToRing(ref4, ring3_info);
     
     obj.add(ref1, ref2, ref3, ref4);
+    
+    const rotationSpeed = 0.2;
+
+    setRotationData(ref2, rotationSpeed);
+    setRotationData(ref3, rotationSpeed);
+    setRotationData(ref4, rotationSpeed);
 }
 
 function addInnerRing(obj, x, y, z) {
@@ -284,9 +291,7 @@ function addRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
     const extrudeSettings = { bevelEnabled: false, depth: height };
     const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
     
-
-    const rotationSpeed = 0.5;
-    return addMesh(obj, geom, material, rotationSpeed, x, y, z);
+    return addMesh(obj, geom, material, x, y, z);
 }
 
 function addMobiusStrip(obj, r, w, segments, x, y, z) {
@@ -330,11 +335,9 @@ function addMobiusStrip(obj, r, w, segments, x, y, z) {
     mesh.name = "mobiusStrip";
 }
 
-function addRotatingSurface(ref, geom, material, rotationSpeed, x, y, z, rotationAxis = THREE.Object3D.DEFAULT_UP) {
-    const surface = addMesh(ref, geom, material, x, y, z);
-    surface.userData.rotationAxis = rotationAxis; // Y-axis (0, 1, 0)
-    surface.userData.rotationSpeed = rotationSpeed;
-    return surface;
+function setRotationData(obj, speed, axis = THREE.Object3D.DEFAULT_UP) {
+    obj.userData.rotationAxis = axis;
+    obj.userData.rotationSpeed = speed;
 }
 
 function addObjectsToRing(obj, ring_info) {
@@ -421,8 +424,9 @@ function addDonut(ref, x, y, z) {
     }, 50, 50);
 
     const rotationSpeed = 0.75;
-    const donut = addRotatingSurface(ref, geom, materials.donut, rotationSpeed, x, y, z);
+    const donut = addMesh(ref, geom, materials.donut, x, y, z);
 
+    setRotationData(donut, rotationSpeed);
     addSpotLight(ref, donut, x, y, z);
 
     return donut;
@@ -442,8 +446,9 @@ function addEnneper(ref, x, y, z) {
     }, 25, 25);
 
     const rotationSpeed = 0.85;
-    const enneper = addRotatingSurface(ref, geom, basicMaterials.enneper, rotationSpeed, x, y, z);
+    const enneper = addMesh(ref, geom, materials.enneper, x, y, z);
 
+    setRotationData(enneper, rotationSpeed);
     addSpotLight(ref, enneper, x, y, z);
 
     return enneper;
@@ -459,8 +464,9 @@ function addKleinBottle(ref, x, y, z) {
     }, 25, 25);
 
     const rotationSpeed = 0.5;
-    const kleinBottle = addRotatingSurface(ref, geom, basicMaterials.kleinBottle, rotationSpeed, x, y, z);
+    const kleinBottle = addMesh(ref, geom, materials.kleinBottle, x, y, z);
 
+    setRotationData(kleinBottle, rotationSpeed);
     addSpotLight(ref, kleinBottle, x, y, z);
 
     return kleinBottle;
@@ -477,8 +483,9 @@ function addScherkSurface(ref, x, y, z) {
     }, 64, 64);
 
     const rotationSpeed = 0.6;
-    const scherkSurface = addRotatingSurface(ref, geom, basicMaterials.scherkSurface, rotationSpeed, x, y, z);
+    const scherkSurface = addMesh(ref, geom, materials.scherkSurface, x, y, z);
 
+    setRotationData(scherkSurface, rotationSpeed);
     addSpotLight(ref, scherkSurface, x, y, z); 
 
     return scherkSurface;
@@ -498,8 +505,9 @@ function addParaboloid(ref, x, y, z) {
     }, 64, 64); 
 
     const rotationSpeed = 0.75;
-    const paraboloid = addRotatingSurface(ref, geom, basicMaterials.paraboloid, rotationSpeed, x, y, z);
+    const paraboloid = addMesh(ref, geom, materials.paraboloid, x, y, z);
 
+    setRotationData(paraboloid, rotationSpeed);
     addSpotLight(ref, paraboloid, x, y, z);
 
     return paraboloid;
@@ -518,8 +526,9 @@ function addBox(ref, x, y, z) {
     }, 32, 32);
 
     const rotationSpeed = 0.75;
-    const box = addRotatingSurface(ref, geom, basicMaterials.box, rotationSpeed, x, y, z);
+    const box = addMesh(ref, geom, materials.box, x, y, z);
 
+    setRotationData(box, rotationSpeed);
     addSpotLight(ref, box, x, y, z); 
 
     return box;
@@ -538,8 +547,9 @@ function addEllipsoid(ref, x, y, z) {
     }, 64, 64);
 
     const rotationSpeed = 0.7;
-    const ellipsoid = addRotatingSurface(ref, geom, basicMaterials.ellipsoid, rotationSpeed, x, y, z);
+    const ellipsoid = addMesh(ref, geom, materials.ellipsoid, x, y, z);
 
+    setRotationData(ellipsoid, rotationSpeed);
     addSpotLight(ref, ellipsoid, x, y, z); 
 
     return ellipsoid;
@@ -560,8 +570,9 @@ function addHyperboloid(ref, x, y, z) {
     }, 50, 50);
 
     const rotationSpeed = 0.75;
-    const hyperboloid = addRotatingSurface(ref, geom, basicMaterials.hyperboloid, rotationSpeed, x, y, z);
+    const hyperboloid = addMesh(ref, geom, materials.hyperboloid, rotationSpeed, x, y, z);
 
+    setRotationData(hyperboloid, rotationSpeed);
     addSpotLight(ref, hyperboloid, x, y, z); 
 
     return hyperboloid;
@@ -668,7 +679,6 @@ function update() {
             obj.rotateOnAxis(obj.userData.rotationAxis, obj.userData.rotationSpeed * delta);
         }
     });
-
 }
 
 /////////////
