@@ -694,9 +694,9 @@ function addPlane(obj, x, y, z) {
 function addSkydome(obj, x, y, z) {
     'use strict';
 
-    let map = new THREE.TextureLoader().load("textures/skydome.jpeg");
-    let bmap = new THREE.TextureLoader().load("textures/skydome-bump.jpeg");
-    let dmap = new THREE.TextureLoader().load("textures/skydome-displacement.jpeg");
+    let map = new THREE.TextureLoader().load("textures/skydome2.jpeg");
+    let bmap = new THREE.TextureLoader().load("textures/skydome2-bump.jpeg");
+    let dmap = new THREE.TextureLoader().load("textures/skydome2-displacement.jpeg");
 
     const material = new THREE.MeshPhongMaterial({
         bumpMap: bmap,
