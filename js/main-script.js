@@ -38,7 +38,7 @@ const basicMaterials = {
     ring2:         new THREE.MeshBasicMaterial({ color: 0xA0DEFF }),
     ring3:         new THREE.MeshBasicMaterial({ color: 0x5AB2FF }),
     mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x6AD4DD, side: THREE.DoubleSide }),
-    donut:         new THREE.MeshBasicMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
+    torus:         new THREE.MeshBasicMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshBasicMaterial({ color: 0x990000, side: THREE.DoubleSide }),
     kleinBottle :  new THREE.MeshBasicMaterial({ color: 0x011111, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshBasicMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
@@ -55,7 +55,7 @@ const lambertMaterials = {
     ring2:         new THREE.MeshLambertMaterial({ color: 0xA0DEFF }),
     ring3:         new THREE.MeshLambertMaterial({ color: 0x5AB2FF }),
     mobiusStrip:   new THREE.MeshLambertMaterial({ color: 0x6AD4DD, side: THREE.DoubleSide}),
-    donut:         new THREE.MeshLambertMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
+    torus:         new THREE.MeshLambertMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     kleinBottle :  new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshLambertMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
@@ -72,7 +72,7 @@ const phongMaterials = {
     ring2:         new THREE.MeshPhongMaterial({ color: 0xA0DEFF }),
     ring3:         new THREE.MeshPhongMaterial({ color: 0x5AB2FF }),
     mobiusStrip:   new THREE.MeshPhongMaterial({ color: 0x6AD4DD, side: THREE.DoubleSide}),
-    donut:         new THREE.MeshPhongMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
+    torus:         new THREE.MeshPhongMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     kleinBottle:   new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshPhongMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
@@ -89,7 +89,7 @@ const cartoonMaterials = {
     ring2:         new THREE.MeshToonMaterial({ color: 0xA0DEFF }),
     ring3:         new THREE.MeshToonMaterial({ color: 0x5AB2FF }),
     mobiusStrip:   new THREE.MeshToonMaterial({ color: 0x6AD4DD, side: THREE.DoubleSide}),
-    donut:         new THREE.MeshToonMaterial({ color: 0xdddd00, side: THREE.DoubleSide}),
+    torus:         new THREE.MeshToonMaterial({ color: 0xdddd00, side: THREE.DoubleSide}),
     enneper:       new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     kleinBottle:   new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshToonMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
@@ -106,7 +106,7 @@ const normalMaterials = {
     ring2:         new THREE.MeshNormalMaterial(),
     ring3:         new THREE.MeshNormalMaterial(),
     mobiusStrip:   new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    donut:         new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    torus:         new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     enneper:       new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     kleinBottle :  new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
@@ -450,7 +450,6 @@ function addMobiusStrip(obj, x, y, z) {
     addPointLightsToMobiusStrip(mobiusStrip, geometry);
 }
 
-
 function addObjectsToRing(parent, ring) {
     'use strict';
     const angleIncrement = Math.PI / 4; // 45 degrees
@@ -470,7 +469,7 @@ function addObjectsToRing(parent, ring) {
 
         switch (objectIndices[i]) {
             case 0:
-                obj = addDonut(parent, x, y, z);
+                obj = addTorus(parent, x, y, z);
                 break;
             case 1:
                 obj = addEnneper(parent, x, y, z);
@@ -499,7 +498,7 @@ function addObjectsToRing(parent, ring) {
     }
 }
 
-function addDonut(ref, x, y, z) {
+function addTorus(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
         const radius = 1;
@@ -514,13 +513,13 @@ function addDonut(ref, x, y, z) {
 
     const rotationSpeed = Math.random();
     const rotationAxis = randomVector();
-    const donut = addMesh(ref, geom, materials.donut, x, y, z);
+    const torus = addMesh(ref, geom, materials.torus, x, y, z);
 
-    setRotationData(donut, rotationSpeed, rotationAxis);
-    addSpotLight(ref, donut, x, y, z);
+    setRotationData(torus, rotationSpeed, rotationAxis);
+    addSpotLight(ref, torus, x, y, z);
 
-    donut.name = "donut";
-    return donut;
+    torus.name = "torus";
+    return torus;
 }
 
 function addEnneper(ref, x, y, z) {
