@@ -45,22 +45,6 @@ const basicMaterials = {
     hyperboloid:   new THREE.MeshBasicMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
 
-const normalMaterials = {
-    foundation:    new THREE.MeshNormalMaterial(),
-    ring1:         new THREE.MeshNormalMaterial(),
-    ring2:         new THREE.MeshNormalMaterial(),
-    ring3:         new THREE.MeshNormalMaterial(),
-    mobiusStrip:   new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    donut:         new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    enneper:       new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    kleinBottle :  new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    scherkSurface: new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    paraboloid:    new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    cylinder:      new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    ellipsoid:     new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    hyperboloid:   new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
-}
-
 const lambertMaterials = {
     foundation:    new THREE.MeshLambertMaterial({ color: 0x123235 }),
     ring1:         new THREE.MeshLambertMaterial({ color: 0x5BBCFF }),
@@ -109,7 +93,23 @@ const cartoonMaterials = {
     hyperboloid:   new THREE.MeshToonMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
 
-let materials = basicMaterials; // materials currently in use
+const normalMaterials = {
+    foundation:    new THREE.MeshNormalMaterial(),
+    ring1:         new THREE.MeshNormalMaterial(),
+    ring2:         new THREE.MeshNormalMaterial(),
+    ring3:         new THREE.MeshNormalMaterial(),
+    mobiusStrip:   new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    donut:         new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    enneper:       new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    kleinBottle :  new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    scherkSurface: new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    paraboloid:    new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    cylinder:      new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    ellipsoid:     new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    hyperboloid:   new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
+}
+
+let materials = lambertMaterials; // materials currently in use
 let lightsOn = true;
 
 
@@ -120,53 +120,41 @@ function randomVector() {
     return new THREE.Vector3().random().normalize();
 }
 
-function updateMaterials(newMaterials) {
+function updateMaterials() {
     'use strict';
-    materials = newMaterials;
+    const materialsArray = lightsOn ? materials : basicMaterials;
 
     scene.traverse(obj => {
         if (obj.material && obj.name) {
-            obj.material = materials[obj.name];
+            obj.material = materialsArray[obj.name];
         }
     });
 }
 
 function togglePointLights() {
     'use strict'
-    if (lightsOn) {
-        scene.traverse(obj => {
-            // toggle point lights
-        });
-    }
+    scene.traverse(obj => {
+        // toggle point lights
+    });
 }
 
 function toggleSpotLigths() {
     'use strict';
-    if (lightsOn) {
-        scene.traverse(obj => {
-            if (obj.isSpotLight) {
-                obj.visible = !obj.visible;
-            }
-        });
-    }
+    scene.traverse(obj => {
+        if (obj.isSpotLight) {
+            obj.visible = !obj.visible;
+        }
+    });
 }
 
 function toggleDirectionalLight() {
     'use strict';
-    if (lightsOn) {
-        directionalLight.visible = !directionalLight.visible;
-    }
+    directionalLight.visible = !directionalLight.visible;
 }
 
-function toggleLigths() {
-    'use strict';
+function toggleLights() {
     lightsOn = !lightsOn;
-
-    scene.traverse(obj => {
-        if (obj.isLight) {
-            obj.visible = lightsOn;
-        }
-    });
+    updateMaterials();
 }
 
 
@@ -762,19 +750,23 @@ function onKeyDown(e) {
             break;
         // Select Lambert materials
         case 'Q':
-            updateMaterials(lambertMaterials);
+            materials = lambertMaterials;
+            updateMaterials();
             break;
         // Select Phong materials
         case 'W':
-            updateMaterials(phongMaterials);
+            materials = phongMaterials;
+            updateMaterials();
             break;
         // Select Cartoon materials
         case 'E':
-            updateMaterials(cartoonMaterials);
+            materials = cartoonMaterials;
+            updateMaterials();
             break;
         // Select Normal materials
         case 'R':
-            updateMaterials(normalMaterials);
+            materials = normalMaterials;
+            updateMaterials();
             break;
         // Lights of the parametric surfaces
         case 'P':
@@ -790,7 +782,7 @@ function onKeyDown(e) {
             break;
         // Toggle lights
         case 'T':
-            toggleLigths();
+            toggleLights();
             break;
     }
 }
