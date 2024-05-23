@@ -637,11 +637,18 @@ function addPlane(obj, x, y, z) {
 
 function addSkydome(obj, x, y, z) {
     'use strict';
+
+    let map = new THREE.TextureLoader().load("textures/skydome.jpeg");
+    let bmap = new THREE.TextureLoader().load("textures/skydome-bump.jpeg");
+    let dmap = new THREE.TextureLoader().load("textures/skydome-displacement.jpeg");
+
     const material = new THREE.MeshPhongMaterial({
-        map: new THREE.TextureLoader().load("textures/skydome.jpg"),
+        bumpMap: bmap,
+        bumpScale: 1.3,
+        displacementMap: dmap,
+        displacementScale: 5,
+        map: map,
         side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.7
     });
 
     const geom = new THREE.SphereGeometry(skydome.radius, skydome.widthSegments, skydome.heightSegments, skydome.phiStart, skydome.phiLength, skydome.thetaStart, skydome.thetaLength);
