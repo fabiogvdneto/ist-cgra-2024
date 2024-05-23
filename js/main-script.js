@@ -136,9 +136,17 @@ function updateMaterials() {
 
 function togglePointLights() {
     'use strict'
-    scene.traverse(obj => {
-        // toggle point lights
-    });
+    if (ref1.userData.mobiusStrip) {
+        const mobiusStrip = ref1.userData.mobiusStrip;
+        const numLights = 8; 
+
+        for (let i = 0; i < numLights; i++) {
+            const light = mobiusStrip.userData[`light${i}`];
+            if (light) {
+                light.visible = !light.visible;
+            }
+        }
+    }
 }
 
 function toggleSpotLigths() {
@@ -292,6 +300,52 @@ function addRing(obj, x, y, z, ring, material) {
     return addMesh(obj, geom, material, x, y, z);
 }
 
+function addSpotLight(ref, target, x, y, z) {
+    'use strict';
+    const light = new THREE.SpotLight(0xffffff);
+
+    light.position.set(x + 2, y - 2, z + 2);
+    light.target = target;
+    light.intensity = 20;
+    light.distance = 15;
+
+    ref.add(light);
+    target.userData.light = light;
+}
+
+function getRandomVertices(geometry) {
+    const positions = geometry.getAttribute('position');
+    const totalVertices = positions.count;
+    const numVertices = 8;
+    const randomVertices = [];
+
+    for (let i = 0; i < numVertices; i++) {
+        const randomIndex = Math.floor(Math.random() * totalVertices);
+        const x = positions.getX(randomIndex);
+        const y = positions.getY(randomIndex);
+        const z = positions.getZ(randomIndex);
+        randomVertices.push(new THREE.Vector3(x, y, z));
+    }
+
+    return randomVertices;
+}
+
+function addPointLightsToMobiusStrip(mobiusStrip, geometry) {
+    const numLights = 8;
+    const vertices = getRandomVertices(geometry);
+
+    for (let i = 0; i < numLights; i++) {
+        const light = new THREE.PointLight(0xffffff);
+        const { x, y, z } = vertices[i]; 
+        light.position.set(x, y, z);
+        light.intensity = 20;
+        light.distance = 10;
+
+        mobiusStrip.add(light);
+        mobiusStrip.userData[`light${i}`] = light;
+    }
+}
+
 function addMobiusStrip(obj, x, y, z) {
     const geometry = new THREE.BufferGeometry();
 
@@ -328,11 +382,13 @@ function addMobiusStrip(obj, x, y, z) {
     geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     geometry.computeVertexNormals();
 
-    const mesh = addMesh(obj, geometry, materials.mobiusStrip, x, y, z);
-    mesh.rotation.z = Math.PI/4;
-    mesh.rotation.x = Math.PI/4;
-    mesh.name = "mobiusStrip";
+    const mobiusStrip = addMesh(obj, geometry, materials.mobiusStrip, x, y, z);
+    mobiusStrip.rotation.z = Math.PI/4;
+    mobiusStrip.rotation.x = Math.PI/4;
+    mobiusStrip.name = "mobiusStrip";
 
+    obj.userData.mobiusStrip = mobiusStrip; 
+    addPointLightsToMobiusStrip(mobiusStrip, geometry);
 }
 
 function addObjectsToRing(parent, ring) {
@@ -381,19 +437,6 @@ function addObjectsToRing(parent, ring) {
 
         obj.scale.multiplyScalar(ring.objectScalingFactor);
     }
-}
-
-function addSpotLight(ref, target, x, y, z) {
-    'use strict';
-    const light = new THREE.SpotLight(0xffffff);
-
-    light.position.set(x - 2, y - 2, z);
-    light.target = target;
-    light.intensity = 5;
-    light.distance = 15;
-
-    ref.add(light);
-    target.userData.light = light;
 }
 
 function addDonut(ref, x, y, z) {
