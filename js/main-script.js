@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
@@ -12,8 +11,7 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 const renderer = new THREE.WebGLRenderer();
 const scene = new THREE.Scene();
 const clock = new THREE.Clock();
-const mainCamera = new THREE.PerspectiveCamera();
-const controls = new OrbitControls(mainCamera, renderer.domElement);
+const camera = new THREE.PerspectiveCamera();
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
 const ambientLight = new THREE.AmbientLight(0xffa500, 0.4);
 
@@ -23,14 +21,15 @@ const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
 
 const foundation =  { radius: 4, height: 30 };
-const plane =       { width: 350, depth: 2, color: 0xF2C18D };
+const plane =       { width: 350, depth: 2 };
 const skydome =     { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, thetaStart: 0, thetaLength: Math.PI/2 };
 const ring1 =       { iRadius: 4,  oRadius: 10, height: 3, objectScalingFactor: 0.7 };
 const ring2 =       { iRadius: 10, oRadius: 16, height: 3, objectScalingFactor: 0.9 };
 const ring3 =       { iRadius: 16, oRadius: 22, height: 3, objectScalingFactor: 1.2 };
 
 const basicMaterials = {
-    foundation:    new THREE.MeshBasicMaterial({ color: 0x123235, side: THREE.DoubleSide }),
+    plane:         new THREE.MeshBasicMaterial({ color: 0xF2C18D }),
+    foundation:    new THREE.MeshBasicMaterial({ color: 0x123235 }),
     ring1:         new THREE.MeshBasicMaterial({ color: 0x5BBCFF }),
     ring2:         new THREE.MeshBasicMaterial({ color: 0xA0DEFF }),
     ring3:         new THREE.MeshBasicMaterial({ color: 0x5AB2FF }),
@@ -46,6 +45,7 @@ const basicMaterials = {
 }
 
 const lambertMaterials = {
+    plane:         new THREE.MeshLambertMaterial({ color: 0xF2C18D }),
     foundation:    new THREE.MeshLambertMaterial({ color: 0x123235 }),
     ring1:         new THREE.MeshLambertMaterial({ color: 0x5BBCFF }),
     ring2:         new THREE.MeshLambertMaterial({ color: 0xA0DEFF }),
@@ -62,6 +62,7 @@ const lambertMaterials = {
 }
 
 const phongMaterials = {
+    plane:         new THREE.MeshPhongMaterial({ color: 0xF2C18D }),
     foundation:    new THREE.MeshPhongMaterial({ color: 0x123235 }),
     ring1:         new THREE.MeshPhongMaterial({ color: 0x5BBCFF }),
     ring2:         new THREE.MeshPhongMaterial({ color: 0xA0DEFF }),
@@ -78,6 +79,7 @@ const phongMaterials = {
 }
 
 const cartoonMaterials = {
+    plane:         new THREE.MeshToonMaterial({ color: 0xF2C18D }),
     foundation:    new THREE.MeshToonMaterial({ color: 0x123235 }),
     ring1:         new THREE.MeshToonMaterial({ color: 0x5BBCFF }),
     ring2:         new THREE.MeshToonMaterial({ color: 0xA0DEFF }),
@@ -94,6 +96,7 @@ const cartoonMaterials = {
 }
 
 const normalMaterials = {
+    plane:         new THREE.MeshNormalMaterial(),
     foundation:    new THREE.MeshNormalMaterial(),
     ring1:         new THREE.MeshNormalMaterial(),
     ring2:         new THREE.MeshNormalMaterial(),
@@ -178,8 +181,8 @@ function createScene() {
 //////////////////////
 function createCamera() {
     'use strict';
-    mainCamera.position.set(0.5*(plane.width/2), 0.6*(plane.width/2), 0.512*(plane.width/2));
-    mainCamera.lookAt(scene.position);
+    camera.position.set(0.5*(plane.width/2), 0.6*(plane.width/2), 0.512*(plane.width/2));
+    camera.lookAt(scene.position);
 }
 
 /////////////////////
@@ -578,15 +581,11 @@ function addHyperboloid(ref, x, y, z) {
 
 function addPlane(obj, x, y, z) {
     'use strict';
-    const planeMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(plane.width, plane.width, plane.depth),
-        new THREE.MeshBasicMaterial({ color: plane.color, wireframe: false, side: THREE.DoubleSide })
-    );
+    const geom = new THREE.BoxGeometry(plane.width, plane.width, plane.depth);
+    const mesh = addMesh(obj, geom, materials.plane, x, y, z);
     
-    planeMesh.rotation.x = Math.PI / 2;
-    planeMesh.position.set(x, y, z);
-
-    obj.add(planeMesh);
+    mesh.rotation.x = Math.PI / 2;
+    mesh.name = "plane";
 }
 
 function addSkydome(obj, x, y, z) {
@@ -685,7 +684,7 @@ function update() {
 /////////////
 function render() {
     'use strict';
-    renderer.render(scene, mainCamera);
+    renderer.render(scene, camera);
 }
 
 ////////////////////////////////
@@ -697,8 +696,6 @@ function init() {
 
     document.body.appendChild(renderer.domElement);
     document.body.appendChild(VRButton.createButton(renderer));
-    
-    controls.enableDamping = true;
 
     ref2.userData = { moving: true, direction: 1 };
     ref3.userData = { moving: true, direction: 1 };
@@ -718,7 +715,6 @@ function animate() {
     'use strict';
     update();
     render();
-    controls.update();
     renderer.setAnimationLoop(animate);
 }
 
@@ -728,8 +724,8 @@ function animate() {
 function onResize() {
     'use strict';
     renderer.setSize(window.innerWidth, window.innerHeight);
-    mainCamera.aspect = window.innerWidth / window.innerHeight;
-    mainCamera.updateProjectionMatrix();
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 }
 
 ///////////////////////
