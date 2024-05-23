@@ -311,7 +311,7 @@ function addSpotLight(ref, target, x, y, z) {
     light.position.set(x + 2, y - 2, z + 2);
     light.target = target;
     light.intensity = 20;
-    light.distance = 15;
+    light.distance = 8;
 
     ref.add(light);
     target.userData.light = light;
@@ -343,7 +343,6 @@ function addPointLightsToMobiusStrip(mobiusStrip, geometry) {
         const { x, y, z } = vertices[i]; 
         light.position.set(x, y, z);
         light.intensity = 20;
-        light.distance = 10;
 
         mobiusStrip.add(light);
         mobiusStrip.userData[`light${i}`] = light;
@@ -354,32 +353,89 @@ function addMobiusStrip(obj, x, y, z) {
     const geometry = new THREE.BufferGeometry();
 
     const vertices = new Float32Array([
-        10, 0, 0,      
-        10, 10, 5,     
-        5, 10, 10,     
-        0, 10, 10,     
-        -5, 10, 5,     
-        -10, 10, 0,    
-        -10, 0, -5,    
-        -10, -10, -10, 
-        -5, -10, -5,   
-        0, -10, 0,     
-        5, -10, -5,    
-        10, -10, -10   
-    ]);    
+        20, 0, 0,      
+        16, 6, 2,      
+        12, 12, 4,     
+        6, 16, 2,      
+        0, 20, 0,      
+        -6, 16, -2,    
+        -12, 12, -4,   
+        -16, 6, -2,    
+        -20, 0, 0,     
+        -16, -6, 2,    
+        -12, -12, 4,   
+        -6, -16, 2,    
+        0, -20, 0,     
+        6, -16, -2,    
+        12, -12, -4,   
+        16, -6, -2,    
+        16, 0, 4,      
+        12, 5, 5,      
+        8, 10, 6,      
+        4, 12, 4,      
+        0, 16, 4,      
+        -4, 12, 3,     
+        -8, 10, 2,     
+        -12, 5, 3,     
+        -16, 0, 4,     
+        -12, -5, 5,    
+        -8, -10, 6,    
+        -4, -12, 4,    
+        0, -16, 4,     
+        4, -12, 3,     
+        8, -10, 2,     
+        12, -5, 3      
+    ]);
 
     const indices = new Uint16Array([
-        0, 1, 2,
-        0, 2, 3,
-        0, 3, 4,
-        0, 4, 5,
-        0, 5, 6,
-        0, 6, 7,
-        0, 7, 8,
-        0, 8, 9,
-        0, 9, 10,
-        0, 10, 11,
-        0, 11, 1
+        0, 1, 16,
+        1, 17, 16,
+        1, 2, 17,
+        2, 18, 17,
+        2, 3, 18,
+        3, 19, 18,
+        3, 4, 19,
+        4, 20, 19,
+        4, 5, 20,
+        5, 21, 20,
+        5, 6, 21,
+        6, 22, 21,
+        6, 7, 22,
+        7, 23, 22,
+        7, 8, 23,
+        8, 24, 23,
+        8, 9, 24,
+        9, 25, 24,
+        9, 10, 25,
+        10, 26, 25,
+        10, 11, 26,
+        11, 27, 26,
+        11, 12, 27,
+        12, 28, 27,
+        12, 13, 28,
+        13, 29, 28,
+        13, 14, 29,
+        14, 30, 29,
+        14, 15, 30,
+        15, 31, 30,
+        15, 0, 31,
+        0, 16, 31,
+        16, 17, 1,
+        17, 18, 2,
+        18, 19, 3,
+        19, 20, 4,
+        20, 21, 5,
+        21, 22, 6,
+        22, 23, 7,
+        23, 24, 8,
+        24, 25, 9,
+        25, 26, 10,
+        26, 27, 11,
+        27, 28, 12,
+        28, 29, 13,
+        29, 30, 14,
+        30, 31, 15,
+        31, 16, 0
     ]);
 
     geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
@@ -387,13 +443,13 @@ function addMobiusStrip(obj, x, y, z) {
     geometry.computeVertexNormals();
 
     const mobiusStrip = addMesh(obj, geometry, materials.mobiusStrip, x, y, z);
-    mobiusStrip.rotation.z = Math.PI/4;
-    mobiusStrip.rotation.x = Math.PI/4;
+    mobiusStrip.rotation.x = Math.PI / 2;
     mobiusStrip.name = "mobiusStrip";
 
-    obj.userData.mobiusStrip = mobiusStrip; 
+    obj.userData.mobiusStrip = mobiusStrip;
     addPointLightsToMobiusStrip(mobiusStrip, geometry);
 }
+
 
 function addObjectsToRing(parent, ring) {
     'use strict';
