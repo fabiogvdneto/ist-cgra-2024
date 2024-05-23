@@ -1,7 +1,7 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { VRButton } from 'three/addons/webxr/VRButton.js';
-import * as Stats from 'three/addons/libs/stats.module.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import Stats from 'three/addons/libs/stats.module.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js'
 
 
@@ -9,11 +9,15 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 /* GLOBAL VARIABLES/CONSTANTS */
 ////////////////////////////////
 const renderer = new THREE.WebGLRenderer();
+const camera = new THREE.PerspectiveCamera();
 const scene = new THREE.Scene();
 const clock = new THREE.Clock();
-const camera = new THREE.PerspectiveCamera();
+
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
 const ambientLight = new THREE.AmbientLight(0xffa500, 0.4);
+
+const stats = new Stats();
+const controls = new OrbitControls(camera, renderer.domElement);
 
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
@@ -737,6 +741,7 @@ function init() {
     'use strict';
     renderer.xr.enabled = true;
 
+    document.body.appendChild(stats.dom);
     document.body.appendChild(renderer.domElement);
     document.body.appendChild(VRButton.createButton(renderer));
 
@@ -758,6 +763,8 @@ function animate() {
     'use strict';
     update();
     render();
+    stats.update();
+    controls.update();
     renderer.setAnimationLoop(animate);
 }
 
