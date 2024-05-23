@@ -170,7 +170,7 @@ function createScene() {
     addPlane(scene, 0, -plane.depth/2, 0);
     addSkydome(scene, 0, 0, 0);
     addCarousel(scene, 0, 0, 0);
-    addMobiusStrip(ref1, 15, 15, 30, 0, foundation.height*2, 0); 
+    addMobiusStrip(ref1, 0, foundation.height*2, 0); 
 }
 
 //////////////////////
@@ -289,45 +289,47 @@ function addRing(obj, x, y, z, ring, material) {
     return addMesh(obj, geom, material, x, y, z);
 }
 
-function addMobiusStrip(obj, r, w, segments, x, y, z) {
+function addMobiusStrip(obj, x, y, z) {
     const geometry = new THREE.BufferGeometry();
-    
-    const vertices = [];
-    const indices = [];
 
-    for (let i = 0; i <= segments; i++) {
-        const u = i / segments * Math.PI * 2;
-        
-        for (let j = 0; j <= segments; j++) {
-            const v = (j - segments / 2) / segments * w;
+    const vertices = new Float32Array([
+        10, 0, 0,      
+        10, 10, 5,     
+        5, 10, 10,     
+        0, 10, 10,     
+        -5, 10, 5,     
+        -10, 10, 0,    
+        -10, 0, -5,    
+        -10, -10, -10, 
+        -5, -10, -5,   
+        0, -10, 0,     
+        5, -10, -5,    
+        10, -10, -10   
+    ]);    
 
-            //  Equation of a Möbius Strip
-            const xCoord = (r + v * Math.cos(u / 2) / 2) * Math.cos(u);
-            const yCoord = (r + v * Math.cos(u / 2) / 2) * Math.sin(u);
-            const zCoord = v * Math.sin(u / 2) / 2;
+    const indices = new Uint16Array([
+        0, 1, 2,
+        0, 2, 3,
+        0, 3, 4,
+        0, 4, 5,
+        0, 5, 6,
+        0, 6, 7,
+        0, 7, 8,
+        0, 8, 9,
+        0, 9, 10,
+        0, 10, 11,
+        0, 11, 1
+    ]);
 
-            vertices.push(xCoord, yCoord, zCoord);
-        }
-    }
-
-    for (let i = 0; i < segments; i++) {
-        for (let j = 0; j < segments; j++) {
-            const a = (i * (segments + 1)) + j;
-            const b = a + segments + 1;
-
-            indices.push(a, b, a + 1);
-            indices.push(b, b + 1, a + 1);
-        }
-    }
-
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
     geometry.computeVertexNormals();
 
     const mesh = addMesh(obj, geometry, materials.mobiusStrip, x, y, z);
-    
-    mesh.rotation.x = Math.PI/2;
+    mesh.rotation.z = Math.PI/4;
+    mesh.rotation.x = Math.PI/4;
     mesh.name = "mobiusStrip";
+
 }
 
 function addObjectsToRing(parent, ring) {
