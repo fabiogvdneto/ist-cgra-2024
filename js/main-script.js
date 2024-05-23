@@ -22,20 +22,19 @@ const ref2 = new THREE.Object3D();
 const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
 
-const foundation = { radius: 4, height: 30, color: 0x4793AF };
+const foundation =  { radius: 4, height: 30 };
 const plane =       { width: 350, depth: 2, color: 0xF2C18D };
 const skydome =     { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, thetaStart: 0, thetaLength: Math.PI/2 };
-const ring1 =       { innerR: 4,  outerR: 10, height: 3, color: 0x5BBCFF, objScalingFactor: 0.6 };
-const ring2 =       { innerR: 10, outerR: 16, height: 3, color: 0xA0DEFF, objScalingFactor: 0.9 };
-const ring3 =       { innerR: 16, outerR: 22, height: 3, color: 0x5AB2FF, objScalingFactor: 1.2 };
-const mobiusStrip = { color: 0x6AD4DD };
+const ring1 =       { iRadius: 4,  oRadius: 10, height: 3, objectScalingFactor: 0.7 };
+const ring2 =       { iRadius: 10, oRadius: 16, height: 3, objectScalingFactor: 0.9 };
+const ring3 =       { iRadius: 16, oRadius: 22, height: 3, objectScalingFactor: 1.2 };
 
 const basicMaterials = {
     foundation:    new THREE.MeshBasicMaterial({ color: 0x123235, side: THREE.DoubleSide }),
-    ring1:         new THREE.MeshBasicMaterial({ color: ring1.color }),
-    ring2:         new THREE.MeshBasicMaterial({ color: ring2.color }),
-    ring3:         new THREE.MeshBasicMaterial({ color: ring3.color }),
-    mobiusStrip:   new THREE.MeshBasicMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide }),
+    ring1:         new THREE.MeshBasicMaterial({ color: 0x5BBCFF }),
+    ring2:         new THREE.MeshBasicMaterial({ color: 0xA0DEFF }),
+    ring3:         new THREE.MeshBasicMaterial({ color: 0x5AB2FF }),
+    mobiusStrip:   new THREE.MeshBasicMaterial({ color: 0x6AD4DD, side: THREE.DoubleSide }),
     donut:         new THREE.MeshBasicMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshBasicMaterial({ color: 0x990000, side: THREE.DoubleSide }),
     kleinBottle :  new THREE.MeshBasicMaterial({ color: 0x011111, side: THREE.DoubleSide }),
@@ -64,10 +63,10 @@ const normalMaterials = {
 
 const lambertMaterials = {
     foundation:    new THREE.MeshLambertMaterial({ color: 0x123235 }),
-    ring1:         new THREE.MeshLambertMaterial({ color: ring1.color }),
-    ring2:         new THREE.MeshLambertMaterial({ color: ring2.color }),
-    ring3:         new THREE.MeshLambertMaterial({ color: ring3.color }),
-    mobiusStrip:   new THREE.MeshLambertMaterial({ color: mobiusStrip.color,side: THREE.DoubleSide}),
+    ring1:         new THREE.MeshLambertMaterial({ color: 0x5BBCFF }),
+    ring2:         new THREE.MeshLambertMaterial({ color: 0xA0DEFF }),
+    ring3:         new THREE.MeshLambertMaterial({ color: 0x5AB2FF }),
+    mobiusStrip:   new THREE.MeshLambertMaterial({ color: 0x6AD4DD, side: THREE.DoubleSide}),
     donut:         new THREE.MeshLambertMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     kleinBottle :  new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
@@ -80,10 +79,10 @@ const lambertMaterials = {
 
 const phongMaterials = {
     foundation:    new THREE.MeshPhongMaterial({ color: 0x123235 }),
-    ring1:         new THREE.MeshPhongMaterial({ color: ring1.color }),
-    ring2:         new THREE.MeshPhongMaterial({ color: ring2.color }),
-    ring3:         new THREE.MeshPhongMaterial({ color: ring3.color }),
-    mobiusStrip:   new THREE.MeshPhongMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide}),
+    ring1:         new THREE.MeshPhongMaterial({ color: 0x5BBCFF }),
+    ring2:         new THREE.MeshPhongMaterial({ color: 0xA0DEFF }),
+    ring3:         new THREE.MeshPhongMaterial({ color: 0x5AB2FF }),
+    mobiusStrip:   new THREE.MeshPhongMaterial({ color: 0x6AD4DD, side: THREE.DoubleSide}),
     donut:         new THREE.MeshPhongMaterial({ color: 0xdddd00, side: THREE.DoubleSide }),
     enneper:       new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     kleinBottle:   new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
@@ -96,10 +95,10 @@ const phongMaterials = {
 
 const cartoonMaterials = {
     foundation:    new THREE.MeshToonMaterial({ color: 0x123235 }),
-    ring1:         new THREE.MeshToonMaterial({ color: ring1.color }),
-    ring2:         new THREE.MeshToonMaterial({ color: ring2.color }),
-    ring3:         new THREE.MeshToonMaterial({ color: ring3.color }),
-    mobiusStrip:   new THREE.MeshToonMaterial({ color: mobiusStrip.color, side: THREE.DoubleSide}),
+    ring1:         new THREE.MeshToonMaterial({ color: 0x5BBCFF }),
+    ring2:         new THREE.MeshToonMaterial({ color: 0xA0DEFF }),
+    ring3:         new THREE.MeshToonMaterial({ color: 0x5AB2FF }),
+    mobiusStrip:   new THREE.MeshToonMaterial({ color: 0x6AD4DD, side: THREE.DoubleSide}),
     donut:         new THREE.MeshToonMaterial({ color: 0xdddd00, side: THREE.DoubleSide}),
     enneper:       new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     kleinBottle:   new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
@@ -118,7 +117,7 @@ let lightsOn = true;
 /* AUXILIAR FUNCTIONS */
 ////////////////////////
 function randomVector() {
-    return new THREE.Vector3(Math.random(), Math.random(), Math.random());
+    return new THREE.Vector3(0, 1, 0);
 }
 
 function updateMaterials(newMaterials) {
@@ -203,8 +202,7 @@ function createLigths() {
     'use strict';
     directionalLight.position.set(10, 100, -10); // angle
     
-    scene.add(directionalLight);
-    scene.add(ambientLight);
+    scene.add(directionalLight, ambientLight);
 }
 
 ////////////////////////
@@ -261,7 +259,7 @@ function addCarousel(obj, x, y, z) {
 
 function addInnerRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring1.outerR, ring1.innerR, ring1.h, materials.ring1);
+    const mesh = addRing(obj, x, y, z, ring1, materials.ring1);
 
     mesh.rotation.x = Math.PI / 2;
     mesh.name = "ring1";
@@ -269,7 +267,7 @@ function addInnerRing(obj, x, y, z) {
 
 function addMidRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring2.outerR, ring2.innerR, ring2.h, materials.ring2);
+    const mesh = addRing(obj, x, y, z, ring2, materials.ring2);
 
     mesh.rotation.x = Math.PI / 2;
     mesh.name = "ring2";
@@ -277,19 +275,23 @@ function addMidRing(obj, x, y, z) {
 
 function addOuterRing(obj, x, y, z) {
     'use strict';
-    const mesh = addRing(obj, x, y, z, ring3.outerR, ring3.innerR, ring3.h, materials.ring3);
+    const mesh = addRing(obj, x, y, z, ring3, materials.ring3);
 
     mesh.rotation.x = Math.PI / 2;
     mesh.name = "ring3";
 }
 
-function addRing(obj, x, y, z, outerRadius, innerRadius, height, material) {
+function addRing(obj, x, y, z, ring, material) {
     'use strict';
+    const oRadius = ring.oRadius;
+    const iRadius = ring.iRadius;
+    const height = ring.height;
+
     const shape = new THREE.Shape();
     const holePath = new THREE.Path();
 
-    shape.moveTo(outerRadius, 0).absarc(0, 0, outerRadius, 0, 2*Math.PI, false);
-    holePath.moveTo(innerRadius, 0).absarc(0, 0, innerRadius, 0, 2*Math.PI, true);
+    shape.moveTo(oRadius, 0).absarc(0, 0, oRadius, 0, 2*Math.PI, false);
+    holePath.moveTo(iRadius, 0).absarc(0, 0, iRadius, 0, 2*Math.PI, true);
 
     shape.holes.push(holePath);
 
@@ -351,9 +353,9 @@ function addObjectsToRing(parent, ring) {
 
     for (let i = 0; i < numObjects; i++) {
         const angle = i * angleIncrement;
-        const x = (ring.outerR + ring.innerR) / 2 * Math.cos(angle);
+        const x = Math.cos(angle) * (ring.oRadius + ring.iRadius) / 2;
         const y = ring.height;
-        const z = (ring.outerR + ring.innerR) / 2 * Math.sin(angle);
+        const z = Math.sin(angle) * (ring.oRadius + ring.iRadius) / 2;
 
         let obj;
 
@@ -384,7 +386,7 @@ function addObjectsToRing(parent, ring) {
                 break;
         }
 
-        obj.scale.multiplyScalar(ring.objScalingFactor);
+        obj.scale.multiplyScalar(ring.objectScalingFactor);
     }
 }
 
