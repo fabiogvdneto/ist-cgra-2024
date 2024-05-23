@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import Stats from 'three/addons/libs/stats.module.js';
 import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js'
@@ -17,7 +16,6 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
 const ambientLight = new THREE.AmbientLight(0xffa500, 0.4);
 
 const stats = new Stats();
-const controls = new OrbitControls(camera, renderer.domElement);
 
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
@@ -25,7 +23,7 @@ const ref3 = new THREE.Object3D();
 const ref4 = new THREE.Object3D();
 
 const foundation =  { radius: 4, height: 30 };
-const plane =       { width: 350, depth: 2 };
+const plane =       { width: 300, depth: 2 };
 const skydome =     { radius: plane.width/2,  widthSegments: 64, heightSegments: 32, phiStart: 0, phiLength: 2*Math.PI, thetaStart: 0, thetaLength: Math.PI/2 };
 const ring1 =       { iRadius: 4,  oRadius: 10, height: 3, objectScalingFactor: 0.7 };
 const ring2 =       { iRadius: 10, oRadius: 16, height: 3, objectScalingFactor: 0.9 };
@@ -193,8 +191,12 @@ function createScene() {
 //////////////////////
 function createCamera() {
     'use strict';
-    camera.position.set(0.5*(plane.width/2), 0.6*(plane.width/2), 0.512*(plane.width/2));
-    camera.lookAt(scene.position);
+    const wrapper = new THREE.Group();
+
+    scene.add(wrapper.add(camera));
+
+    wrapper.position.set(0.25*plane.width, 0.2*plane.width, 0.25*plane.width);
+    camera.lookAt(scene.position.clone().setY(foundation.height/1.2));
 }
 
 /////////////////////
@@ -826,7 +828,6 @@ function animate() {
     update();
     render();
     stats.update();
-    controls.update();
     renderer.setAnimationLoop(animate);
 }
 
