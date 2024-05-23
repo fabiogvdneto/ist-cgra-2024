@@ -40,7 +40,7 @@ const basicMaterials = {
     kleinBottle :  new THREE.MeshBasicMaterial({ color: 0x011111, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshBasicMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshBasicMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
-    cylinder:           new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    cylinder:      new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshBasicMaterial({ color: 0xfffaaa, side: THREE.DoubleSide }),
     hyperboloid:   new THREE.MeshBasicMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
@@ -56,7 +56,7 @@ const normalMaterials = {
     kleinBottle :  new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    cylinder:           new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    cylinder:      new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     hyperboloid:   new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
 }
@@ -72,7 +72,7 @@ const lambertMaterials = {
     kleinBottle :  new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshLambertMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshLambertMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
-    cylinder:           new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    cylinder:      new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshLambertMaterial({ color: 0xff00ff, side: THREE.DoubleSide }),
     hyperboloid:   new THREE.MeshLambertMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
@@ -88,7 +88,7 @@ const phongMaterials = {
     kleinBottle:   new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshPhongMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshPhongMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
-    cylinder:           new THREE.MeshPhongMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    cylinder:      new THREE.MeshPhongMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshPhongMaterial({ color: 0xff00ff, side: THREE.DoubleSide }),
     hyperboloid:   new THREE.MeshPhongMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
@@ -104,7 +104,7 @@ const cartoonMaterials = {
     kleinBottle:   new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshToonMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshToonMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
-    cylinder:           new THREE.MeshToonMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    cylinder:      new THREE.MeshToonMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshToonMaterial({ color: 0xff00ff, side: THREE.DoubleSide }), 
     hyperboloid:   new THREE.MeshToonMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
@@ -117,7 +117,7 @@ let lightsOn = true;
 /* AUXILIAR FUNCTIONS */
 ////////////////////////
 function randomVector() {
-    return new THREE.Vector3(0, 1, 0);
+    return new THREE.Vector3().random().normalize();
 }
 
 function updateMaterials(newMaterials) {
