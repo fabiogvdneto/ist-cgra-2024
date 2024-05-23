@@ -41,7 +41,7 @@ const basicMaterials = {
     kleinBottle :  new THREE.MeshBasicMaterial({ color: 0x011111, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshBasicMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshBasicMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
-    box:           new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    cylinder:           new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshBasicMaterial({ color: 0xfffaaa, side: THREE.DoubleSide }),
     hyperboloid:   new THREE.MeshBasicMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
@@ -57,7 +57,7 @@ const normalMaterials = {
     kleinBottle :  new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
-    box:           new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
+    cylinder:           new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshNormalMaterial({ side: THREE.DoubleSide }),
     hyperboloid:   new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
 }
@@ -73,7 +73,7 @@ const lambertMaterials = {
     kleinBottle :  new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshLambertMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshLambertMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
-    box:           new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    cylinder:           new THREE.MeshLambertMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshLambertMaterial({ color: 0xff00ff, side: THREE.DoubleSide }),
     hyperboloid:   new THREE.MeshLambertMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
@@ -89,7 +89,7 @@ const phongMaterials = {
     kleinBottle:   new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshPhongMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshPhongMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
-    box:           new THREE.MeshPhongMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    cylinder:           new THREE.MeshPhongMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshPhongMaterial({ color: 0xff00ff, side: THREE.DoubleSide }),
     hyperboloid:   new THREE.MeshPhongMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
@@ -105,7 +105,7 @@ const cartoonMaterials = {
     kleinBottle:   new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
     scherkSurface: new THREE.MeshToonMaterial({ color: 0x0aaa00, side: THREE.DoubleSide }),
     paraboloid:    new THREE.MeshToonMaterial({ color: 0x00ffa0, side: THREE.DoubleSide }),
-    box:           new THREE.MeshToonMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
+    cylinder:           new THREE.MeshToonMaterial({ color: 0x0000ff, side: THREE.DoubleSide }),
     ellipsoid:     new THREE.MeshToonMaterial({ color: 0xff00ff, side: THREE.DoubleSide }), 
     hyperboloid:   new THREE.MeshToonMaterial({ color: 0xaa20af, side: THREE.DoubleSide })
 }
@@ -374,7 +374,7 @@ function addObjectsToRing(parent, ring) {
                 obj = addParaboloid(parent, x, y, z);
                 break;
             case 5:
-                obj = addBox(parent, x, y, z);
+                obj = addCylinder(parent, x, y, z);
                 break;
             case 6:
                 obj = addEllipsoid(parent, x, y, z);
@@ -392,7 +392,7 @@ function addSpotLight(ref, target, x, y, z) {
     'use strict';
     const light = new THREE.SpotLight(0xffffff);
 
-    light.position.set(x, y - 2, z);
+    light.position.set(x - 2, y - 2, z);
     light.target = target;
     light.intensity = 5;
     light.distance = 15;
@@ -513,33 +513,33 @@ function addParaboloid(ref, x, y, z) {
     return paraboloid;
 }
 
-function addBox(ref, x, y, z) {
+function addCylinder(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
-        const width = 1.5;
+        const radius = 0.75;
         const height = 1.5;
-        const depth = 1.5;
-        const posX = (u - 0.5) * width;
+        const theta = u * Math.PI * 2;
+        const posX = radius * Math.cos(theta);
         const posY = (v - 0.5) * height;
-        const posZ = (Math.random() - 0.5) * depth;
+        const posZ = radius * Math.sin(theta);
         target.set(posX, posY, posZ);
     }, 32, 32);
 
     const rotationSpeed = Math.random();
     const rotationAxis = randomVector();
-    const box = addMesh(ref, geom, materials.box, x, y, z);
+    const cylinder = addMesh(ref, geom, materials.cylinder, x, y, z);
 
-    setRotationData(box, rotationSpeed, rotationAxis);
-    addSpotLight(ref, box, x, y, z); 
+    setRotationData(cylinder, rotationSpeed, rotationAxis);
+    addSpotLight(ref, cylinder, x, y, z);
 
-    box.name = "box";
-    return box;
+    cylinder.name = "cylinder";
+    return cylinder;
 }
 
 function addEllipsoid(ref, x, y, z) {
     'use strict';
     const geom = new ParametricGeometry(function(u, v, target) {
-        const a = 1.5; // X-axis radius
+        const a = 1; // X-axis radius
         const b = 1;   // Y-axis radius
         const c = 1;   // Z-axis radius
         const posX = a * Math.cos(u * Math.PI * 2) * Math.sin(v * Math.PI);
