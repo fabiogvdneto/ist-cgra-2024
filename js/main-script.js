@@ -20,7 +20,6 @@ const stats = new Stats();
 const ref1 = new THREE.Object3D();
 const ref2 = new THREE.Object3D();
 const ref3 = new THREE.Object3D();
-const ref4 = new THREE.Object3D();
 
 const foundation =  { radius: 4, height: 30 };
 const plane =       { width: 300, depth: 2 };
@@ -138,8 +137,8 @@ function updateMaterials() {
 
 function togglePointLights() {
     'use strict'
-    if (ref1.userData.mobiusStrip) {
-        const mobiusStrip = ref1.userData.mobiusStrip;
+    if (scene.userData.mobiusStrip) {
+        const mobiusStrip = scene.userData.mobiusStrip;
         const numLights = 8; 
 
         for (let i = 0; i < numLights; i++) {
@@ -183,7 +182,7 @@ function createScene() {
     addPlane(scene, 0, -plane.depth/2, 0);
     addSkydome(scene, 0, 0, 0);
     addCarousel(scene, 0, 0, 0);
-    addMobiusStrip(ref1, 0, foundation.height*2, 0); 
+    addMobiusStrip(scene, 0, foundation.height*2, 0); 
 }
 
 //////////////////////
@@ -239,27 +238,26 @@ function addFoundation(obj, x, y, z) {
 
 function addCarousel(obj, x, y, z) {
     'use strict';
-    ref1.position.set(x, y, z);
-    ref2.position.set(x, y + foundation.height/3,   z);
-    ref3.position.set(x, y + foundation.height*2/3, z);
-    ref4.position.set(x, y + foundation.height,     z);
+    ref1.position.set(x, y + foundation.height/3,   z);
+    ref2.position.set(x, y + foundation.height*2/3, z);
+    ref3.position.set(x, y + foundation.height,     z);
 
-    addFoundation(ref1, 0, foundation.height/2, 0);
-    addInnerRing( ref2, 0, 0, 0);
-    addMidRing(   ref3, 0, 0, 0);
-    addOuterRing( ref4, 0, 0, 0);
+    addFoundation(obj, 0, foundation.height/2, 0);
+    addInnerRing( ref1, 0, 0, 0);
+    addMidRing(   ref2, 0, 0, 0);
+    addOuterRing( ref3, 0, 0, 0);
 
-    addObjectsToRing(ref2, ring1);
-    addObjectsToRing(ref3, ring2);
-    addObjectsToRing(ref4, ring3);
+    addObjectsToRing(ref1, ring1);
+    addObjectsToRing(ref2, ring2);
+    addObjectsToRing(ref3, ring3);
     
-    obj.add(ref1, ref2, ref3, ref4);
+    obj.add(ref1, ref2, ref3);
     
     const rotationSpeed = 0.2;
 
+    setRotationData(ref1, rotationSpeed);
     setRotationData(ref2, rotationSpeed);
     setRotationData(ref3, rotationSpeed);
-    setRotationData(ref4, rotationSpeed);
 }
 
 function addInnerRing(obj, x, y, z) {
@@ -735,52 +733,27 @@ function handleCollisions() {
 function update() {
     'use strict';
     const delta = clock.getDelta();
-    const speed = 10;
 
-    if (ref2.userData.moving) {
-        const step = speed * ref2.userData.direction * delta;
-        const newY = step + ref2.position.y;
+    [ref1, ref2, ref3].filter(ref => ref.userData.isMoving).forEach(ref => {
+        const speed = ref.userData.speed;
+        const minY = ref.userData.minY;
+        const maxY = ref.userData.maxY;
+        const newY = speed * delta + ref.position.y;
 
-        if (newY < ring1.height) {
-            ref2.userData.direction = 1;
-            ref2.position.y = ring1.height;
-        } else if (newY > foundation.height) {
-            ref2.userData.direction = -1;
-            ref2.position.y = foundation.height;
-        } else {
-            ref2.position.y = newY;
+        if (newY < minY) {
+            ref.userData.speed = -speed;
+            ref.position.y = minY;
+            return;
         }
-    }
 
-    if (ref3.userData.moving) {
-        const step = speed * ref3.userData.direction * delta;
-        const newY = step + ref3.position.y;
-
-        if (newY < ring2.height) {
-            ref3.userData.direction = 1;
-            ref3.position.y = ring2.height;
-        } else if (newY > foundation.height) {
-            ref3.userData.direction = -1;
-            ref3.position.y = foundation.height;
-        } else {
-            ref3.position.y = newY;
+        if (newY > maxY) {
+            ref.userData.speed = -speed;
+            ref.position.y = maxY;
+            return;
         }
-    }
 
-    if (ref4.userData.moving) {
-        const step = speed * ref4.userData.direction * delta;
-        const newY = step + ref4.position.y;
-
-        if (newY < ring3.height) {
-            ref4.userData.direction = 1;
-            ref4.position.y = ring3.height;
-        } else if (newY > foundation.height) {
-            ref4.userData.direction = -1;
-            ref4.position.y = foundation.height;
-        } else {
-            ref4.position.y = newY;
-        }
-    }
+        ref.position.y = newY;
+    });
 
     // rotation of parametric surfaces
     scene.traverse(obj => {
@@ -809,9 +782,9 @@ function init() {
     document.body.appendChild(renderer.domElement);
     document.body.appendChild(VRButton.createButton(renderer));
 
-    ref2.userData = { moving: true, direction: 1 };
-    ref3.userData = { moving: true, direction: 1 };
-    ref4.userData = { moving: true, direction: 1 };
+    ref1.userData = { isMoving: true, speed: 10, minY: ring1.height, maxY: foundation.height };
+    ref2.userData = { isMoving: true, speed: 10, minY: ring2.height, maxY: foundation.height };
+    ref3.userData = { isMoving: true, speed: 10, minY: ring3.height, maxY: foundation.height };
     
     createScene(); // create scene: cameras, objects, light
     onResize();    // update window size
@@ -849,15 +822,15 @@ function onKeyDown(e) {
     switch (e.key.toUpperCase()) {
         // Toggle movement of inner ring
         case '1':
-            ref2.userData.moving = !ref2.userData.moving;
+            ref1.userData.moving = !ref1.userData.moving;
             break;
         // Toggle movement of mid ring
         case '2':
-            ref3.userData.moving = !ref3.userData.moving;
+            ref2.userData.moving = !ref2.userData.moving;
             break;
         // Toggle movement of outer ring
         case '3':
-            ref4.userData.moving = !ref4.userData.moving;
+            ref3.userData.moving = !ref3.userData.moving;
             break;
         // Select Lambert materials
         case 'Q':
