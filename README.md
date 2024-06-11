@@ -8,8 +8,8 @@ sobre computação gráfica interativa.
 
 O projeto foi divido em 3 fases/entregas:
 
-1. Esboço em "papel e caneta" das cenas, dos desenhos técnicos simples e dos grafos de cena ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/CG%202324%20-%20Trabalho%20A%20-%20Enunciado.pdf)).
+1. Esboço em "papel e caneta" das cenas, dos desenhos técnicos simples e dos grafos de cena ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-A.pdf)).
 
-2. Cena interativa com câmaras fixas, câmara móvel, instânciação de primitivas geométricas, animações simples e colisões ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/CG%202324%20-%20Trabalho%20B%20-%20Enunciado.pdf)) ([código](https://github.com/fabiogvdneto/ist-cgra-2024/tree/delivery-b)).
+2. Cena interativa com câmaras fixas, câmara móvel, instânciação de primitivas geométricas, animações simples e colisões ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-B.pdf)) ([código](https://github.com/fabiogvdneto/ist-cgra-2024/tree/delivery-b)).
 
-3. Cena interativa com malhas, materiais, luzes, texturas e câmara estereoscópica ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/CG%202324%20-%20Trabalho%20C%20-%20Enunciado.pdf)) ([código](https://github.com/fabiogvdneto/ist-cgra-2024/tree/delivery-c)).
+3. Cena interativa com malhas, materiais, luzes, texturas e câmara estereoscópica ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-C.pdf)) ([código](https://github.com/fabiogvdneto/ist-cgra-2024/tree/delivery-c)).
