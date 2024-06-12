@@ -1,51 +1,51 @@
-# Computação Gráfica - Trabalho B
+# Computer Graphics - Assignment B
 
-## Descrição
+## Description
 
-Este repositório contém a resolução do Trabalho B para a disciplina de Computação Gráfica do ano letivo 2023/2024. O objetivo deste trabalho é desenvolver uma aplicação gráfica interativa utilizando Three.js, focando-se nos seguintes aspectos:
+This repository contains the solution for Assignment B for the Computer Graphics course in the academic year 2023/2024. The goal of this assignment is to develop an interactive graphical application using Three.js, focusing on the following aspects:
 
-1. **Cenas e Câmaras**:
-    - Configuração de uma cena com fundo de cor clara.
-    - Implementação de três câmaras fixas com projeção ortogonal (vistas frontal, lateral e de topo).
-    - Adição de duas câmaras fixas adicionais (uma com projeção ortogonal e outra com projeção perspectiva).
-    - Inclusão de uma câmara móvel com projeção perspectiva posicionada no gancho da grua.
+1. **Scenes and Cameras**:
+    - Setting up a scene with a light-colored background.
+    - Implementing three fixed cameras with orthogonal projection (front, side, and top views).
+    - Adding two additional fixed cameras (one with orthogonal projection and another with perspective projection).
+    - Including a movable camera with perspective projection positioned on the crane's hook.
 
-2. **Modelagem Geométrica**:
-    - Modelagem de uma grua simplificada baseada em primitivas geométricas de Three.js, com uma hierarquia de transformações para permitir movimentos articulados.
-    - Modelagem de um contentor aberto e várias cargas espalhadas pela cena.
+2. **Geometric Modeling**:
+    - Modeling a simplified crane based on Three.js geometric primitives, with a transformation hierarchy to allow articulated movements.
+    - Modeling an open container and several loads scattered around the scene.
 
-3. **Animações e Interatividade**:
-    - Controle da grua para içar e posicionar cargas dentro do contentor usando teclas específicas.
-    - Alternância entre modos de exibição de arames e sólidos.
-    - Implementação de detecção de colisões entre a garra da grua e as cargas, ativando animações de movimento.
+3. **Animations and Interactivity**:
+    - Controlling the crane to lift and position loads inside the container using specific keys.
+    - Switching between wireframe and solid rendering modes.
+    - Implementing collision detection between the crane claw and the loads, triggering movement animations.
 
 4. **Heads-Up Display (HUD)**:
-    - Inclusão de um HUD com o mapa das teclas para controle da grua.
+    - Including a HUD with a keymap for crane control.
 
-## Objetivos
+## Objectives
 
-- Compreender e implementar a arquitetura de uma aplicação gráfica interativa.
-- Explorar conceitos de modelagem geométrica por instanciação de primitivas.
-- Entender o uso de câmaras virtuais e as diferenças entre projeções ortogonais e perspectivas.
-- Aplicar técnicas básicas de animação.
-- Implementar técnicas simples de detecção de colisões.
+- Understand and implement the architecture of an interactive graphical application.
+- Explore geometric modeling concepts by instantiating primitives.
+- Understand the use of virtual cameras and the differences between orthogonal and perspective projections.
+- Apply basic animation techniques.
+- Implement simple collision detection techniques.
 
-## Instruções de Uso
+## Usage Instructions
 
-1. Clone o repositório.
-2. Instale as dependências necessárias (Three.js).
-3. Execute a aplicação em um servidor local.
-4. Utilize as teclas definidas para operar a grua e interagir com a cena.
+1. Clone the repository.
+2. Install the necessary dependencies (Three.js).
+3. Run the application on a local server.
+4. Use the defined keys to operate the crane and interact with the scene.
 
-## Notas
+## Notes
 
-- A implementação é feita utilizando a biblioteca Three.js sem o uso de bibliotecas externas para detecção de colisões ou física de movimentos.
-- O código segue boas práticas de programação orientada a objetos para facilitar a reutilização e escalabilidade.
+- The implementation uses the Three.js library without external libraries for collision detection or motion physics.
+- The code follows good object-oriented programming practices to facilitate reuse and scalability.
 
-## Licença
+## License
 
-Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/LICENSE) para detalhes.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/LICENSE) file for details.
 
 ---
 
-Para mais informações, pode consultar o enunciado completo desta entrega aqui: [Enunciado Trabalho B](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-B.pdf)
+For more information, you can refer to the complete assignment statement here: [Assignment B Statement](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-B.pdf)
