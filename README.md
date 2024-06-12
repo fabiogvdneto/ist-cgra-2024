@@ -1,64 +1,63 @@
-# Computação Gráfica - Trabalho C
+# Computer Graphics - Assignment C
 
-## Descrição
+## Description
 
-Este repositório contém a resolução do Trabalho C para a disciplina de Computação Gráfica do ano letivo 2023/2024. O objetivo deste trabalho é desenvolver uma aplicação gráfica interativa utilizando Three.js, focando-se nos seguintes aspectos:
+This repository contains the solution for Assignment C for the Computer Graphics course in the academic year 2023/2024. The goal of this assignment is to develop an interactive graphical application using Three.js, focusing on the following aspects:
 
-1. **Cenas e Câmaras**:
-    - Configuração de uma cena com um carrossel matemático.
-    - Implementação de uma câmara fixa com projeção perspectiva e uma câmara estereoscópica para visualização em VR.
+1. **Scenes and Cameras**:
+    - Setting up a scene with a mathematical carousel.
+    - Implementing a fixed camera with perspective projection and a stereoscopic camera for VR viewing.
 
-2. **Modelagem Geométrica**:
-    - Criação de um carrossel com um cilindro central e três anéis concêntricos que podem se mover independentemente.
-    - Modelagem de superfícies paramétricas e uma faixa de Möbius utilizando malhas de polígonos.
+2. **Geometric Modeling**:
+    - Creating a carousel with a central cylinder and three concentric rings that can move independently.
+    - Modeling parametric surfaces and a Möbius strip using polygon meshes.
 
-3. **Animações e Interatividade**:
-    - Controle dos movimentos dos anéis do carrossel usando teclas específicas.
-    - Aplicação de texturas e alternância entre diferentes tipos de materiais e sombreamento.
+3. **Animations and Interactivity**:
+    - Controlling the movements of the carousel rings using specific keys.
+    - Applying textures and switching between different types of materials and shading.
 
-4. **Iluminação**:
-    - Configuração de luz direcional e luzes pontuais associadas à faixa de Möbius e superfícies paramétricas.
-    - Implementação de um skydome com uma textura baseada em um vídeo clássico de animação.
+4. **Lighting**:
+    - Setting up directional light and point lights associated with the Möbius strip and parametric surfaces.
+    - Implementing a skydome with a texture based on a classic animation video.
 
-5. **Câmara Estereoscópica**:
-    - Adição de suporte para visualização estereoscópica em dispositivos de Realidade Virtual.
+5. **Stereoscopic Camera**:
+    - Adding support for stereoscopic viewing on VR devices.
 
-## Objetivos
+## Objectives
 
-- Perceber as noções básicas de iluminação e materiais.
-- Modelar superfícies geométricas complexas usando Three.js.
-- Compreender a aplicação de texturas e o uso de câmaras estereoscópicas.
-- Implementar uma cena interativa e visualmente atraente.
+- Understand the basic concepts of lighting and materials.
+- Model complex geometric surfaces using Three.js.
+- Understand the application of textures and the use of stereoscopic cameras.
+- Implement an interactive and visually appealing scene.
 
-## Lista de Tarefas
+## Task List
 
-1. Criar a base do carrossel com um cilindro central e três anéis móveis.
-2. Criar um skydome.
-3. Adicionar superfícies paramétricas aos anéis do carrossel.
-4. Configurar iluminação global com uma luz direcional e uma luz ambiente.
-5. Modelar uma faixa de Möbius com malhas de polígonos.
-6. Adicionar luzes pontuais à faixa de Möbius e spotlights nas superfícies paramétricas.
-7. Definir e alternar entre diferentes tipos de materiais e sombreamento.
-8. Implementar uma câmara fixa e suporte para visualização estereoscópica.
+1. Create the base of the carousel with a central cylinder and three movable rings.
+2. Create a skydome.
+3. Add parametric surfaces to the carousel rings.
+4. Set up global lighting with a directional light and an ambient light.
+5. Model a Möbius strip with polygon meshes.
+6. Add point lights to the Möbius strip and spotlights to the parametric surfaces.
+7. Define and switch between different types of materials and shading.
+8. Implement a fixed camera and support for stereoscopic viewing.
 
-## Instruções de Uso
+## Usage Instructions
 
-1. Clone o repositório.
-2. Instale as dependências necessárias (Three.js).
-3. Execute a aplicação em um servidor local.
-4. Utilize as teclas definidas para interagir com a cena e alterar as configurações de iluminação e materiais.
+1. Clone the repository.
+2. Install the necessary dependencies (Three.js).
+3. Run the application on a local server.
+4. Use the defined keys to interact with the scene and change lighting and material settings.
 
-## Notas
+## Notes
 
-- A implementação é feita utilizando sommente a biblioteca Three.js.
-- O código segue boas práticas de programação orientada a objetos para facilitar a reutilização e escalabilidade.
-- O projeto está configurado para funcionar em dispositivos VR.
+- The implementation uses only the Three.js library.
+- The code follows good object-oriented programming practices to facilitate reuse and scalability.
+- The project is configured to work on VR devices.
 
+## License
 
-## Licença
-
-Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/LICENSE) para detalhes.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/LICENSE) file for details.
 
 ---
 
-Para mais informações, pode consultar o enunciado completo desta entrega aqui: [Enunciado Trabalho C](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-C.pdf)
+For more information, you can refer to the complete assignment statement here: [Assignment C Statement](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-C.pdf)
