@@ -1,20 +1,17 @@
-# Projeto de Computação Gráfica
+# Computer Graphics Project
 
-Este projeto foi realizado no âmbito da cadeira de Computação Gráfica da
-Licenciatura em Engenharia Informática e de Computadores, com o objetivo
-de fornecer conhecimentos básicos sobre computação gráfica interativa.
+This project was carried out as part of the Computer Graphics course in the Bachelor's Degree in Computer Engineering, with the aim of providing knowledge about interactive computer graphics.
 
-### Fases do Projeto
+### Project Phases
 
-O projeto foi divido em 3 fases/entregas:
+The project was divided into three phases/deliveries:
 
-1. Esboço em "papel e caneta" das cenas, dos desenhos técnicos simples e dos grafos de cena ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-A.pdf)).
+1. Sketching scenes, simple technical drawings, and scene graphs using "pen and paper" ([statement-A](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-A.pdf)).
 
-2. Cena interativa com câmaras fixas, câmara móvel, instânciação de primitivas geométricas, animações simples e colisões ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-B.pdf)) ([código](https://github.com/fabiogvdneto/ist-cgra-2024/tree/delivery-b)).
+2. An interactive scene with fixed cameras, a movable camera, instantiation of geometric primitives, simple animations, and collisions ([statement-B](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-B.pdf)) ([code](https://github.com/fabiogvdneto/ist-cgra-2024/tree/delivery-b)).
 
-3. Cena interativa com malhas, materiais, luzes, texturas e câmara estereoscópica ([enunciado](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-C.pdf)) ([código](https://github.com/fabiogvdneto/ist-cgra-2024/tree/delivery-c)).
+3. An interactive scene with meshes, materials, lights, textures, and stereoscopic camera ([statement-C](https://github.com/fabiogvdneto/ist-cgra-2024/blob/main/statement-C.pdf)) ([code](https://github.com/fabiogvdneto/ist-cgra-2024/tree/delivery-c)).
 
 ### Template
 
-O código que se encontra nesta branch foi o código utilizado como
-template para realizar as entregas B e C.
+The code found in this branch was used as the template for completing deliveries B and C.
